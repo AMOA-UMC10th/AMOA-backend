@@ -1,4 +1,14 @@
 package com.AMOA.server.domain.common.repository;
 
-public interface DesignTagRepository {
+import com.AMOA.server.domain.common.entity.DesignTag;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface DesignTagRepository extends JpaRepository<DesignTag, Long> {
+
+    // designtag_ids 목록으로 태그 조회 (샵 등록/수정 시 사용)
+    List<DesignTag> findByDesignTagIdIn(List<Long> designTagIds);
 }
