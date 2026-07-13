@@ -95,12 +95,22 @@ public class ShopCommandService {
         }
 
         String[] parts = address.split(" ");
+
+        // 1순위: 구/군 먼저 탐색
         for (String part : parts) {
-            if (part.endsWith("구") || part.endsWith("군") || part.endsWith("시")) { // '시' 추가
+            if (part.endsWith("구") || part.endsWith("군")) {
                 return part;
             }
         }
-        // 구/군/시를 찾지 못한 경우 예외 발생
+
+        // 2순위: 구/군 없을 때만 시 탐색
+        for (String part : parts) {
+            if (part.endsWith("시")) {
+                return part;
+            }
+        }
+
+        // 구/군/시 모두 없으면 예외
         throw new ShopException(ShopErrorCode.SHOP_INVALID_ADDRESS);
     }
 }
