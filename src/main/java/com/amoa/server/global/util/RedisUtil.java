@@ -1,7 +1,6 @@
 package com.amoa.server.global.util;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RedisUtil {
     private static final String REFRESH_PREFIX = "refresh:";
-    private static final String BLACKLIST_PREFIX = "blacklist:";
     private final RedisTemplate<String, Object> redisTemplate;
 
     // 데이터 저장
@@ -30,7 +28,7 @@ public class RedisUtil {
 
     // 존재 여부 확인
     public boolean hasKey(String key) {
-        return redisTemplate.hasKey(key);
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 
     public void saveRefreshToken(
@@ -47,18 +45,25 @@ public class RedisUtil {
         return value == null ? null : value.toString();
     }
 
+    public boolean rotateRefreshToken(
+            Long userId,
+            String oldRefreshToken,
+            String newRefreshToken,
+            Duration expiration
+    ) {
+        String savedRefreshToken = getRefreshToken(userId);
+
+        if (savedRefreshToken == null
+                || !savedRefreshToken.equals(oldRefreshToken)) {
+            return false;
+        }
+
+        saveRefreshToken(userId, newRefreshToken, expiration);
+
+        return true;
+    }
+
     public void deleteRefreshToken(Long userId) {
         delete(REFRESH_PREFIX + userId);
-    }
-
-    // 블랙리스트 등록 (key가 액세스 토큰, value가 "logout", ttl이 남은 유효 시간이 되도록)
-    public void setBlackList(String accessToken, Long remainingTime) {
-        if (remainingTime > 0) {
-            redisTemplate.opsForValue().set(accessToken, "logout", remainingTime, TimeUnit.MILLISECONDS);
-        }
-    }
-
-    public boolean isBlackList(String accessToken) {
-        return hasKey(accessToken);
     }
 }

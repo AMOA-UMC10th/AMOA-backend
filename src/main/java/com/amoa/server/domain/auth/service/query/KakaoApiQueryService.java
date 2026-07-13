@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 
@@ -54,6 +55,15 @@ public class KakaoApiQueryService {
             }
 
             throw new GeneralException(AuthErrorCode.KAKAO_5XX);
+        }catch (ResourceAccessException exception) {
+
+            log.error(
+                    "카카오 API 통신 실패",
+                    exception
+            );
+
+            throw new GeneralException(AuthErrorCode.KAKAO_5XX);
+
         }
     }
 }

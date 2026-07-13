@@ -60,7 +60,7 @@ public class JwtUtil {
 
             return true;
         } catch (Exception e) {
-            log.warn("Invalid JWT token: {}", token);
+            log.warn("Invalid JWT token. type={}", e.getClass().getSimpleName());
             return false;
         }
     }

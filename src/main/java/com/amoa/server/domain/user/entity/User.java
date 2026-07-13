@@ -37,7 +37,7 @@ import org.hibernate.annotations.SQLRestriction;
                         columnNames = "social_uid"
                 )
         })
-@SQLDelete(sql = "UPDATE member SET is_active = false WHERE id = ?") // delete()시 hard delete 하는 것이 아닌 soft delete를 진행
+@SQLDelete(sql = "UPDATE user SET is_active = false WHERE user_id = ?") // delete()시 hard delete 하는 것이 아닌 soft delete를 진행
 @SQLRestriction("is_active = true") // 조회시 isActive 필드가 true인 데이터만 조회
 
 public class User extends BaseEntity {

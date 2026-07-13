@@ -8,6 +8,7 @@ import com.amoa.server.global.apiPayload.code.GeneralErrorCode;
 import com.amoa.server.global.apiPayload.exception.GeneralException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -41,14 +42,17 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         } catch (MalformedJwtException e) {
             log.warn("jwt 토큰이 유효하지 않습니다.  : {}", e.getMessage());
             setErrorResponse(response, AuthErrorCode.TOKEN_INVALID);
-        } catch (AuthException e) {
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("유효하지 않은 jwt 토큰입니다: {}", e.getMessage());
+            setErrorResponse(response, AuthErrorCode.TOKEN_INVALID);
+        }catch (AuthException e) {
             log.warn("인증 예외 발생: {}", e.getMessage());
             setErrorResponse(response, e.getCode());
         } catch (GeneralException e) {
             log.warn("jwt 관련 예외 발생: {}", e.getMessage());
             setErrorResponse(response, e.getCode());
         } catch (Exception e) {
-            log.error("예상치 못한 jwt filter chain 관련 예외입니다.: {}", e.getMessage());
+            log.error("예상치 못한 jwt filter chain 관련 예외입니다.", e);
             setErrorResponse(response, GeneralErrorCode.INTERNAL_SERVER_ERROR);
         }
     }

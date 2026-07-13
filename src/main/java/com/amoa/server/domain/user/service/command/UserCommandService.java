@@ -6,9 +6,9 @@ import com.amoa.server.domain.user.enums.Role;
 import com.amoa.server.domain.user.exception.UserException;
 import com.amoa.server.domain.user.exception.code.UserErrorCode;
 import com.amoa.server.domain.user.repository.UserRepository;
-import com.amoa.server.global.util.JwtUtil;
 import com.amoa.server.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,18 +19,16 @@ public class UserCommandService {
 
     private final UserRepository userRepository;
     private final RedisUtil redisUtil;
-    private final JwtUtil jwtUtil;
 
     // 회원 탈퇴
     @Transactional
-    public void withdrawalUser(Long userId, String accessToken) {
+    public void withdrawalUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
                         new UserException(UserErrorCode.MEMBER_NOT_FOUND)
                 );
 
         redisUtil.deleteRefreshToken(userId);
-        setTokenBlackList(accessToken);
 
         /*
          * 소프트 삭제를 사용할 예정이라면 deleteById 대신
@@ -41,14 +39,13 @@ public class UserCommandService {
 
     // 로그아웃
     @Transactional
-    public void logout(Long userId, String accessToken) {
+    public void logout(Long userId) {
         userRepository.findById(userId)
                 .orElseThrow(() ->
                         new UserException(UserErrorCode.MEMBER_NOT_FOUND)
                 );
 
         redisUtil.deleteRefreshToken(userId);
-        setTokenBlackList(accessToken);
     }
 
     // 기존 회원 조회 또는 신규 회원 생성
@@ -83,16 +80,12 @@ public class UserCommandService {
                         .role(Role.NEW_USER)
                         .isActive(true)
                         .build();
-
-                    return userRepository.save(newUser);
+                    try {
+                        return userRepository.saveAndFlush(newUser);
+                    } catch (DataIntegrityViolationException exception) {
+                        return userRepository.findBySocialUid(socialUid)
+                                .orElseThrow(() -> exception);
+                    }
         });
-    }
-
-    public void setTokenBlackList(String accessToken) {
-        Long remainingTime = jwtUtil.getExpirationTime(accessToken);
-
-        if (remainingTime > 0) {
-            redisUtil.setBlackList(accessToken, remainingTime);
-        }
     }
 }

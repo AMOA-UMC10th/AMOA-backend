@@ -39,12 +39,12 @@ public class AuthCommandService {
 
         User user = userCommandService.getOrSaveMember(kakaoUserInfoResDTO);
 
-        // 비활성된(탈퇴) 회원인 경우
-        if (!user.getIsActive()) {
-            throw new UserException(UserErrorCode.MEMBER_NOT_ACTIVE);
+        // 탈퇴 또는 비활성 회원 로그인 차단
+        if (!Boolean.TRUE.equals(user.getIsActive())) {
+            throw new UserException(UserErrorCode.MEMBER_UNAUTHORIZED);
         }
 
-        // 온보딩 미완료 회원일 경우
+        // 온보딩 미완료 회원일 경우 임시 토큰 발급
         if (user.getRole() == Role.NEW_USER) {
             String tempToken = jwtUtil.createTempToken(user.getId());
 
@@ -88,6 +88,11 @@ public class AuthCommandService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.MEMBER_NOT_FOUND));
+
+        // 탈퇴 또는 비활성 회원 토큰 재발행 불가
+        if (!Boolean.TRUE.equals(user.getIsActive())) {
+            throw new UserException(UserErrorCode.MEMBER_UNAUTHORIZED);
+        }
 
         // 온보딩 미완료 회원은 토큰 재발행 불가
         if (user.getRole() == Role.NEW_USER) {
