@@ -103,3 +103,4 @@ public class ShopCommandService {
         // 구/군/시를 찾지 못한 경우 예외 발생
         throw new ShopException(ShopErrorCode.SHOP_INVALID_ADDRESS);
     }
+}
