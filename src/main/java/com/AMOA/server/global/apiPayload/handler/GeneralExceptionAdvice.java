@@ -1,5 +1,6 @@
 package com.AMOA.server.global.apiPayload.handler;
 
+import com.AMOA.server.domain.shop.exception.ShopException;
 import com.AMOA.server.global.apiPayload.ApiResponse;
 import com.AMOA.server.global.apiPayload.code.BaseErrorCode;
 import com.AMOA.server.global.apiPayload.code.GeneralErrorCode;
@@ -65,5 +66,16 @@ public class GeneralExceptionAdvice {
                         code,
                         "서버 내부 오류가 발생하였습니다."
                 ));
+    }
+
+    @ExceptionHandler(ShopException.class)
+    public ResponseEntity<ApiResponse<Void>> handleShopException(ShopException e) {
+        BaseErrorCode code = e.getErrorCode();
+
+        log.warn("Shop error occurred: {}: {}", code.getCode(), code.getMessage());
+
+        return ResponseEntity
+                .status(code.getHttpStatus())
+                .body(ApiResponse.onFailure(code));
     }
 }
