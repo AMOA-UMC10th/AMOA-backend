@@ -90,12 +90,16 @@ public class ShopCommandService {
 
     // 주소에서 구/군 단위 파싱
     private String extractRegionName(String address) {
+        if (address == null || address.isBlank()) {
+            throw new ShopException(ShopErrorCode.SHOP_INVALID_ADDRESS);
+        }
+
         String[] parts = address.split(" ");
         for (String part : parts) {
-            if (part.endsWith("구") || part.endsWith("군")) {
+            if (part.endsWith("구") || part.endsWith("군") || part.endsWith("시")) { // '시' 추가
                 return part;
             }
         }
-        return parts.length > 1 ? parts[1] : parts[0];
+        // 구/군/시를 찾지 못한 경우 예외 발생
+        throw new ShopException(ShopErrorCode.SHOP_INVALID_ADDRESS);
     }
-}
