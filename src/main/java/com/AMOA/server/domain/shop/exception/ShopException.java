@@ -8,8 +8,8 @@ public class ShopException extends RuntimeException {
 
   private final BaseErrorCode errorCode;
 
-  public ShopException(BaseErrorCode errorCode) {
-    super(errorCode.getMessage());
+  public ShopException(BaseErrorCode errorCode, Throwable cause) {
+    super(errorCode.getMessage(), cause);
     this.errorCode = errorCode;
   }
 }

@@ -6,6 +6,7 @@ import com.AMOA.server.domain.shop.exception.code.ShopErrorCode;
 import io.netty.channel.ChannelOption;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import reactor.netty.http.client.HttpClient;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KakaoLocalClient {
@@ -64,7 +66,8 @@ public class KakaoLocalClient {
                     .build();
 
         } catch (Exception e) {
-            throw new ShopException(ShopErrorCode.KAKAO_API_ERROR);
+            log.error("카카오 키워드 검색 중 오류 발생: {}", e.getMessage(), e);
+            throw new ShopException(ShopErrorCode.KAKAO_API_ERROR, e);
         }
     }
 
@@ -96,7 +99,8 @@ public class KakaoLocalClient {
             return new BigDecimal[]{latitude, longitude};
 
         } catch (Exception e) {
-            throw new ShopException(ShopErrorCode.KAKAO_API_ERROR);
+            log.error("카카오 로컬 API 호출 중 오류 발생: {}", e.getMessage(), e);
+            throw new ShopException(ShopErrorCode.KAKAO_API_ERROR, e);
         }
     }
 }
