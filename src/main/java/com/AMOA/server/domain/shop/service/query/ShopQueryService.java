@@ -32,10 +32,14 @@ public class ShopQueryService {
         if (keyword == null || keyword.isBlank()) {
             throw new ShopException(ShopErrorCode.SHOP_KEYWORD_EMPTY);
         }
+
         ShopResDTO.KakaoSearchResponse result = kakaoLocalClient.searchByKeyword(keyword);
+
         if (result == null) {
-            throw new ShopException(ShopErrorCode.KAKAO_API_ERROR);
+            // API 오류가 아니라 검색 결과 없음
+            throw new ShopException(ShopErrorCode.KAKAO_SEARCH_NOT_FOUND);
         }
+
         return result;
     }
 }
