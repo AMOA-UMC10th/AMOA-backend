@@ -5,7 +5,13 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "region")
+@Table(
+        name = "region",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_region_name",
+                columnNames = "name"
+        )
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
