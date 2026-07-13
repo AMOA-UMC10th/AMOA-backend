@@ -80,8 +80,7 @@ public class ShopConverter {
         return new ShopResDTO.KakaoSearchResponse(
                 placeName,
                 address,
-                phone,
-                businessHours
+                phone
         );
     }
 }
