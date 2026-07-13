@@ -1,4 +1,7 @@
-package com.AMOA.server.domain.shop.entity;
+package com.AMOA.server.domain.shop.enums;
 
-public class ShopStatus {
+public enum ShopStatus {
+    DRAFT,
+    ACTIVE,
+    INACTIVE
 }
