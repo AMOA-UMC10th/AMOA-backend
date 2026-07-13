@@ -3,15 +3,19 @@ package com.AMOA.server.global.kakao;
 import com.AMOA.server.domain.shop.dto.Response.ShopResDTO;
 import com.AMOA.server.domain.shop.exception.ShopException;
 import com.AMOA.server.domain.shop.exception.code.ShopErrorCode;
+import io.netty.channel.ChannelOption;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import reactor.netty.http.client.HttpClient;
 
 @Component
 @RequiredArgsConstructor
@@ -22,6 +26,11 @@ public class KakaoLocalClient {
 
     private final WebClient webClient = WebClient.builder()
             .baseUrl("https://dapi.kakao.com")
+            .clientConnector(new ReactorClientHttpConnector(
+                    HttpClient.create()
+                            .responseTimeout(Duration.ofSeconds(5))  // 응답 타임아웃 5초
+                            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)  // 연결 타임아웃 3초
+            ))
             .build();
 
     // 샵 이름으로 검색 (자동완성용)
