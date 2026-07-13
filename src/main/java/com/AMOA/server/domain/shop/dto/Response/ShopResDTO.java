@@ -28,7 +28,6 @@ public class ShopResDTO {
         private String placeName;
         private String address;
         private String phone;
-        private String businessHours;
     }
 
     // POST /api/admin/shops (샵 등록)
