@@ -72,7 +72,11 @@ public class GeneralExceptionAdvice {
     public ResponseEntity<ApiResponse<Void>> handleShopException(ShopException e) {
         BaseErrorCode code = e.getErrorCode();
 
-        log.warn("Shop error occurred: {}: {}", code.getCode(), code.getMessage());
+        if (code.getHttpStatus().is5xxServerError()) {
+            log.error("Shop error occurred: {}: {}", code.getCode(), code.getMessage(), e);
+        } else {
+            log.warn("Shop error occurred: {}: {}", code.getCode(), code.getMessage(), e);
+        }
 
         return ResponseEntity
                 .status(code.getHttpStatus())
