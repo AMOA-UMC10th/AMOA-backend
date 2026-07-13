@@ -3,11 +3,15 @@ package com.AMOA.server.domain.shop.controller;
 import com.AMOA.server.domain.shop.controller.docs.ShopControllerDocs;
 import com.AMOA.server.domain.shop.dto.Request.ShopReqDTO;
 import com.AMOA.server.domain.shop.dto.Response.ShopResDTO;
+import com.AMOA.server.domain.shop.dto.Response.ShopResDTO.CreateShopResponse;
 import com.AMOA.server.domain.shop.exception.code.ShopSuccessCode;
 import com.AMOA.server.domain.shop.service.command.ShopCommandService;
 import com.AMOA.server.domain.shop.service.query.ShopQueryService;
 import com.AMOA.server.global.apiPayload.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,9 +39,11 @@ public class ShopController implements ShopControllerDocs {
 
     // POST /api/admin/shops - 샵 등록
     @PostMapping
-    public ApiResponse<ShopResDTO.CreateShopResponse> createShop(
-            @RequestBody ShopReqDTO.CreateShopRequest request) {
+    public ResponseEntity<ApiResponse<CreateShopResponse>> createShop(
+            @RequestBody @Valid ShopReqDTO.CreateShopRequest request) {
         ShopResDTO.CreateShopResponse result = shopCommandService.createShop(request);
-        return ApiResponse.onSuccess(ShopSuccessCode.SHOP_CREATED, result);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.onSuccess(ShopSuccessCode.SHOP_CREATED, result));
     }
 }
