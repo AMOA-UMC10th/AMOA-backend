@@ -16,6 +16,7 @@ import com.AMOA.server.domain.shop.repository.ShopRepository;
 import com.AMOA.server.global.kakao.KakaoLocalClient;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,16 +49,21 @@ public class ShopCommandService {
         String regionName = extractRegionName(request.address());
         // 예: "서울 성동구 성수동 123" → "성동구"
 
-        Region region = regionRepository.findByName(regionName)
-                .orElseGet(() -> {
-                    // Region이 없으면 새로 생성
-                    Region newRegion = Region.builder()
-                            .name(regionName)
-                            .createdAt(LocalDateTime.now())
-                            .updatedAt(LocalDateTime.now())
-                            .build();
-                    return regionRepository.save(newRegion);
-                });
+        Region region;
+        try {
+            region = regionRepository.findByName(regionName)
+                    .orElseGet(() -> regionRepository.save(
+                            Region.builder()
+                                    .name(regionName)
+                                    .createdAt(LocalDateTime.now())
+                                    .updatedAt(LocalDateTime.now())
+                                    .build()
+                    ));
+        } catch (DataIntegrityViolationException e) {
+            // 동시 INSERT로 UNIQUE 제약 위반 시 기존 region 재조회
+            region = regionRepository.findByName(regionName)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.REGION_NOT_FOUND));
+        }
 
         // 3) Shop Entity 생성 및 저장
         Shop shop = ShopConverter.toShop(request, region, latitude, longitude);
