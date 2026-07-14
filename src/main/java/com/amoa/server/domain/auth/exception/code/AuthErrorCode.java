@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum AuthErrorCode implements BaseErrorCode {
     KAKAO_4XX(
             HttpStatus.BAD_REQUEST,
-            "KAKAO4XX"
+            "KAKAO4XX",
             "카카오로부터 4XX 응답을 받았습니다."),
     KAKAO_5XX(
             HttpStatus.BAD_GATEWAY,
