@@ -39,12 +39,30 @@ jobs:
       - name: Configure SSH
         env:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_KNOWN_HOSTS: ${{ secrets.EC2_KNOWN_HOSTS }}
         run: |
           mkdir -p ~/.ssh
+
           printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/amoa-key.pem
           chmod 600 ~/.ssh/amoa-key.pem
-          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+
+          printf '%s\n' "$EC2_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Prepare EC2 deployment directory
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_ENV_FILE: ${{ secrets.EC2_ENV_FILE }}
+        run: |
+          ssh -i ~/.ssh/amoa-key.pem \
+            "$EC2_USER@$EC2_HOST" \
+            "mkdir -p /home/ubuntu/AMOA-backend"
+
+          printf '%s\n' "$EC2_ENV_FILE" | \
+            ssh -i ~/.ssh/amoa-key.pem \
+            "$EC2_USER@$EC2_HOST" \
+            "umask 077 && cat > /home/ubuntu/AMOA-backend/.env"
 
       - name: Upload deployment files
         env:
@@ -68,12 +86,43 @@ jobs:
 
               cd /home/ubuntu/AMOA-backend
 
+              echo "===== Building Docker image ====="
               docker build -t amoa-server:latest .
+
+              echo "===== Starting containers ====="
               docker compose up -d --force-recreate
+
+              echo "===== Waiting for application ====="
+              HEALTH_CHECK_SUCCESS=false
+
+              for attempt in $(seq 1 30); do
+                if curl -fsS http://localhost:8080/health | grep -q "OK"; then
+                  echo "Application is healthy."
+                  HEALTH_CHECK_SUCCESS=true
+                  break
+                fi
+
+                echo "Health check attempt ${attempt}/30 failed."
+                sleep 5
+              done
+
+              if [ "$HEALTH_CHECK_SUCCESS" != "true" ]; then
+                echo "Application failed to become healthy."
+
+                echo "===== Container status ====="
+                docker compose ps
+
+                echo "===== Application logs ====="
+                docker logs --tail 200 amoa-server || true
+
+                exit 1
+              fi
+
+              echo "===== Removing unused images ====="
               docker image prune -f
 
               echo "===== Running containers ====="
-              docker ps
+              docker compose ps
 
               echo "===== Application logs ====="
               docker logs --tail 50 amoa-server
