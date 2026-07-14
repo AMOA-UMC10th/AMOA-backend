@@ -1,4 +1,4 @@
-package com.AMOA.server.domain.user.enums;
+package com.amoa.server.domain.user.enums;
 
 public enum Role {
     NEW_USER,

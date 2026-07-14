@@ -1,4 +1,4 @@
-package com.AMOA.server.global.entity;
+package com.amoa.server.global.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

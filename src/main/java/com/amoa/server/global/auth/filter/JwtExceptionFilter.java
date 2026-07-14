@@ -1,11 +1,11 @@
-package com.AMOA.server.global.auth.filter;
+package com.amoa.server.global.auth.filter;
 
-import com.AMOA.server.domain.auth.exception.AuthException;
-import com.AMOA.server.domain.auth.exception.code.AuthErrorCode;
-import com.AMOA.server.global.apiPayload.ApiResponse;
-import com.AMOA.server.global.apiPayload.code.BaseErrorCode;
-import com.AMOA.server.global.apiPayload.code.GeneralErrorCode;
-import com.AMOA.server.global.apiPayload.exception.GeneralException;
+import com.amoa.server.domain.auth.exception.AuthException;
+import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
+import com.amoa.server.global.apiPayload.ApiResponse;
+import com.amoa.server.global.apiPayload.code.BaseErrorCode;
+import com.amoa.server.global.apiPayload.code.GeneralErrorCode;
+import com.amoa.server.global.apiPayload.exception.GeneralException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;

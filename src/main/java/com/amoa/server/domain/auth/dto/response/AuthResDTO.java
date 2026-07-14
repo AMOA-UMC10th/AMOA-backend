@@ -1,6 +1,6 @@
-package com.AMOA.server.domain.auth.dto.response;
+package com.amoa.server.domain.auth.dto.response;
 
-import com.AMOA.server.domain.user.enums.Role;
+import com.amoa.server.domain.user.enums.Role;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,6 @@
-package com.AMOA.server.domain.user.exception.code;
+package com.amoa.server.domain.user.exception.code;
 
-import com.AMOA.server.global.apiPayload.code.BaseSuccessCode;
+import com.amoa.server.global.apiPayload.code.BaseSuccessCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

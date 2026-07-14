@@ -1,6 +1,6 @@
-package com.AMOA.server.global.auth;
+package com.amoa.server.global.auth;
 
-import com.AMOA.server.domain.user.entity.User;
+import com.amoa.server.domain.user.entity.User;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.security.core.GrantedAuthority;

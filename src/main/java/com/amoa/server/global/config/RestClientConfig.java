@@ -1,4 +1,4 @@
-package com.AMOA.server.global.config;
+package com.amoa.server.global.config;
 
 import java.time.Duration;
 import org.springframework.context.annotation.Bean;

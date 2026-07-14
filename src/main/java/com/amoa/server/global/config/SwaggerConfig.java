@@ -1,4 +1,4 @@
-package com.AMOA.server.global.config;
+package com.amoa.server.global.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -17,8 +17,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI swagger() {
         Info info = new Info()
-                .title("AMOA")
-                .description("AMOA API 명세서")
+                .title("amoa")
+                .description("amoa API 명세서")
                 .version("0.0.1"
                 );
 

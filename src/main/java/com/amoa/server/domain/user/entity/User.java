@@ -1,7 +1,7 @@
-package com.AMOA.server.domain.user.entity;
+package com.amoa.server.domain.user.entity;
 
-import com.AMOA.server.domain.user.enums.Role;
-import com.AMOA.server.global.entity.BaseEntity;
+import com.amoa.server.domain.user.enums.Role;
+import com.amoa.server.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

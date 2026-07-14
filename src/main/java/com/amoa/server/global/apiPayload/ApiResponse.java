@@ -1,7 +1,7 @@
-package com.AMOA.server.global.apiPayload;
+package com.amoa.server.global.apiPayload;
 
-import com.AMOA.server.global.apiPayload.code.BaseErrorCode;
-import com.AMOA.server.global.apiPayload.code.BaseSuccessCode;
+import com.amoa.server.global.apiPayload.code.BaseErrorCode;
+import com.amoa.server.global.apiPayload.code.BaseSuccessCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

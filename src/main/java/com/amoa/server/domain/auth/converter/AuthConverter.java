@@ -1,7 +1,7 @@
-package com.AMOA.server.domain.auth.converter;
+package com.amoa.server.domain.auth.converter;
 
-import com.AMOA.server.domain.auth.dto.response.AuthResDTO;
-import com.AMOA.server.domain.user.entity.User;
+import com.amoa.server.domain.auth.dto.response.AuthResDTO;
+import com.amoa.server.domain.user.entity.User;
 
 public class AuthConverter {
     public static AuthResDTO.LoginResultDTO toExistingMemberDTO(

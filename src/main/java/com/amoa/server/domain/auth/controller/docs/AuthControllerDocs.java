@@ -1,9 +1,9 @@
-package com.AMOA.server.domain.auth.controller.docs;
+package com.amoa.server.domain.auth.controller.docs;
 
-import com.AMOA.server.domain.auth.dto.request.AuthReqDTO;
-import com.AMOA.server.domain.auth.dto.response.AuthResDTO;
-import com.AMOA.server.domain.auth.dto.response.AuthResDTO.LoginResultDTO;
-import com.AMOA.server.global.apiPayload.ApiResponse;
+import com.amoa.server.domain.auth.dto.request.AuthReqDTO;
+import com.amoa.server.domain.auth.dto.response.AuthResDTO;
+import com.amoa.server.domain.auth.dto.response.AuthResDTO.LoginResultDTO;
+import com.amoa.server.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.RequestBody;
 

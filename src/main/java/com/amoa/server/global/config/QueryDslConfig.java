@@ -1,4 +1,4 @@
-package com.AMOA.server.global.config;
+package com.amoa.server.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

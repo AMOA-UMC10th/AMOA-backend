@@ -1,12 +1,12 @@
-package com.AMOA.server.domain.user.service.command;
+package com.amoa.server.domain.user.service.command;
 
-import com.AMOA.server.domain.user.dto.respose.KakaoUserInfoResDTO;
-import com.AMOA.server.domain.user.entity.User;
-import com.AMOA.server.domain.user.enums.Role;
-import com.AMOA.server.domain.user.exception.UserException;
-import com.AMOA.server.domain.user.exception.code.UserErrorCode;
-import com.AMOA.server.domain.user.repository.UserRepository;
-import com.AMOA.server.global.util.RedisUtil;
+import com.amoa.server.domain.user.dto.respose.KakaoUserInfoResDTO;
+import com.amoa.server.domain.user.entity.User;
+import com.amoa.server.domain.user.enums.Role;
+import com.amoa.server.domain.user.exception.UserException;
+import com.amoa.server.domain.user.exception.code.UserErrorCode;
+import com.amoa.server.domain.user.repository.UserRepository;
+import com.amoa.server.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;

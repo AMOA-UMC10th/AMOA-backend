@@ -1,6 +1,6 @@
-package com.AMOA.server.domain.common.repository;
+package com.amoa.server.domain.common.repository;
 
-import com.AMOA.server.domain.common.entity.DesignTag;
+import com.amoa.server.domain.common.entity.DesignTag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

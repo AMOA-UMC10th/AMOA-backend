@@ -1,12 +1,12 @@
-package com.AMOA.server.domain.shop.service.query;
+package com.amoa.server.domain.shop.service.query;
 
-import com.AMOA.server.domain.common.entity.DesignTag;
-import com.AMOA.server.domain.common.repository.DesignTagRepository;
-import com.AMOA.server.domain.shop.converter.ShopConverter;
-import com.AMOA.server.domain.shop.dto.Response.ShopResDTO;
-import com.AMOA.server.domain.shop.exception.ShopException;
-import com.AMOA.server.domain.shop.exception.code.ShopErrorCode;
-import com.AMOA.server.global.kakao.KakaoLocalClient;
+import com.amoa.server.domain.common.entity.DesignTag;
+import com.amoa.server.domain.common.repository.DesignTagRepository;
+import com.amoa.server.domain.shop.converter.ShopConverter;
+import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
+import com.amoa.server.domain.shop.exception.ShopException;
+import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
+import com.amoa.server.global.kakao.KakaoLocalClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

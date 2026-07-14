@@ -1,9 +1,9 @@
-package com.AMOA.server.domain.shop.controller.docs;
+package com.amoa.server.domain.shop.controller.docs;
 
-import com.AMOA.server.domain.shop.dto.Request.ShopReqDTO;
-import com.AMOA.server.domain.shop.dto.Response.ShopResDTO;
-import com.AMOA.server.domain.shop.dto.Response.ShopResDTO.CreateShopResponse;
-import com.AMOA.server.global.apiPayload.ApiResponse;
+import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
+import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
+import com.amoa.server.domain.shop.dto.Response.ShopResDTO.CreateShopResponse;
+import com.amoa.server.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;

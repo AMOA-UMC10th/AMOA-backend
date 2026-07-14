@@ -1,9 +1,9 @@
-package com.AMOA.server.domain.auth.service.query;
+package com.amoa.server.domain.auth.service.query;
 
-import com.AMOA.server.domain.auth.exception.code.AuthErrorCode;
-import com.AMOA.server.domain.user.dto.respose.KakaoUserInfoResDTO;
-import com.AMOA.server.global.apiPayload.exception.GeneralException;
-import com.AMOA.server.global.config.KaKaoProperties;
+import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
+import com.amoa.server.domain.user.dto.respose.KakaoUserInfoResDTO;
+import com.amoa.server.global.apiPayload.exception.GeneralException;
+import com.amoa.server.global.config.KaKaoProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

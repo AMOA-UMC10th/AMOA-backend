@@ -1,6 +1,6 @@
-package com.AMOA.server.domain.shop.entity;
+package com.amoa.server.domain.shop.entity;
 
-import com.AMOA.server.domain.common.entity.DesignTag;
+import com.amoa.server.domain.common.entity.DesignTag;
 import jakarta.persistence.*;
 import lombok.*;
 

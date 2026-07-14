@@ -1,4 +1,4 @@
-package com.AMOA.server.domain.auth.dto.request;
+package com.amoa.server.domain.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

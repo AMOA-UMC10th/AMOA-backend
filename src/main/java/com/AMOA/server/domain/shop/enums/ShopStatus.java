@@ -1,4 +1,4 @@
-package com.AMOA.server.domain.shop.enums;
+package com.amoa.server.domain.shop.enums;
 
 public enum ShopStatus {
     DRAFT,
