@@ -5,6 +5,13 @@ on:
     branches:
       - develop
 
+permissions:
+  contents: read
+
+concurrency:
+  group: amoa-deploy
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,41 +24,57 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
           cache: gradle
 
-      - name: Grant execute permission
+      - name: Grant Gradle permission
         run: chmod +x gradlew
 
-      - name: Build Spring Boot application
+      - name: Build Spring Boot JAR
         run: ./gradlew clean bootJar -x test --no-daemon
 
-      - name: Prepare SSH key
+      - name: Rename JAR
+        run: cp build/libs/*.jar app.jar
+
+      - name: Configure SSH
+        env:
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/amoa-key.pem
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/amoa-key.pem
           chmod 600 ~/.ssh/amoa-key.pem
-          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
 
       - name: Upload deployment files
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
         run: |
           scp -i ~/.ssh/amoa-key.pem \
-            build/libs/*.jar \
-            "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/AMOA-backend/app.jar"
-
-          scp -i ~/.ssh/amoa-key.pem \
+            app.jar \
             Dockerfile \
             docker-compose.yml \
-            "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/AMOA-backend/"
+            "$EC2_USER@$EC2_HOST:/home/ubuntu/AMOA-backend/"
 
-      - name: Deploy on EC2
+      - name: Deploy application
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
         run: |
           ssh -i ~/.ssh/amoa-key.pem \
-            "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" << 'EOF'
+            "$EC2_USER@$EC2_HOST" << 'EOF'
               set -e
+
               cd /home/ubuntu/AMOA-backend
-              docker build -t amoa-server .
+
+              docker build -t amoa-server:latest .
               docker compose up -d --force-recreate
               docker image prune -f
+
+              echo "===== Running containers ====="
               docker ps
+
+              echo "===== Application logs ====="
+              docker logs --tail 50 amoa-server
           EOF
