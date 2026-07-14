@@ -20,7 +20,7 @@ public class UserCommandService {
 
     private final UserRepository userRepository;
     private final RedisUtil redisUtil;
-    private final UserCreateService userCreateService;
+    private final UserCreateCommandService userCreateCommandService;
 
     // 회원 탈퇴
     @Transactional
@@ -92,7 +92,7 @@ public class UserCommandService {
                         .isActive(true)
                         .build();
                     try {
-                        return userRepository.saveAndFlush(newUser);
+                        return userCreateCommandService.saveAndFlush(newUser);
                     } catch (DataIntegrityViolationException exception) {
                         User user = userRepository
                                 .findBySocialUidIncludingInactive(socialUid)
