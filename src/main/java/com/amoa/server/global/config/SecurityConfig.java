@@ -1,8 +1,8 @@
-package com.amoa.server.global.config;
+package com.AMOA.server.global.config;
 
-import com.amoa.server.global.auth.AuthenticationEntryPointImpl;
-import com.amoa.server.global.auth.filter.JwtAuthFilter;
-import com.amoa.server.global.auth.filter.JwtExceptionFilter;
+import com.AMOA.server.global.auth.AuthenticationEntryPointImpl;
+import com.AMOA.server.global.auth.filter.JwtAuthFilter;
+import com.AMOA.server.global.auth.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

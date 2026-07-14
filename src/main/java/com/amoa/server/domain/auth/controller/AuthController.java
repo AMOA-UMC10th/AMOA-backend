@@ -1,11 +1,11 @@
-package com.amoa.server.domain.auth.controller;
+package com.AMOA.server.domain.auth.controller;
 
-import com.amoa.server.domain.auth.controller.docs.AuthControllerDocs;
-import com.amoa.server.domain.auth.dto.request.AuthReqDTO;
-import com.amoa.server.domain.auth.dto.response.AuthResDTO;
-import com.amoa.server.domain.auth.exception.code.AuthSuccessCode;
-import com.amoa.server.domain.auth.service.command.AuthCommandService;
-import com.amoa.server.global.apiPayload.ApiResponse;
+import com.AMOA.server.domain.auth.controller.docs.AuthControllerDocs;
+import com.AMOA.server.domain.auth.dto.request.AuthReqDTO;
+import com.AMOA.server.domain.auth.dto.response.AuthResDTO;
+import com.AMOA.server.domain.auth.exception.code.AuthSuccessCode;
+import com.AMOA.server.domain.auth.service.command.AuthCommandService;
+import com.AMOA.server.global.apiPayload.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

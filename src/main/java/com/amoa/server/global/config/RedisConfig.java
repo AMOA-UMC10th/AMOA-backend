@@ -1,4 +1,4 @@
-package com.amoa.server.global.config;
+package com.AMOA.server.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

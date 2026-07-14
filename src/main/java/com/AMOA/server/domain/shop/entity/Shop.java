@@ -1,7 +1,7 @@
-package com.amoa.server.domain.shop.entity;
+package com.AMOA.server.domain.shop.entity;
 
-import com.amoa.server.domain.common.entity.Region;
-import com.amoa.server.domain.shop.enums.ShopStatus;
+import com.AMOA.server.domain.common.entity.Region;
+import com.AMOA.server.domain.shop.enums.ShopStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;

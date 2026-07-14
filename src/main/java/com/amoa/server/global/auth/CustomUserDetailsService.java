@@ -1,6 +1,6 @@
-package com.amoa.server.global.auth;
+package com.AMOA.server.global.auth;
 
-import com.amoa.server.domain.user.repository.UserRepository;
+import com.AMOA.server.domain.user.repository.UserRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

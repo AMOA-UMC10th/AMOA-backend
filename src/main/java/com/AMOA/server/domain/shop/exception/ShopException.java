@@ -1,6 +1,6 @@
-package com.amoa.server.domain.shop.exception;
+package com.AMOA.server.domain.shop.exception;
 
-import com.amoa.server.global.apiPayload.code.BaseErrorCode;
+import com.AMOA.server.global.apiPayload.code.BaseErrorCode;
 import lombok.Getter;
 
 @Getter

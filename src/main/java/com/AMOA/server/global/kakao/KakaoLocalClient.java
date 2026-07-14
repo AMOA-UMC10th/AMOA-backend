@@ -1,8 +1,8 @@
-package com.amoa.server.global.kakao;
+package com.AMOA.server.global.kakao;
 
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
-import com.amoa.server.domain.shop.exception.ShopException;
-import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
+import com.AMOA.server.domain.shop.dto.Response.ShopResDTO;
+import com.AMOA.server.domain.shop.exception.ShopException;
+import com.AMOA.server.domain.shop.exception.code.ShopErrorCode;
 import io.netty.channel.ChannelOption;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;

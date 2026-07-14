@@ -1,4 +1,4 @@
-package com.amoa.server.domain.auth.dto.response;
+package com.AMOA.server.domain.auth.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

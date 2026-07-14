@@ -1,4 +1,4 @@
-package com.amoa.server.domain.common.entity;
+package com.AMOA.server.domain.common.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

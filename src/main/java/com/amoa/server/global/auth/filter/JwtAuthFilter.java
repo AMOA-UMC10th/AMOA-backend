@@ -1,10 +1,10 @@
-package com.amoa.server.global.auth.filter;
+package com.AMOA.server.global.auth.filter;
 
-import com.amoa.server.domain.auth.exception.AuthException;
-import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
-import com.amoa.server.global.auth.CustomUserDetailsService;
-import com.amoa.server.global.util.JwtUtil;
-import com.amoa.server.global.util.RedisUtil;
+import com.AMOA.server.domain.auth.exception.AuthException;
+import com.AMOA.server.domain.auth.exception.code.AuthErrorCode;
+import com.AMOA.server.global.auth.CustomUserDetailsService;
+import com.AMOA.server.global.util.JwtUtil;
+import com.AMOA.server.global.util.RedisUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

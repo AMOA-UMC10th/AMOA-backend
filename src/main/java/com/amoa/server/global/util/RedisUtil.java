@@ -1,4 +1,4 @@
-package com.amoa.server.global.util;
+package com.AMOA.server.global.util;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;

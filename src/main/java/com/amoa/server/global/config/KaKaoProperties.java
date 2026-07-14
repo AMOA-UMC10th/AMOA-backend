@@ -1,4 +1,4 @@
-package com.amoa.server.global.config;
+package com.AMOA.server.global.config;
 
 import lombok.Getter;
 import lombok.Setter;

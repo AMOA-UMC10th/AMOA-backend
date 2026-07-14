@@ -1,4 +1,4 @@
-package com.amoa.server.domain.shop.dto.Request;
+package com.AMOA.server.domain.shop.dto.Request;
 
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;

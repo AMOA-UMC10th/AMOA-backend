@@ -1,4 +1,4 @@
-package com.amoa.server.global.apiPayload.code;
+package com.AMOA.server.global.apiPayload.code;
 
 import org.springframework.http.HttpStatus;
 

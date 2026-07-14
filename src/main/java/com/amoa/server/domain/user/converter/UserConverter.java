@@ -1,4 +1,4 @@
-package com.amoa.server.domain.user.converter;
+package com.AMOA.server.domain.user.converter;
 
 public class UserConverter {
 }

@@ -1,13 +1,13 @@
-package com.amoa.server.domain.shop.controller;
+package com.AMOA.server.domain.shop.controller;
 
-import com.amoa.server.domain.shop.controller.docs.ShopControllerDocs;
-import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO.CreateShopResponse;
-import com.amoa.server.domain.shop.exception.code.ShopSuccessCode;
-import com.amoa.server.domain.shop.service.command.ShopCommandService;
-import com.amoa.server.domain.shop.service.query.ShopQueryService;
-import com.amoa.server.global.apiPayload.ApiResponse;
+import com.AMOA.server.domain.shop.controller.docs.ShopControllerDocs;
+import com.AMOA.server.domain.shop.dto.Request.ShopReqDTO;
+import com.AMOA.server.domain.shop.dto.Response.ShopResDTO;
+import com.AMOA.server.domain.shop.dto.Response.ShopResDTO.CreateShopResponse;
+import com.AMOA.server.domain.shop.exception.code.ShopSuccessCode;
+import com.AMOA.server.domain.shop.service.command.ShopCommandService;
+import com.AMOA.server.domain.shop.service.query.ShopQueryService;
+import com.AMOA.server.global.apiPayload.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

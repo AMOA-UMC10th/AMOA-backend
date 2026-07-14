@@ -1,7 +1,7 @@
-package com.amoa.server.global.util;
+package com.AMOA.server.global.util;
 
-import com.amoa.server.domain.user.enums.Role;
-import com.amoa.server.global.config.JwtProperties;
+import com.AMOA.server.domain.user.enums.Role;
+import com.AMOA.server.global.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

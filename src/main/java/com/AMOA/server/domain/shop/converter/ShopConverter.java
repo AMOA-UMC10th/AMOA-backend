@@ -1,12 +1,12 @@
-package com.amoa.server.domain.shop.converter;
+package com.AMOA.server.domain.shop.converter;
 
-import com.amoa.server.domain.common.entity.DesignTag;
-import com.amoa.server.domain.common.entity.Region;
-import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
-import com.amoa.server.domain.shop.entity.Shop;
-import com.amoa.server.domain.shop.entity.ShopDesignTag;
-import com.amoa.server.domain.shop.enums.ShopStatus;
+import com.AMOA.server.domain.common.entity.DesignTag;
+import com.AMOA.server.domain.common.entity.Region;
+import com.AMOA.server.domain.shop.dto.Request.ShopReqDTO;
+import com.AMOA.server.domain.shop.dto.Response.ShopResDTO;
+import com.AMOA.server.domain.shop.entity.Shop;
+import com.AMOA.server.domain.shop.entity.ShopDesignTag;
+import com.AMOA.server.domain.shop.enums.ShopStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

@@ -1,7 +1,7 @@
-package com.amoa.server.global.auth;
+package com.AMOA.server.global.auth;
 
-import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
-import com.amoa.server.global.apiPayload.ApiResponse;
+import com.AMOA.server.domain.auth.exception.code.AuthErrorCode;
+import com.AMOA.server.global.apiPayload.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

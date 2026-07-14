@@ -1,4 +1,4 @@
-package com.amoa.server.domain.user.dto.respose;
+package com.AMOA.server.domain.user.dto.respose;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

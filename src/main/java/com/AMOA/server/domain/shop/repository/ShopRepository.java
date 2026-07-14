@@ -1,12 +1,11 @@
-package com.amoa.server.domain.shop.repository;
+package com.AMOA.server.domain.shop.repository;
 
-import com.amoa.server.domain.shop.entity.Shop;
-import com.amoa.server.domain.shop.enums.ShopStatus;
+import com.AMOA.server.domain.shop.entity.Shop;
+import com.AMOA.server.domain.shop.enums.ShopStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ShopRepository extends JpaRepository<Shop, Long> {
