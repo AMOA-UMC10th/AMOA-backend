@@ -1,6 +1,6 @@
-package com.AMOA.server.domain.shop.dto.Response;
+package com.amoa.server.domain.shop.dto.Response;
 
-import com.AMOA.server.domain.shop.enums.ShopStatus;
+import com.amoa.server.domain.shop.enums.ShopStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;

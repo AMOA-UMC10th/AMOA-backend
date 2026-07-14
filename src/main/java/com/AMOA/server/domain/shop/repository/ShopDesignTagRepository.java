@@ -1,6 +1,6 @@
-package com.AMOA.server.domain.shop.repository;
+package com.amoa.server.domain.shop.repository;
 
-import com.AMOA.server.domain.shop.entity.ShopDesignTag;
+import com.amoa.server.domain.shop.entity.ShopDesignTag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
