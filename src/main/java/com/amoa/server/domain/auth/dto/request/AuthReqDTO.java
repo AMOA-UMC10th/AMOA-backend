@@ -19,6 +19,8 @@ public class AuthReqDTO {
     @Getter
     @NoArgsConstructor
     public static class ReissueRequestDTO {
+
+        @NotBlank(message = "리프레시 토큰은 필수입니다.")
         private String refreshToken;
     }
 }

@@ -34,12 +34,21 @@ public enum AuthErrorCode implements BaseErrorCode {
             "TOKEN401_4"),
     KAKAO_TOKEN_RESPONSE_EMPTY(
             HttpStatus.BAD_GATEWAY,
+<<<<<<< Updated upstream
             "카카오 토큰 응답이 비어있습니다.",
             "AUTH4001"),
     TOKEN_BLACKLIST(
             HttpStatus.UNAUTHORIZED,
             "블랙리스트에 포함된 토큰입니다.",
             "TOKEN401_4"
+=======
+            "AUTH400_1",
+            "카카오 토큰 응답이 비어있습니다."),
+    TOKEN_BLACKLIST(
+            HttpStatus.UNAUTHORIZED,
+            "TOKEN401_5",
+            "블랙리스트에 포함된 토큰입니다."
+>>>>>>> Stashed changes
     );
 
     private final HttpStatus httpStatus;

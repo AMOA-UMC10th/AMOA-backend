@@ -6,6 +6,7 @@ import com.amoa.server.domain.user.enums.Role;
 import com.amoa.server.domain.user.exception.UserException;
 import com.amoa.server.domain.user.exception.code.UserErrorCode;
 import com.amoa.server.domain.user.repository.UserRepository;
+import com.amoa.server.global.apiPayload.exception.GeneralException;
 import com.amoa.server.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,6 +20,7 @@ public class UserCommandService {
 
     private final UserRepository userRepository;
     private final RedisUtil redisUtil;
+    private final UserCreateService userCreateService;
 
     // 회원 탈퇴
     @Transactional
@@ -71,7 +73,16 @@ public class UserCommandService {
                         ? account.getProfile().getNickname()
                         : "익명사용자";
 
-        return userRepository.findBySocialUid(socialUid)
+        return userRepository.findBySocialUidIncludingInactive(socialUid)
+                .map(user -> {
+                    if (!Boolean.TRUE.equals(user.getIsActive())) {
+                        throw new GeneralException(
+                                UserErrorCode.MEMBER_UNAUTHORIZED
+                        );
+                    }
+
+                    return user;
+                })
                 .orElseGet(() -> {
                     User newUser = User.builder()
                         .socialUid(socialUid)
@@ -83,8 +94,17 @@ public class UserCommandService {
                     try {
                         return userRepository.saveAndFlush(newUser);
                     } catch (DataIntegrityViolationException exception) {
-                        return userRepository.findBySocialUid(socialUid)
+                        User user = userRepository
+                                .findBySocialUidIncludingInactive(socialUid)
                                 .orElseThrow(() -> exception);
+
+                        if (!Boolean.TRUE.equals(user.getIsActive())) {
+                            throw new GeneralException(
+                                    UserErrorCode.MEMBER_UNAUTHORIZED
+                            );
+                        }
+
+                        return user;
                     }
         });
     }

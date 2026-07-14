@@ -99,24 +99,13 @@ public class AuthCommandService {
             throw new UserException(UserErrorCode.MEMBER_UNAUTHORIZED);
         }
 
-        // 데이터베이스에 저장된 리프레쉬 토큰과 일치하는지 확인
-        String savedRefreshToken =
-                redisUtil.getRefreshToken(userId);
-
-        if (savedRefreshToken == null
-                || !savedRefreshToken.equals(refreshToken)) {
-            // 토큰이 일치하지 않다면 다른 곳에서 이미 재발급에 사용되어 탈취 가능성 의심
-            throw new AuthException(
-                    AuthErrorCode.TOKEN_INVALID
-            );
-        }
-
         // 새로운 액세스 토큰과 리프레쉬 토큰 생성
         String newAccessToken = jwtUtil.createAccessToken(user.getId(), user.getRole());
         String newRefreshToken = jwtUtil.createRefreshToken(user.getId());
 
-        redisUtil.saveRefreshToken(
+        boolean rotated = redisUtil.rotateRefreshToken(
                 user.getId(),
+                refreshToken,
                 newRefreshToken,
                 Duration.ofMillis(
                         jwtProperties
@@ -125,6 +114,9 @@ public class AuthCommandService {
                 )
         );
 
+        if (!rotated) {
+            throw new AuthException(AuthErrorCode.TOKEN_INVALID);
+        }
         return AuthConverter.toExistingMemberDTO(user, newAccessToken, newRefreshToken);
     }
 }
