@@ -55,6 +55,9 @@ dependencies {
 
 	//Actuator
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// 카카오 로컬 API 연동을 위한 WebClient
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {

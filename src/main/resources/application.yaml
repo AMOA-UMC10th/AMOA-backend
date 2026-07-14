@@ -56,3 +56,6 @@ management:
   endpoint:
     health:
       show-details: never
+
+api:
+  key: ${KAKAO_API_KEY}
