@@ -8,6 +8,7 @@ build/
 ### 민감정보 ###
 .env
 application.yml
+app.jar
 
 ### STS ###
 .apt_generated
