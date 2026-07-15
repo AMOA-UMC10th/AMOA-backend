@@ -1,23 +1,41 @@
 package com.amoa.server.global.util;
 
 import java.time.Duration;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class RedisUtil {
     private static final String REFRESH_PREFIX = "refresh:";
-    private final RedisTemplate<String, Object> redisTemplate;
+
+    private static final DefaultRedisScript<Long> ROTATE_REFRESH_TOKEN_SCRIPT =
+            new DefaultRedisScript<>(
+                    """
+                    local currentToken = redis.call('GET', KEYS[1])
+
+                    if currentToken == ARGV[1] then
+                        redis.call('SET', KEYS[1], ARGV[2], 'PX', ARGV[3])
+                        return 1
+                    end
+
+                    return 0
+                    """,
+                    Long.class
+            );
+
+    private final StringRedisTemplate redisTemplate;
 
     // 데이터 저장
-    public void set(String key, Object value, Duration duration) {
+    public void set(String key, String value, Duration duration) {
         redisTemplate.opsForValue().set(key, value, duration);
     }
 
     // 데이터 조회
-    public Object get(String key) {
+    public String get(String key) {
         return redisTemplate.opsForValue().get(key);
     }
 
@@ -51,16 +69,17 @@ public class RedisUtil {
             String newRefreshToken,
             Duration expiration
     ) {
-        String savedRefreshToken = getRefreshToken(userId);
+        String key = REFRESH_PREFIX + userId;
 
-        if (savedRefreshToken == null
-                || !savedRefreshToken.equals(oldRefreshToken)) {
-            return false;
-        }
+        Long result = redisTemplate.execute(
+                ROTATE_REFRESH_TOKEN_SCRIPT,
+                Collections.singletonList(key),
+                oldRefreshToken,
+                newRefreshToken,
+                String.valueOf(expiration.toMillis())
+        );
 
-        saveRefreshToken(userId, newRefreshToken, expiration);
-
-        return true;
+        return Long.valueOf(1L).equals(result);
     }
 
     public void deleteRefreshToken(Long userId) {

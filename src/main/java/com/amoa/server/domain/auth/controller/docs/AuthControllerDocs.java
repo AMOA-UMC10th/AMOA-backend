@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface AuthControllerDocs {
     @Operation(
             summary = "카카오 소셜 로그인",
-            description = "카카오 액세스 토큰을 보내면 회원 정보를 반환합니다."
+            description = "카카오 액세스 토큰을 전달받아 로그인하고, 사용자 정보와 Access Token 및 Refresh Token을 발급합니다."
     )
     ApiResponse<AuthResDTO.LoginResultDTO> kakaoLogin(
             @RequestBody AuthReqDTO.KakaoLoginRequestDTO request

@@ -20,12 +20,6 @@ public class KakaoApiQueryService {
     private final KaKaoProperties kakaoProperties;
 
     public KakaoUserInfoResDTO getUserInfo(String accessToken) {
-        if (accessToken == null || accessToken.isBlank()) {
-            log.error("카카오 사용자 정보 조회에 사용할 액세스 토큰이 없습니다.");
-            throw new GeneralException(
-                    AuthErrorCode.KAKAO_TOKEN_RESPONSE_EMPTY
-            );
-        }
         try {
             KakaoUserInfoResDTO response = restClient.get()
                     .uri(kakaoProperties.getUserInfoUri())

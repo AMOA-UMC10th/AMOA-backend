@@ -39,7 +39,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
-	implementation 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 	// OAuth
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -52,6 +52,9 @@ dependencies {
 	annotationProcessor "io.github.openfeign.querydsl:querydsl-apt:7.0:jpa"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+
+	//Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	// 카카오 로컬 API 연동을 위한 WebClient
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'

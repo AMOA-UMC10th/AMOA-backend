@@ -11,4 +11,16 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findBySocialUid(String socialUid);
+
+    @Query(
+            value = """
+                    SELECT *
+                    FROM user
+                    WHERE social_uid = :socialUid
+                    """,
+            nativeQuery = true
+    )
+    Optional<User> findBySocialUidIncludingInactive(
+            @Param("socialUid") String socialUid
+    );
 }
