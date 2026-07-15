@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -27,13 +28,13 @@ public class SavedShop {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     public SavedShop(User user, Shop shop){
         this.user = user;
         this.shop = shop;
-        this.createdAt = LocalDateTime.now();
     }
 
 
