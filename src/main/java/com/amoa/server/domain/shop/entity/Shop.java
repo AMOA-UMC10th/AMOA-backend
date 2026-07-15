@@ -25,7 +25,7 @@ public class Shop {
     private Long id;
 
     @Column(name = "region_id", nullable = false)
-    private Long region_id;
+    private Long regionId;
 
     @Column(name = "shop_name", nullable = false, length = 100)
     private String shopName;
