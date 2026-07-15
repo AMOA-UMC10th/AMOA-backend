@@ -60,9 +60,6 @@ public class User extends BaseEntity {
     @Column(name = "social_uid", nullable = false, length = 255)
     private String socialUid;
 
-    @Column(name = "refresh_token")
-    private String refreshToken;
-
     @Column(name = "user_phone_number", length = 20)
     private String userPhoneNumber;
 
