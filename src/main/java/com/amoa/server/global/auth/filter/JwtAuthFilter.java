@@ -42,21 +42,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // Bearer로 시작하는 토큰이 있는지 확인
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
+            token = authHeader.substring(7).trim();
 
-            // 로그아웃 처리된 Access Token인지 확인
-            if (redisUtil.isBlackListed(token)) {
-                logger.warn("블랙리스트에 포함된 토큰으로 인증을 시도했습니다.");
-                throw new AuthException(AuthErrorCode.TOKEN_BLACKLIST);
-            }
-
+            //서명, issuer?, 만료 검증
             Claims claims = jwtUtil.getClaimsFromToken(token);
 
             String category = claims.get("category", String.class);
 
+            //AccessToken 여부 확인
             if (!"access".equals(category)) {
                 logger.warn("access token이 아닌 토큰으로 인증을 시도하셨습니다.");
                 throw new AuthException(AuthErrorCode.TOKEN_INVALID);
+            }
+
+            // 로그아웃 처리된 Access Token인지 확인 -> Redis에서만 조회 가능
+            if (redisUtil.isBlackListed(token)) {
+                logger.warn("블랙리스트에 포함된 토큰으로 인증을 시도했습니다.");
+                throw new AuthException(AuthErrorCode.TOKEN_BLACKLIST);
             }
 
             userId = Long.parseLong(claims.getSubject());
