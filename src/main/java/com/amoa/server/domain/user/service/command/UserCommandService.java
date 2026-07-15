@@ -7,6 +7,7 @@ import com.amoa.server.domain.user.exception.UserException;
 import com.amoa.server.domain.user.exception.code.UserErrorCode;
 import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.apiPayload.exception.GeneralException;
+import com.amoa.server.global.util.JwtUtil;
 import com.amoa.server.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,33 +22,22 @@ public class UserCommandService {
     private final UserRepository userRepository;
     private final RedisUtil redisUtil;
     private final UserCreateCommandService userCreateCommandService;
+    private final JwtUtil jwtUtil;
 
     // 회원 탈퇴
     @Transactional
-    public void withdrawalUser(Long userId) {
+    public void withdrawalUser(Long userId, String accessToken) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
                         new UserException(UserErrorCode.MEMBER_NOT_FOUND)
                 );
 
         redisUtil.deleteRefreshToken(userId);
+        redisUtil.setBlackList(
+                accessToken,
+                jwtUtil.getExpirationTime(accessToken);
 
-        /*
-         * 소프트 삭제를 사용할 예정이라면 deleteById 대신
-         * user.withdraw() 같은 상태 변경 메서드를 사용하는 편이 좋음.
-         */
         userRepository.delete(user);
-    }
-
-    // 로그아웃
-    @Transactional
-    public void logout(Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new UserException(UserErrorCode.MEMBER_NOT_FOUND)
-                );
-
-        redisUtil.deleteRefreshToken(userId);
     }
 
     // 기존 회원 조회 또는 신규 회원 생성
