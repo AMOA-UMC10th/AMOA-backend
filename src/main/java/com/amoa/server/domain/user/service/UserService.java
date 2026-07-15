@@ -1,7 +1,9 @@
 package com.amoa.server.domain.user.service;
 
 import com.amoa.server.domain.user.entity.User;
+import com.amoa.server.domain.user.exception.code.UserErrorCode;
 import com.amoa.server.domain.user.repository.UserRepository;
+import com.amoa.server.global.apiPayload.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +17,7 @@ public class UserService {
 
     public User getUser(Long userId){
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않음"));
+                .orElseThrow(() -> new GeneralException(UserErrorCode.USER_NOT_FOUND));
 
     }
 }
