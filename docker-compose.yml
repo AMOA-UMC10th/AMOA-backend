@@ -1,21 +1,18 @@
 services:
-  amoa-mysql:
-    image: mysql:8.0
-    container_name: amoa-mysql
+  amoa-server:
+    image: amoa-server:latest
+    container_name: amoa-server
     restart: always
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      TZ: Asia/Seoul
-    command: >
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci
-    volumes:
-      - amoa_mysql_data:/var/lib/mysql
+      SPRING_DATA_REDIS_HOST: amoa-redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
     ports:
-      - "127.0.0.1:3306:3306"
+      - "8080:8080"
+    depends_on:
+      - amoa-redis
     networks:
       - amoa-network
 
@@ -26,8 +23,6 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
     volumes:
       - amoa_redis_data:/data
-    ports:
-      - "127.0.0.1:6379:6379"
     networks:
       - amoa-network
 
@@ -36,5 +31,4 @@ networks:
     driver: bridge
 
 volumes:
-  amoa_mysql_data:
   amoa_redis_data:
