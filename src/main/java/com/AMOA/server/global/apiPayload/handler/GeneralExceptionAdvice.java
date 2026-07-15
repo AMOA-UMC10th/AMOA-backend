@@ -1,9 +1,9 @@
-package com.AMOA.server.global.apiPayload.handler;
+package com.amoa.server.global.apiPayload.handler;
 
-import com.AMOA.server.global.apiPayload.ApiResponse;
-import com.AMOA.server.global.apiPayload.code.BaseErrorCode;
-import com.AMOA.server.global.apiPayload.code.GeneralErrorCode;
-import com.AMOA.server.global.apiPayload.exception.GeneralException;
+import com.amoa.server.global.apiPayload.ApiResponse;
+import com.amoa.server.global.apiPayload.code.BaseErrorCode;
+import com.amoa.server.global.apiPayload.code.GeneralErrorCode;
+import com.amoa.server.global.apiPayload.exception.GeneralException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

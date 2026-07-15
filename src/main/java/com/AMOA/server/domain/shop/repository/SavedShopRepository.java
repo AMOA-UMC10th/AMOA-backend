@@ -1,8 +1,8 @@
-package com.AMOA.server.domain.like.repository;
+package com.amoa.server.domain.shop.repository;
 
-import com.AMOA.server.domain.like.domain.SavedShop;
-import com.AMOA.server.domain.user.domain.User;
-import com.AMOA.server.domain.shop.domain.Shop;
+import com.amoa.server.domain.shop.entity.SavedShop;
+import com.amoa.server.domain.user.entity.User;
+import com.amoa.server.domain.shop.entity.Shop;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

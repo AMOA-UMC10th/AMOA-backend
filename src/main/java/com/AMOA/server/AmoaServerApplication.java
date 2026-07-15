@@ -1,4 +1,4 @@
-package com.AMOA.server;
+package com.amoa.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AmoaServerApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(AmoaServerApplication.class, args);
 	}
 

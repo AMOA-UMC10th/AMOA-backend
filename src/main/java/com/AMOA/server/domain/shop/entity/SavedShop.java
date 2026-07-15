@@ -1,11 +1,12 @@
-package com.AMOA.server.domain.like.domain;
+package com.amoa.server.domain.shop.entity;
 
-import com.AMOA.server.domain.shop.domain.Shop;
-import com.AMOA.server.domain.user.domain.User;
+import com.amoa.server.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -15,7 +16,8 @@ import lombok.NoArgsConstructor;
 public class SavedShop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @Column(name = "user_shop_id")
+    private Long userShopId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -25,9 +27,13 @@ public class SavedShop {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
     public SavedShop(User user, Shop shop){
         this.user = user;
         this.shop = shop;
+        this.createdAt = LocalDateTime.now();
     }
 
 

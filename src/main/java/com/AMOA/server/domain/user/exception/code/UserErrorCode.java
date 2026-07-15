@@ -1,13 +1,13 @@
-package com.AMOA.server.global.apiPayload.code;
+package com.amoa.server.domain.user.exception.code;
 
+import com.amoa.server.global.apiPayload.code.BaseErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum UserErrorCode implements BaseErrorCode{
+public enum UserErrorCode implements BaseErrorCode {
 
     USER_NOT_FOUND(
             HttpStatus.NOT_FOUND,

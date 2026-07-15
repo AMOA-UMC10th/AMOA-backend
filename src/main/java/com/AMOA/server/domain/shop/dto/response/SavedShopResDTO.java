@@ -1,4 +1,4 @@
-package com.AMOA.server.domain.like.dto;
+package com.amoa.server.domain.shop.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,14 +7,15 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-public class ShopLikeResponseDTO {
+public class SavedShopResDTO {
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LikeResultDTO{
-        private Long shopLikeId;
+        private Long userShopId;
+        private Long shopId;
         private LocalDateTime createdAt;
     }
 

@@ -4,9 +4,9 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.AMOA'
+group = 'com.amoa'
 version = '0.0.1-SNAPSHOT'
-description = 'AMOA'
+description = 'amoa'
 
 java {
 	toolchain {

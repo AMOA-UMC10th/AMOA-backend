@@ -1,4 +1,4 @@
-package com.AMOA.server.global.config;
+package com.amoa.server.global.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
