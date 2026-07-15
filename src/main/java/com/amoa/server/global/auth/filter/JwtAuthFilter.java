@@ -60,10 +60,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             // 사용자 정보 조회
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
 
-            // 조회된 사용자 정보와 토큰의 유효성을 확인
-            if (jwtUtil.validateToken(token)) {
+            // 토큰 유효성 및 사용자 활성 여부 확인
+            if (jwtUtil.validateToken(token) && userDetails.isEnabled()) {
                 // Spring Security가 사용할 인증 토큰 생성
-                Authentication auth = new UsernamePasswordAuthenticationToken(
+                Authentication auth =
+                        new UsernamePasswordAuthenticationToken(
                         userDetails, // 사용자 정보
                         null, // 비밀번호(사용X)
                         userDetails.getAuthorities() // 권한 목록

@@ -35,7 +35,7 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/reissue")
     public ApiResponse<AuthResDTO.LoginResultDTO> reissueToken(
-            @RequestBody AuthReqDTO.ReissueRequestDTO request
+            @Valid @RequestBody AuthReqDTO.ReissueRequestDTO request
     ) {
         return ApiResponse.onSuccess(
                 AuthSuccessCode.AUTH_REISSUE_OK,
