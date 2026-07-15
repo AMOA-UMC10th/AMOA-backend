@@ -73,6 +73,9 @@ public class Card extends BaseEntity {
      * @return 가격 범위가 유효하면 true, 아니면 false
      */
     public boolean isPriceRangeValid() {
+        if (this.minPrice == null || this.maxPrice == null) {
+            return false;
+        }
         return this.minPrice <= this.maxPrice;
     }
 }
