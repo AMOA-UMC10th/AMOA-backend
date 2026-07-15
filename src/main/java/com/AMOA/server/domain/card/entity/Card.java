@@ -1,9 +1,9 @@
-package com.AMOA.server.domain.card.entity;
+package com.amoa.server.domain.card.entity;
 
-import com.AMOA.server.domain.card.enums.ArtDesign;
-import com.AMOA.server.domain.card.enums.ArtType;
-import com.AMOA.server.domain.shop.entity.Shop;
-import com.AMOA.server.global.entity.BaseEntity;
+import com.amoa.server.domain.card.enums.ArtDesign;
+import com.amoa.server.domain.card.enums.ArtType;
+import com.amoa.server.domain.shop.entity.Shop;
+import com.amoa.server.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

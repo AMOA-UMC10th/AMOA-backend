@@ -1,12 +1,12 @@
-package com.AMOA.server.domain.card.converter;
+package com.amoa.server.domain.card.converter;
 
-import com.AMOA.server.domain.card.dto.request.CardReqDTO;
-import com.AMOA.server.domain.card.dto.response.CardResDTO.CreateCard;
-import com.AMOA.server.domain.card.dto.response.CardResDTO.CreateCard.DesignTagRes;
-import com.AMOA.server.domain.card.entity.Card;
-import com.AMOA.server.domain.card.enums.ArtDesign;
-import com.AMOA.server.domain.common.entity.DesignTag;
-import com.AMOA.server.domain.shop.entity.Shop;
+import com.amoa.server.domain.card.dto.request.CardReqDTO;
+import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard;
+import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard.DesignTagRes;
+import com.amoa.server.domain.card.entity.Card;
+import com.amoa.server.domain.card.enums.ArtDesign;
+import com.amoa.server.domain.common.entity.DesignTag;
+import com.amoa.server.domain.shop.entity.Shop;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -43,14 +43,14 @@ public class CardConverter {
     public CreateCard toCreateCardResponse(Card card, List<DesignTag> designTags) {
         List<DesignTagRes> designTagResList = designTags.stream()
                 .map(designTag -> new DesignTagRes(
-                        designTag.getId(),
+                        designTag.getDesignTagId(),
                         designTag.getName()
                 ))
                 .toList();
 
         return new CreateCard(
                 card.getId(),
-                card.getShop().getId(),
+                card.getShop().getShopId(),
                 card.getInstagramUrl(),
                 card.getMaxPrice(),
                 card.getMinPrice(),

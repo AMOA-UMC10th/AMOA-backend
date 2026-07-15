@@ -1,6 +1,6 @@
-package com.AMOA.server.domain.card.dto.response;
+package com.amoa.server.domain.card.dto.response;
 
-import com.AMOA.server.domain.card.enums.ArtType;
+import com.amoa.server.domain.card.enums.ArtType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

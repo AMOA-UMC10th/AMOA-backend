@@ -1,7 +1,7 @@
-package com.AMOA.server.domain.card.exception;
+package com.amoa.server.domain.card.exception;
 
-import com.AMOA.server.global.apiPayload.code.BaseErrorCode;
-import com.AMOA.server.global.apiPayload.exception.GeneralException;
+import com.amoa.server.global.apiPayload.code.BaseErrorCode;
+import com.amoa.server.global.apiPayload.exception.GeneralException;
 
 public class CardException extends GeneralException {
     public CardException(BaseErrorCode errorCode) {

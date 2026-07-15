@@ -1,11 +1,11 @@
-package com.AMOA.server.domain.card.controller;
+package com.amoa.server.domain.card.controller;
 
-import com.AMOA.server.domain.card.controller.docs.CardControllerDocs;
-import com.AMOA.server.domain.card.dto.request.CardReqDTO;
-import com.AMOA.server.domain.card.dto.response.CardResDTO.CreateCard;
-import com.AMOA.server.domain.card.exception.code.CardSuccessCode;
-import com.AMOA.server.domain.card.service.command.CardCommandService;
-import com.AMOA.server.global.apiPayload.ApiResponse;
+import com.amoa.server.domain.card.controller.docs.CardControllerDocs;
+import com.amoa.server.domain.card.dto.request.CardReqDTO;
+import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard;
+import com.amoa.server.domain.card.exception.code.CardSuccessCode;
+import com.amoa.server.domain.card.service.command.CardCommandService;
+import com.amoa.server.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

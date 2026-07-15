@@ -1,7 +1,7 @@
-package com.AMOA.server.domain.card.entity.mapping;
+package com.amoa.server.domain.card.entity.mapping;
 
-import com.AMOA.server.domain.card.entity.Card;
-import com.AMOA.server.domain.common.entity.DesignTag;
+import com.amoa.server.domain.card.entity.Card;
+import com.amoa.server.domain.common.entity.DesignTag;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

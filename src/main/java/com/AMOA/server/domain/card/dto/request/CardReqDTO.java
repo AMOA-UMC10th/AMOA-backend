@@ -1,6 +1,6 @@
-package com.AMOA.server.domain.card.dto.request;
+package com.amoa.server.domain.card.dto.request;
 
-import com.AMOA.server.domain.card.enums.ArtType;
+import com.amoa.server.domain.card.enums.ArtType;
 import java.util.List;
 
 public class CardReqDTO {

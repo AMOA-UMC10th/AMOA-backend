@@ -1,8 +1,8 @@
-package com.AMOA.server.domain.card.controller.docs;
+package com.amoa.server.domain.card.controller.docs;
 
-import com.AMOA.server.domain.card.dto.request.CardReqDTO;
-import com.AMOA.server.domain.card.dto.response.CardResDTO.CreateCard;
-import com.AMOA.server.global.apiPayload.ApiResponse;
+import com.amoa.server.domain.card.dto.request.CardReqDTO;
+import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard;
+import com.amoa.server.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RequestBody;

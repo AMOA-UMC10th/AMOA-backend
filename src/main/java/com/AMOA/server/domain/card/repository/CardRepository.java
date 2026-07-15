@@ -1,6 +1,6 @@
-package com.AMOA.server.domain.card.repository;
+package com.amoa.server.domain.card.repository;
 
-import com.AMOA.server.domain.card.entity.Card;
+import com.amoa.server.domain.card.entity.Card;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

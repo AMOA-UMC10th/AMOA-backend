@@ -1,20 +1,20 @@
-package com.AMOA.server.domain.card.service.command;
+package com.amoa.server.domain.card.service.command;
 
-import com.AMOA.server.domain.card.converter.CardConverter;
-import com.AMOA.server.domain.card.dto.request.CardReqDTO.createCard;
-import com.AMOA.server.domain.card.dto.response.CardResDTO.CreateCard;
-import com.AMOA.server.domain.card.entity.Card;
-import com.AMOA.server.domain.card.entity.mapping.CardDesignTag;
-import com.AMOA.server.domain.card.exception.CardException;
-import com.AMOA.server.domain.card.exception.code.CardErrorCode;
-import com.AMOA.server.domain.card.repository.CardDesignTagRepository;
-import com.AMOA.server.domain.card.repository.CardRepository;
-import com.AMOA.server.domain.common.entity.DesignTag;
-import com.AMOA.server.domain.common.repository.DesignTagRepository;
-import com.AMOA.server.domain.shop.entity.Shop;
-import com.AMOA.server.domain.shop.repository.ShopRepository;
-import com.AMOA.server.global.apiPayload.code.GeneralErrorCode;
-import com.AMOA.server.global.apiPayload.exception.GeneralException;
+import com.amoa.server.domain.card.converter.CardConverter;
+import com.amoa.server.domain.card.dto.request.CardReqDTO.createCard;
+import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard;
+import com.amoa.server.domain.card.entity.Card;
+import com.amoa.server.domain.card.entity.mapping.CardDesignTag;
+import com.amoa.server.domain.card.exception.CardException;
+import com.amoa.server.domain.card.exception.code.CardErrorCode;
+import com.amoa.server.domain.card.repository.CardDesignTagRepository;
+import com.amoa.server.domain.card.repository.CardRepository;
+import com.amoa.server.domain.common.entity.DesignTag;
+import com.amoa.server.domain.common.repository.DesignTagRepository;
+import com.amoa.server.domain.shop.entity.Shop;
+import com.amoa.server.domain.shop.repository.ShopRepository;
+import com.amoa.server.global.apiPayload.code.GeneralErrorCode;
+import com.amoa.server.global.apiPayload.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
