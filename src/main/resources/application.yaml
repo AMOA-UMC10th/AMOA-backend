@@ -56,9 +56,6 @@ management:
   endpoint:
     health:
       show-details: never
-  health:
-    redis:
-      enabled: false
 
 api:
   key: ${KAKAO_API_KEY}

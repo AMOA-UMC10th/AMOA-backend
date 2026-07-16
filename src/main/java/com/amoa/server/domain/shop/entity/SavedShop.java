@@ -13,7 +13,15 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "saved_shop")
+@Table(
+        name = "saved_shop",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_saved_shop_user_shop",
+                        columnNames = {"user_id", "shop_id"}
+                )
+        }
+        )
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SavedShop {

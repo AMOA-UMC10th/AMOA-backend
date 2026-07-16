@@ -12,6 +12,7 @@ import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.apiPayload.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,33 +21,26 @@ import org.springframework.web.bind.annotation.*;
 public class SavedShopController {
 
     private final SavedShopService savedShopService;
-    private final UserRepository userRepository;
-    private final ShopRepository shopRepository;
-
 
     @PostMapping("/{shopId}/like")
-    public ApiResponse<SavedShopResDTO.LikeResultDTO> createShopLike(@PathVariable Long shopId) {
+    public ApiResponse<SavedShopResDTO.LikeResultDTO> createShopLike(
+            @PathVariable Long shopId,
+            @AuthenticationPrincipal User user
+    ) {
 
-        User dummyUser = userRepository.findById(1L)
-                .orElseThrow(() -> new GeneralException(UserErrorCode.MEMBER_NOT_FOUND));
-        Shop dummyShop = shopRepository.findById(shopId)
-                .orElseThrow(() -> new GeneralException(ShopErrorCode.SHOP_NOT_FOUND));
-
-        SavedShopResDTO.LikeResultDTO result = savedShopService.createShopLike(dummyUser, dummyShop);
+        SavedShopResDTO.LikeResultDTO result = savedShopService.createShopLike(user, shopId);
 
         return ApiResponse.onSuccess(ShopSuccessCode.SHOP_LIKED, result);
 
     }
 
     @DeleteMapping("/{shopId}/like")
-    public ApiResponse<Void> deleteShopLike(@PathVariable Long shopId) {
+    public ApiResponse<Void> deleteShopLike(
+            @PathVariable Long shopId,
+            @AuthenticationPrincipal User user
+    ) {
 
-        User dummyUser = userRepository.findById(1L)
-                .orElseThrow(() -> new GeneralException(UserErrorCode.MEMBER_NOT_FOUND));
-        Shop dummyShop = shopRepository.findById(shopId)
-                .orElseThrow(() -> new GeneralException(ShopErrorCode.SHOP_NOT_FOUND));
-
-        savedShopService.deleteShopLike(dummyUser, dummyShop);
+        savedShopService.deleteShopLike(user, shopId);
 
         return ApiResponse.onSuccess(ShopSuccessCode.SHOP_UNLIKED,null);
     }
