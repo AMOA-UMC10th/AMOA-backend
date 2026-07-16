@@ -1,25 +1,21 @@
 package com.amoa.server.domain.common.converter;
 
-import com.amoa.server.domain.common.dto.response.RegionResDTO.SearchRegion;
-import com.amoa.server.global.kakao.dto.response.KakaoRegionResDTO;
+import com.amoa.server.domain.common.dto.response.RegionResDTO;
+import com.amoa.server.domain.common.entity.Region;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RegionConverter {
 
-    public SearchRegion toSearchRegion(
-            KakaoRegionResDTO.Response.Document document
+    // 검색 기반 지역 조회
+    public RegionResDTO.SearchRegion toSearchRegion(
+            Region region
     ) {
-
-        KakaoRegionResDTO.Response.Address address =
-                document.address();
-
-        String regionName = String.join(" ",
-                address.city(),
-                address.district(),
-                address.dong()
+        return new RegionResDTO.SearchRegion(
+                region.getRegionId(),
+                region.getFirstDepth(),
+                region.getSecondDepth(),
+                region.getThirdDepth()
         );
-
-        return new SearchRegion(regionName);
     }
 }

@@ -4,7 +4,10 @@ public class RegionResDTO {
 
     // 검색 기반 지역 조회
     public record SearchRegion(
-            String regionName
+            Long regionId,
+            String firstDepth,
+            String secondDepth,
+            String thirdDepth
     ) {
     }
 }
