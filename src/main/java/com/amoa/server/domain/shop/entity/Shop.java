@@ -1,6 +1,7 @@
 package com.amoa.server.domain.shop.entity;
 
 import com.amoa.server.domain.common.entity.Region;
+import com.amoa.server.domain.shop.entity.mapping.ShopDesignTag;
 import com.amoa.server.domain.shop.enums.ShopStatus;
 import jakarta.persistence.*;
 import lombok.*;
