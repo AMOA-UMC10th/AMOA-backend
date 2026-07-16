@@ -3,7 +3,7 @@ package com.amoa.server.domain.shop.controller;
 import com.amoa.server.domain.shop.controller.docs.SavedShopControllerDocs;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.exception.code.ShopSuccessCode;
-import com.amoa.server.domain.shop.service.command.SavedShopService;
+import com.amoa.server.domain.shop.service.command.SavedShopCommandService;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/shops")
 public class SavedShopController implements SavedShopControllerDocs{
 
-    private final SavedShopService savedShopService;
+    private final SavedShopCommandService savedShopCommandService;
 
     @Override
     @PostMapping("/{shopId}/like")
@@ -24,7 +24,7 @@ public class SavedShopController implements SavedShopControllerDocs{
             @AuthenticationPrincipal User user
     ) {
 
-        SavedShopResDTO.LikeResultDTO result = savedShopService.createShopLike(user, shopId);
+        SavedShopResDTO.LikeResultDTO result = savedShopCommandService.createShopLike(user, shopId);
 
         return ApiResponse.onSuccess(ShopSuccessCode.SHOP_LIKED, result);
 
@@ -37,7 +37,7 @@ public class SavedShopController implements SavedShopControllerDocs{
             @AuthenticationPrincipal User user
     ) {
 
-        savedShopService.deleteShopLike(user, shopId);
+        savedShopCommandService.deleteShopLike(user, shopId);
 
         return ApiResponse.onSuccess(ShopSuccessCode.SHOP_UNLIKED,null);
     }
