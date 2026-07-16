@@ -38,4 +38,17 @@ public class ShopResDTO {
             ShopStatus shopStatus,
             LocalDateTime createdAt
     ) {}
+
+    // GET /api/shops/{shop_id} (유저용 샵 상세 조회)
+    public record ShopDetailResponse(
+            Long shopId,
+            String shopName,
+            String address,
+            String shopPhoneNumber,
+            String businessHours,
+            List<DesignTagResponse> designtags,
+            int cardLikeCount,
+            int shopLikeCount,
+            boolean isLiked
+    ) {}
 }
