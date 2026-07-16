@@ -4,9 +4,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver # MySQL JDBC 드라이버 클래스 이름
-    url: ${DB_URL} # jdbc:mysql://localhost:3306/{데이터베이스명}
-    username: ${DB_USERNAME} # MySQL 유저 이름
-    password: ${DB_PASSWORD} # MySQL 비밀번호
+    url: ${DATABASE_URL} # jdbc:mysql://localhost:3306/{데이터베이스명}
+    username: ${MYSQL_USER} # MySQL 유저 이름
+    password: ${MYSQL_PASSWORD} # MySQL 비밀번호
 
   data:
     redis:
@@ -28,7 +28,7 @@ spring:
 
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET_KEY}
   access-token:
     expiration-time: 3600000 # 1시간 (밀리초 단위)
   refresh-token:
