@@ -14,6 +14,8 @@ public enum ShopErrorCode implements BaseErrorCode {
     SHOP_INVALID_ADDRESS(HttpStatus.BAD_REQUEST, "SHOP400", "주소를 좌표로 변환할 수 없습니다."),
     SHOP_INVALID_DESIGNTAG(HttpStatus.BAD_REQUEST, "SHOP400", "존재하지 않는 디자인태그 ID입니다."),
     SHOP_KEYWORD_EMPTY(HttpStatus.BAD_REQUEST, "SHOP400", "검색어를 입력해주세요."),
+    SHOP_ALREADY_LIKED(HttpStatus.CONFLICT, "SHOP409", "이미 찜한 네일샵입니다."),
+    SHOP_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOP404", "찜한 네일샵을 찾을 수 없습니다."),
     KAKAO_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SHOP500", "카카오 로컬 API 호출 중 오류가 발생했습니다."),
     KAKAO_SEARCH_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOP404", "검색 결과가 없습니다."),
     REGION_NOT_FOUND(HttpStatus.BAD_REQUEST, "SHOP400", "존재하지 않는 지역입니다.");

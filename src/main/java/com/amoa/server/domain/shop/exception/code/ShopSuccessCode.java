@@ -14,6 +14,8 @@ public enum ShopSuccessCode implements BaseSuccessCode {
     SHOP_LIST_FOUND(HttpStatus.OK, "SHOP200", "샵 목록 조회에 성공했습니다."),
     SHOP_UPDATED(HttpStatus.OK, "SHOP200", "샵이 수정되었습니다."),
     SHOP_DELETED(HttpStatus.OK, "SHOP200", "샵이 삭제되었습니다."),
+    SHOP_LIKED(HttpStatus.OK, "SHOP200", "네일샵 찜 등록에 성공했습니다."),
+    SHOP_UNLIKED(HttpStatus.OK, "SHOP200", "네일샵 찜 취소에 성공했습니다."),
     DESIGNTAG_LIST_FOUND(HttpStatus.OK, "SHOP200", "디자인태그 목록 조회에 성공했습니다."),
     KAKAO_SEARCH_FOUND(HttpStatus.OK, "SHOP200", "카카오 로컬 API 검색에 성공했습니다.");
 
