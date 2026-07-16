@@ -4,8 +4,12 @@ import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.common.repository.DesignTagRepository;
 import com.amoa.server.domain.shop.converter.ShopConverter;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
+import com.amoa.server.domain.shop.entity.Shop;
+import com.amoa.server.domain.shop.entity.mapping.ShopDesignTag;
 import com.amoa.server.domain.shop.exception.ShopException;
 import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
+import com.amoa.server.domain.shop.repository.ShopDesignTagRepository;
+import com.amoa.server.domain.shop.repository.ShopRepository;
 import com.amoa.server.global.kakao.KakaoLocalClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,8 @@ public class ShopQueryService {
 
     private final DesignTagRepository designTagRepository;
     private final KakaoLocalClient kakaoLocalClient;
+    private final ShopRepository shopRepository;
+    private final ShopDesignTagRepository shopDesignTagRepository;
 
     // GET /api/admin/shops/designtag - 디자인태그 목록 조회
     public ShopResDTO.DesignTagListResponse getDesignTags() {
@@ -41,5 +47,26 @@ public class ShopQueryService {
         }
 
         return result;
+    }
+
+    // GET /api/shops/{shop_id} - 샵 상세 조회 (유저)
+    public ShopResDTO.ShopDetailResponse getShopDetail(Long shopId) {
+
+        // 1) 샵 조회
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new ShopException(ShopErrorCode.SHOP_NOT_FOUND));
+
+        // 2) 디자인태그 조회
+        List<DesignTag> designTags = shopDesignTagRepository.findByShop_ShopId(shopId)
+                .stream()
+                .map(ShopDesignTag::getDesignTag)
+                .toList();
+
+        // 3) 찜 수 (임시로 0, 나중에 SavedShop/UserCard Entity 생기면 수정할 예정)
+        int cardLikeCount = 0;
+        int shopLikeCount = 0;
+        boolean isLiked = false;
+
+        return ShopConverter.toShopDetailResponse(shop, designTags, cardLikeCount, shopLikeCount, isLiked);
     }
 }
