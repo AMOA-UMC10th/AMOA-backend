@@ -12,6 +12,7 @@ import com.amoa.server.domain.user.exception.UserException;
 import com.amoa.server.domain.user.exception.code.UserErrorCode;
 import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.domain.user.service.command.UserCommandService;
+import com.amoa.server.global.apiPayload.exception.GeneralException;
 import com.amoa.server.global.config.JwtProperties;
 import com.amoa.server.global.util.JwtUtil;
 import com.amoa.server.global.util.RedisUtil;
@@ -118,5 +119,37 @@ public class AuthCommandService {
             throw new AuthException(AuthErrorCode.TOKEN_INVALID);
         }
         return AuthConverter.toExistingMemberDTO(user, newAccessToken, newRefreshToken);
+    }
+
+    public void logout(Long userId, String authorizationHeader) {
+        String accessToken = resolveAccessToken(authorizationHeader);
+
+        Long remainingTime =
+                jwtUtil.getExpirationTime(accessToken);
+
+        redisUtil.deleteRefreshToken(userId);
+
+        if (remainingTime > 0) {
+            redisUtil.saveBlackList(accessToken, Duration.ofMillis(remainingTime));
+        }
+    }
+
+    private String resolveAccessToken(String authorizationHeader) {
+        if (authorizationHeader == null
+                || !authorizationHeader.startsWith("Bearer ")) {
+            throw new GeneralException(
+                    AuthErrorCode.TOKEN_INVALID
+            );
+        }
+
+        String accessToken =
+                authorizationHeader.substring(7).trim();
+
+        if (accessToken.isBlank()) {
+            throw new GeneralException(
+                    AuthErrorCode.TOKEN_INVALID
+            );
+        }
+        return accessToken;
     }
 }
