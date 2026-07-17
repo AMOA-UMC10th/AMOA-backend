@@ -34,7 +34,7 @@ public class SavedShopCommandService {
         savedShopRepository.save(savedShop);
 
         return SavedShopResDTO.LikeResultDTO.builder()
-                .userShopId(savedShop.getUserShopId())
+                .userShopId(savedShop.getId())
                 .shopId(shop.getShopId())
                 .createdAt(savedShop.getCreatedAt())
                 .build();
