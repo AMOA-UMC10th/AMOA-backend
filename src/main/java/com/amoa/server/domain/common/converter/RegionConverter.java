@@ -12,7 +12,7 @@ public class RegionConverter {
             Region region
     ) {
         return new RegionResDTO.SearchRegion(
-                region.getRegionId(),
+                region.getId(),
                 region.getFirstDepth(),
                 region.getSecondDepth(),
                 region.getThirdDepth()

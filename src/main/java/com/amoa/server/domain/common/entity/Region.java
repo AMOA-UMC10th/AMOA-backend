@@ -3,7 +3,6 @@ package com.amoa.server.domain.common.entity;
 import com.amoa.server.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(
@@ -26,7 +25,7 @@ public class Region extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "region_id")
-    private Long regionId;
+    private Long id;
 
     // 1Depth (시/도)
     @Column(name = "first_depth", nullable = false, length = 50)
