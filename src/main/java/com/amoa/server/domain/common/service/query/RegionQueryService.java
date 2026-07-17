@@ -3,8 +3,6 @@ package com.amoa.server.domain.common.service.query;
 import com.amoa.server.domain.common.converter.RegionConverter;
 import com.amoa.server.domain.common.dto.response.RegionResDTO.SearchRegion;
 import com.amoa.server.domain.common.repository.RegionRepository;
-import com.amoa.server.global.kakao.KakaoLocalClient;
-import com.amoa.server.global.kakao.dto.response.KakaoRegionResDTO;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

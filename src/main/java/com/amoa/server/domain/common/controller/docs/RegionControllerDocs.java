@@ -12,7 +12,7 @@ public interface RegionControllerDocs {
 
     @Operation(
             summary = "검색 기반 지역 조회",
-            description = "동, 지하철역, 구 이름을 기반으로 카카오 Local API를 통해 지역을 검색합니다."
+            description = "키워드를 기반으로 카카오 Local API를 통해 지역을 검색(자동완성)합니다."
     )
     ApiResponse<List<SearchRegion>> search(
             @RequestParam String keyword

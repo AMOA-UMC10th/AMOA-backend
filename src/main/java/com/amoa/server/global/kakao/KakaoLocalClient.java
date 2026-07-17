@@ -1,11 +1,8 @@
 package com.amoa.server.global.kakao;
 
-import com.amoa.server.domain.common.exception.RegionException;
-import com.amoa.server.domain.common.exception.code.RegionErrorCode;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.exception.ShopException;
 import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
-import com.amoa.server.global.kakao.dto.response.KakaoRegionResDTO.Response;
 import io.netty.channel.ChannelOption;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
@@ -106,25 +103,6 @@ public class KakaoLocalClient {
         } catch (Exception e) {
             log.error("카카오 로컬 API 호출 중 오류 발생: {}", e.getMessage(), e);
             throw new ShopException(ShopErrorCode.KAKAO_API_ERROR, e);
-        }
-    }
-
-    // 지역 검색 (동/역/구 검색용)
-    public Response searchRegionByKeyword(String keyword) {
-        try {
-            return webClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/v2/local/search/address.json")
-                            .queryParam("query", keyword)
-                            .build())
-                    .header("Authorization", "KakaoAK " + kakaoApiKey)
-                    .retrieve()
-                    .bodyToMono(Response.class)
-                    .block();
-
-        } catch (Exception e) {
-            log.error("카카오 지역 검색 중 오류 발생: {}", e.getMessage(), e);
-            throw new RegionException(RegionErrorCode.KAKAO_API_ERROR);
         }
     }
 }
