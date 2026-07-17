@@ -5,8 +5,10 @@ import com.amoa.server.domain.auth.dto.response.AuthResDTO;
 import com.amoa.server.domain.auth.dto.response.AuthResDTO.LoginResultDTO;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RequestBody;
 
+@Tag(name = "Auth", description = "인증 관련 API")
 public interface AuthControllerDocs {
     @Operation(
             summary = "카카오 소셜 로그인",
