@@ -64,7 +64,7 @@ public class ShopConverter {
     // Shop Entity → CreateShopResponse DTO 변환
     public static ShopResDTO.CreateShopResponse toCreateShopResponse(Shop shop) {
         return new ShopResDTO.CreateShopResponse(
-                shop.getShopId(),
+                shop.getId(),
                 shop.getShopName(),
                 shop.getAddress(),
                 shop.getShopStatus(),

@@ -43,6 +43,10 @@ public class ShopOption extends BaseEntity {
     @Column(name = "duration_minutes", nullable = false)
     private int durationMinutes;
 
+    @Column(name = "max_quantity", nullable = false)
+    @Builder.Default
+    private int maxQuantity = 10;
+
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
 }

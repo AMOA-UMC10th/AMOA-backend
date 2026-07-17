@@ -23,9 +23,13 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Builder
+@AllArgsConstructor
 @Getter
 @Entity
 @Table(name = "reservation")
@@ -70,6 +74,7 @@ public class Reservation extends BaseEntity {
     @Column(name = "request_message", length = 500)
     private String requestMessage;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "hand_state", nullable = false)
     private HandState handState;
 

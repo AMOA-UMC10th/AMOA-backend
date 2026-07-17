@@ -1,7 +1,7 @@
 package com.amoa.server.domain.card.service.command;
 
 import com.amoa.server.domain.card.converter.CardConverter;
-import com.amoa.server.domain.card.dto.request.CardReqDTO.createCard;
+import com.amoa.server.domain.card.dto.request.CardReqDTO;
 import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard;
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.entity.mapping.CardDesignTag;
@@ -33,7 +33,7 @@ public class CardCommandService {
 
     // 아트 등록
     @Transactional
-    public CreateCard createCard(createCard request) {
+    public CreateCard createCard(CardReqDTO.createCard request) {
         // 1. 샵 존재 여부 확인
         Shop shop = shopRepository.findById(request.shopId())
                 .orElseThrow(() -> new GeneralException(GeneralErrorCode.BAD_REQUEST));

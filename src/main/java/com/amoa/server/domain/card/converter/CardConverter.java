@@ -32,6 +32,7 @@ public class CardConverter {
                 .instagramUrl(request.instagramUrl())
                 .maxPrice(request.maxPrice())
                 .minPrice(request.minPrice())
+                .durationMinutes(request.durationMinutes())
                 .createdMonth(createdMonth)
                 .artType(request.artType())
                 .artDesign(ArtDesign.SIMPLE)
@@ -50,10 +51,11 @@ public class CardConverter {
 
         return new CreateCard(
                 card.getId(),
-                card.getShop().getShopId(),
+                card.getShop().getId(),
                 card.getInstagramUrl(),
                 card.getMaxPrice(),
                 card.getMinPrice(),
+                card.getDurationMinutes(),
                 card.getCreatedMonth(),
                 card.getArtType(),
                 designTagResList,
