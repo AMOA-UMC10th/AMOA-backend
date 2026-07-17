@@ -78,6 +78,18 @@ public enum ReservationErrorCode implements BaseErrorCode {
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_7",
             "연장 제거 개수는 연장 네일 상태일 때만 입력할 수 있습니다."
+    ),
+
+    DUPLICATE_SHOP_OPTION(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_8",
+            "동일한 예약 옵션을 중복으로 선택할 수 없습니다."
+    ),
+
+    INVALID_OPTION_QUANTITY(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_9",
+            "옵션 수량은 1개 이상이어야 합니다."
     );
 
     private final HttpStatus httpStatus;

@@ -6,6 +6,8 @@ import com.amoa.server.domain.reservation.enums.HandState;
 import com.amoa.server.domain.reservation.enums.PaymentMethod;
 import com.amoa.server.domain.reservation.enums.PaymentStatus;
 import com.amoa.server.domain.reservation.enums.ReservationStatus;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -22,6 +24,8 @@ public class ReservationReqDTO {
             String requestMessage,
             HandState handState,
             GelRemovalType gelRemovalType,
+            @Min(0)
+            @Max(10)
             Integer extensionRemovalCount,
             List<SelectedOptionRequest> selectedOptions,
             PaymentMethod paymentMethod,

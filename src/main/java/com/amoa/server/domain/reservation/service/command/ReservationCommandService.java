@@ -1,5 +1,7 @@
 package com.amoa.server.domain.reservation.service.command;
 
+import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.EXTENSION_REMOVAL_MAX_QUANTITY;
+
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.repository.CardRepository;
 import com.amoa.server.domain.reservation.converter.ReservationConverter;
@@ -21,7 +23,9 @@ import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -74,9 +78,18 @@ public class ReservationCommandService {
                         : request.selectedOptions();
 
         //shopOption 조회
+        //중복 옵션 선택 방지
+        Set<Long> optionIds = new HashSet<>();
+
         List<ShopOption> shopOptions =
                 optionRequests.stream()
                         .map(optionRequest -> {
+                            if (!optionIds.add(optionRequest.shopOptionId())) {
+                                throw new ReservationException(
+                                        ReservationErrorCode.DUPLICATE_SHOP_OPTION
+                                );
+                            }
+
                             ShopOption shopOption = shopOptionRepository
                                     .findById(optionRequest.shopOptionId())
                                     .orElseThrow(() ->
@@ -165,7 +178,7 @@ public class ReservationCommandService {
     private void validateShopOption(
             ShopOption shopOption,
             Shop shop,
-            int quantity
+            Integer quantity
     ) {
         if (!shopOption.getShop().getId().equals(shop.getId())) {
             throw new ReservationException(
@@ -176,6 +189,12 @@ public class ReservationCommandService {
         if (!shopOption.isActive()) {
             throw new ReservationException(
                     ReservationErrorCode.INACTIVE_SHOP_OPTION
+            );
+        }
+
+        if (quantity == null || quantity <= 0) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_OPTION_QUANTITY
             );
         }
 
@@ -217,6 +236,20 @@ public class ReservationCommandService {
             throw new ReservationException(
                     ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
             );
+        }
+
+        if (extensionRemovalCount != null) {
+            if (extensionRemovalCount < 0) {
+                throw new ReservationException(
+                        ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
+                );
+            }
+
+            if (extensionRemovalCount > EXTENSION_REMOVAL_MAX_QUANTITY) {
+                throw new ReservationException(
+                        ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
+                );
+            }
         }
     }
 }

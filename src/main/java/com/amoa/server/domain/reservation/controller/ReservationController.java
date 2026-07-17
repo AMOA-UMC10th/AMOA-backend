@@ -11,8 +11,6 @@ import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReservationController implements ReservationControllerDocs {
 
     private final ReservationCommandService reservationCommandService;
-    private final ReservationQueryService reservationQueryService;
 
     @Override
     @PostMapping
@@ -35,22 +32,8 @@ public class ReservationController implements ReservationControllerDocs {
         Long userId = principal.user().getId();
 
         return ApiResponse.onSuccess(
-                ReservationSuccessCode.RESERVATION_OPTIONS_FOUND,
+                ReservationSuccessCode.RESERVATION_CREATED,
                 reservationCommandService.createReservation(userId, request)
-        );
-    }
-
-    @Override
-    @GetMapping("/{reservationId}")
-    public ApiResponse<ReservationResDTO.ReservationDetailResponse> getReservationDetail(
-            @PathVariable Long reservationId,
-            @AuthenticationPrincipal CustomUserDetails principal
-    ) {
-        Long userId = principal.user().getId();
-
-        return ApiResponse.onSuccess(
-                ReservationSuccessCode.RESERVATION_OPTIONS_FOUND,
-                reservationQueryService.getReservationDetail(userId, reservationId)
         );
     }
 }

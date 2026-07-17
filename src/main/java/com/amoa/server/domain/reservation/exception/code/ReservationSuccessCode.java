@@ -9,10 +9,22 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ReservationSuccessCode implements BaseSuccessCode {
 
-    RESERVATION_OPTIONS_FOUND(
+    RESERVATION_CREATED(
             HttpStatus.OK,
             "RESERVATION200_1",
-            "예약 옵션 조회에 성공했습니다."
+            "예약이 완료되었습니다."
+    ),
+
+    RESERVATION_FOUND(
+            HttpStatus.OK,
+            "RESERVATION200_2",
+            "예약 조회에 성공했습니다."
+    ),
+
+    RESERVATION_OPTIONS_FOUND(
+            HttpStatus.OK,
+            "RESERVATION200_3",
+            "예약 가능한 옵션 조회에 성공했습니다."
     );
 
     private final HttpStatus httpStatus;

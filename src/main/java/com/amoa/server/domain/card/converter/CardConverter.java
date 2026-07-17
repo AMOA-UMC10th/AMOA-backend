@@ -32,7 +32,11 @@ public class CardConverter {
                 .instagramUrl(request.instagramUrl())
                 .maxPrice(request.maxPrice())
                 .minPrice(request.minPrice())
-                .durationMinutes(request.durationMinutes())
+                .durationMinutes(
+                        request.durationMinutes() != null
+                                ? request.durationMinutes()
+                                : 60
+                )
                 .createdMonth(createdMonth)
                 .artType(request.artType())
                 .artDesign(ArtDesign.SIMPLE)

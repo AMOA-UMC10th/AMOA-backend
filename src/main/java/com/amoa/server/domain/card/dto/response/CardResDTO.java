@@ -16,7 +16,6 @@ public class CardResDTO {
             String instagramUrl,
             Integer maxPrice,
             Integer minPrice,
-            @Min(value = 1, message = "소요 시간은 1분 이상이어야 합니다.")
             Integer durationMinutes,
             LocalDate createdYearMonth,
             ArtType artType,
