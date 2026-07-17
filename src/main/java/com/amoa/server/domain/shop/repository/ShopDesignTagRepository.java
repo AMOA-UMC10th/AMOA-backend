@@ -10,8 +10,8 @@ import java.util.List;
 public interface ShopDesignTagRepository extends JpaRepository<ShopDesignTag, Long> {
 
     // 샵 ID로 연결된 태그 전체 조회
-    List<ShopDesignTag> findByShop_ShopId(Long shopId);
+    List<ShopDesignTag> findByShop_Id(Long id);
 
     // 샵 ID로 연결된 태그 전체 삭제 (수정 시 사용)
-    void deleteByShop_ShopId(Long shopId);
+    void deleteByShop_Id(Long id);
 }
