@@ -9,6 +9,7 @@ import com.amoa.server.domain.shop.repository.ShopRepository;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.global.apiPayload.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,16 +27,17 @@ public class SavedShopCommandService {
         Shop shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new GeneralException(ShopErrorCode.SHOP_NOT_FOUND));
 
-        if(savedShopRepository.existsByUserAndShop(user, shop)){
-            throw new GeneralException(ShopErrorCode.SHOP_ALREADY_LIKED);
-        }
-
         SavedShop savedShop = new SavedShop(user, shop);
-        savedShopRepository.save(savedShop);
+
+        try{
+            savedShopRepository.save(savedShop);
+        } catch (DataIntegrityViolationException e) {
+            throw new GeneralException((ShopErrorCode.SHOP_ALREADY_LIKED));
+        }
 
         return SavedShopResDTO.LikeResultDTO.builder()
                 .userShopId(savedShop.getId())
-                .shopId(shop.getShopId())
+                .shopId(shop.getId())
                 .createdAt(savedShop.getCreatedAt())
                 .build();
 
