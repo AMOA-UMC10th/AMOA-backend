@@ -9,8 +9,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RegionRepository extends JpaRepository<Region, Long> {
 
-    // 지역 검색 (시/구/읍면동 검색)
+    // 지역 검색
     List<Region> findByFirstDepthContainingOrSecondDepthContainingOrThirdDepthContaining(
+            String firstDepth,
+            String secondDepth,
+            String thirdDepth
+    );
+
+    // 샵 등록 시 정확한 행정구역 조회
+    Optional<Region> findByFirstDepthAndSecondDepthAndThirdDepth(
             String firstDepth,
             String secondDepth,
             String thirdDepth
