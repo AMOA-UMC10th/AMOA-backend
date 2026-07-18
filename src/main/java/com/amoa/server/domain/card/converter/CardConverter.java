@@ -50,7 +50,7 @@ public class CardConverter {
 
         return new CreateCard(
                 card.getId(),
-                card.getShop().getShopId(),
+                card.getShop().getId(),
                 card.getInstagramUrl(),
                 card.getMaxPrice(),
                 card.getMinPrice(),

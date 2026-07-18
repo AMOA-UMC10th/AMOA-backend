@@ -6,8 +6,13 @@ import com.amoa.server.domain.auth.dto.response.AuthResDTO;
 import com.amoa.server.domain.auth.exception.code.AuthSuccessCode;
 import com.amoa.server.domain.auth.service.command.AuthCommandService;
 import com.amoa.server.global.apiPayload.ApiResponse;
+import com.amoa.server.global.apiPayload.code.GeneralSuccessCode;
+import com.amoa.server.global.auth.CustomUserDetails;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController implements AuthControllerDocs {
+
     private final AuthCommandService authCommandService;
 
     @Override
@@ -40,6 +46,24 @@ public class AuthController implements AuthControllerDocs {
         return ApiResponse.onSuccess(
                 AuthSuccessCode.AUTH_REISSUE_OK,
                 authCommandService.reissueToken(request.getRefreshToken())
+        );
+    }
+
+    @Override
+    @PostMapping("/logout")
+    public ApiResponse<String> logout(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            HttpServletRequest request
+    ){
+        Long userId = customUserDetails.user().getId();
+        String authorizationHeader =
+                request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        authCommandService.logout(userId, authorizationHeader);
+
+        return ApiResponse.onSuccess(
+                GeneralSuccessCode.OK,
+                "로그아웃 되었습니다."
         );
     }
 }
