@@ -1,14 +1,11 @@
 package com.amoa.server.domain.user.service.command;
 
-import com.amoa.server.domain.auth.exception.AuthException;
-import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
 import com.amoa.server.domain.user.dto.respose.KakaoUserInfoResDTO;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.enums.Role;
 import com.amoa.server.domain.user.exception.UserException;
 import com.amoa.server.domain.user.exception.code.UserErrorCode;
 import com.amoa.server.domain.user.repository.UserRepository;
-import com.amoa.server.global.apiPayload.exception.GeneralException;
 import com.amoa.server.global.util.JwtUtil;
 import com.amoa.server.global.util.RedisUtil;
 import java.time.Duration;
@@ -87,15 +84,12 @@ public class UserCommandService {
     @Transactional
     public void withdrawalUser(
             Long userId,
-            String authorizationHeader
+            String accessToken
     ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
                         new UserException(UserErrorCode.MEMBER_NOT_FOUND)
                 );
-
-        String accessToken =
-                resolveAccessToken(authorizationHeader);
 
         // Access Token 블랙리스트 등록
         Long remainingTime =
@@ -112,27 +106,5 @@ public class UserCommandService {
 
         // @SQLDelete에 의해 is_active = false 처리
         userRepository.delete(user);
-    }
-
-    private String resolveAccessToken(
-            String authorizationHeader
-    ) {
-        if (authorizationHeader == null
-                || !authorizationHeader.startsWith("Bearer ")) {
-            throw new AuthException(
-                    AuthErrorCode.TOKEN_INVALID
-            );
-        }
-
-        String accessToken =
-                authorizationHeader.substring(7).trim();
-
-        if (accessToken.isBlank()) {
-            throw new AuthException(
-                    AuthErrorCode.TOKEN_INVALID
-            );
-        }
-
-        return accessToken;
     }
 }
