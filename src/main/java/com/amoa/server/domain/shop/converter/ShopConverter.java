@@ -93,7 +93,7 @@ public class ShopConverter {
                 card.getShop().getRegion().getSecondDepth() + " " + card.getShop().getRegion().getThirdDepth(),  // 구+동
                 card.getMinPrice(),
                 card.getMaxPrice(),
-                card.getArtType().name(),
+                card.getArtType() != null ? card.getArtType().name() : null,
                 isLiked
         );
     }
@@ -106,7 +106,7 @@ public class ShopConverter {
         return new ShopResDTO.CardListResponse(
                 shop.getId(),
                 shop.getShopName(),
-                (int) cards.getTotalElements(),
+                cards.getTotalElements(),
                 cards.getNumber(),
                 cards.getSize(),
                 cardResponses

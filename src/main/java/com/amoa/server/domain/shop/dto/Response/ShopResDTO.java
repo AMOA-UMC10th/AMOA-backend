@@ -43,7 +43,7 @@ public class ShopResDTO {
     public record CardListResponse(
             Long shopId,
             String shopName,
-            int totalCount,
+            long totalCount,
             int page,
             int size,
             List<CardResponse> cards

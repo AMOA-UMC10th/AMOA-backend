@@ -69,7 +69,8 @@ public class ShopQueryService {
                 .orElseThrow(() -> new ShopException(ShopErrorCode.SHOP_NOT_FOUND));
 
         // 2) 정렬 설정
-        Sort sorting = switch (sort) {
+        SortType activeSort = sort != null ? sort : SortType.LATEST;
+        Sort sorting = switch (activeSort) {
             case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
             case POPULAR -> Sort.by(Sort.Direction.DESC, "likeCard");
             case PRICE_ASC -> Sort.by(Sort.Direction.ASC, "minPrice");
