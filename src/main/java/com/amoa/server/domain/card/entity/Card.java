@@ -1,7 +1,6 @@
 package com.amoa.server.domain.card.entity;
 
-import com.amoa.server.domain.card.enums.ArtDesign;
-import com.amoa.server.domain.card.enums.ArtType;
+import com.amoa.server.domain.common.enums.ArtType;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.global.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -32,6 +31,7 @@ public class Card extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "card_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,10 +57,6 @@ public class Card extends BaseEntity {
     @Column(name = "like_card", nullable = false)
     @Builder.Default
     private Integer likeCard = 0;
-
-    @Column(name = "art_design", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ArtDesign artDesign;
 
     @Column(name = "instagram_url")
     private String instagramUrl;

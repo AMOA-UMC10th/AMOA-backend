@@ -76,6 +76,6 @@ public class CardCommandService {
         cardDesignTagRepository.saveAll(cardDesignTags);
 
         // 6. 응답 DTO 변환 및 반환
-        return cardConverter.toCreateCardResponse(savedCard, designTags);
+        return cardConverter.toCreateCardResponse(savedCard, cardDesignTags);
     }
 }

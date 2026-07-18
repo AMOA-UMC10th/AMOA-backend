@@ -1,7 +1,7 @@
 package com.amoa.server.domain.card.dto.request;
 
-import com.amoa.server.domain.card.enums.ArtType;
 import jakarta.validation.constraints.Min;
+import com.amoa.server.domain.common.enums.ArtType;
 import java.util.List;
 
 public class CardReqDTO {
