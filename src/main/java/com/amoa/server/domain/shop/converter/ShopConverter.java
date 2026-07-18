@@ -97,7 +97,7 @@ public class ShopConverter {
                 .collect(Collectors.toList());
 
         return new ShopResDTO.ShopDetailResponse(
-                shop.getShopId(),
+                shop.getId(),
                 shop.getShopName(),
                 shop.getAddress(),
                 shop.getShopPhoneNumber(),
