@@ -1,4 +1,4 @@
-package com.amoa.server.domain.card.enums;
+package com.amoa.server.domain.common.enums;
 
 public enum ArtType {
     MONTHLY, ONE_COLOR, EVENT
