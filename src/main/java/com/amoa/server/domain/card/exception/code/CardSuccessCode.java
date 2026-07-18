@@ -14,7 +14,7 @@ public enum CardSuccessCode implements BaseSuccessCode {
     CARD_KAKAO_CHANNEL_FOUND(
             HttpStatus.OK,
             "CARD200_1",
-            "카카오 채널 URL 조회 성공"
+            "카카오톡 채널 URL을 성공적으로 조회했습니다."
     );
 
     private final HttpStatus httpStatus;
