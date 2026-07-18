@@ -4,7 +4,7 @@ import com.amoa.server.domain.card.dto.request.CardReqDTO;
 import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard;
 import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard.DesignTagRes;
 import com.amoa.server.domain.card.entity.Card;
-import com.amoa.server.domain.card.enums.ArtDesign;
+import com.amoa.server.domain.card.entity.mapping.CardDesignTag;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.shop.entity.Shop;
 import org.springframework.stereotype.Component;
@@ -32,19 +32,23 @@ public class CardConverter {
                 .instagramUrl(request.instagramUrl())
                 .maxPrice(request.maxPrice())
                 .minPrice(request.minPrice())
+                .durationMinutes(
+                        request.durationMinutes() != null
+                                ? request.durationMinutes()
+                                : 60
+                )
                 .createdMonth(createdMonth)
                 .artType(request.artType())
-                .artDesign(ArtDesign.SIMPLE)
                 .likeCard(0)
                 .build();
     }
 
     // Card 엔티티와 DesignTag 목록을 아트 등록 응답 DTO로 변환합니다.
-    public CreateCard toCreateCardResponse(Card card, List<DesignTag> designTags) {
-        List<DesignTagRes> designTagResList = designTags.stream()
-                .map(designTag -> new DesignTagRes(
-                        designTag.getDesignTagId(),
-                        designTag.getName()
+    public CreateCard toCreateCardResponse(Card card, List<CardDesignTag> cardDesignTags) {
+        List<DesignTagRes> designTagResList = cardDesignTags.stream()
+                .map(cardDesignTag -> new DesignTagRes(
+                        cardDesignTag.getDesignTag().getDesignTagId(),
+                        cardDesignTag.getDesignTag().getName()
                 ))
                 .toList();
 
@@ -54,6 +58,7 @@ public class CardConverter {
                 card.getInstagramUrl(),
                 card.getMaxPrice(),
                 card.getMinPrice(),
+                card.getDurationMinutes(),
                 card.getCreatedMonth(),
                 card.getArtType(),
                 designTagResList,
