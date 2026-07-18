@@ -29,6 +29,10 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(info)
                 .addServersItem(new Server().url("/"))
-                .components(components);
+                .components(components)
+                .addSecurityItem(
+                        new SecurityRequirement()
+                                .addList(securityScheme)
+                );
     }
 }
