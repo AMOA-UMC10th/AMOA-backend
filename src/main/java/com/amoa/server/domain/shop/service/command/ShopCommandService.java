@@ -14,9 +14,7 @@ import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
 import com.amoa.server.domain.shop.repository.ShopDesignTagRepository;
 import com.amoa.server.domain.shop.repository.ShopRepository;
 import com.amoa.server.global.kakao.KakaoLocalClient;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,25 +43,18 @@ public class ShopCommandService {
         BigDecimal latitude = coordinates[0];
         BigDecimal longitude = coordinates[1];
 
-        // 2) 카카오 검색 결과에서 지역명 파싱 후 Region 조회
-        String regionName = extractRegionName(request.address());
-        // 예: "서울 성동구 성수동 123" → "성동구"
+        // 2) 주소에서 행정구역 추출 후 Region 조회
+        String[] depths = extractRegionDepth(request.address());
 
-        Region region;
-        try {
-            region = regionRepository.findByName(regionName)
-                    .orElseGet(() -> regionRepository.save(
-                            Region.builder()
-                                    .name(regionName)
-                                    .createdAt(LocalDateTime.now())
-                                    .updatedAt(LocalDateTime.now())
-                                    .build()
-                    ));
-        } catch (DataIntegrityViolationException e) {
-            // 동시 INSERT로 UNIQUE 제약 위반 시 기존 region 재조회
-            region = regionRepository.findByName(regionName)
-                    .orElseThrow(() -> new ShopException(ShopErrorCode.REGION_NOT_FOUND));
-        }
+        Region region = regionRepository
+                .findByFirstDepthAndSecondDepthAndThirdDepth(
+                        depths[0],
+                        depths[1],
+                        depths[2]
+                )
+                .orElseThrow(() ->
+                        new ShopException(ShopErrorCode.REGION_NOT_FOUND)
+                );
 
         // 3) Shop Entity 생성 및 저장
         Shop shop = ShopConverter.toShop(request, region, latitude, longitude);
@@ -89,28 +80,44 @@ public class ShopCommandService {
     }
 
     // 주소에서 구/군 단위 파싱
-    private String extractRegionName(String address) {
+    private String[] extractRegionDepth(String address) {
+
         if (address == null || address.isBlank()) {
             throw new ShopException(ShopErrorCode.SHOP_INVALID_ADDRESS);
         }
 
         String[] parts = address.split(" ");
 
-        // 1순위: 구/군 먼저 탐색
+        String firstDepth = null;
+        String secondDepth = null;
+        String thirdDepth = null;
+
         for (String part : parts) {
-            if (part.endsWith("구") || part.endsWith("군")) {
-                return part;
+
+            // 시/도
+            if (firstDepth == null && (part.endsWith("시") || part.endsWith("도"))) {
+                firstDepth = part;
+            }
+
+            // 시/군/구
+            if (secondDepth == null && (part.endsWith("시") || part.endsWith("군") || part.endsWith("구"))) {
+                secondDepth = part;
+            }
+
+            // 읍/면/동
+            if (thirdDepth == null && (part.endsWith("읍") || part.endsWith("면") || part.endsWith("동"))) {
+                thirdDepth = part;
             }
         }
 
-        // 2순위: 구/군 없을 때만 시 탐색
-        for (String part : parts) {
-            if (part.endsWith("시")) {
-                return part;
-            }
+        if (firstDepth == null || secondDepth == null || thirdDepth == null) {
+            throw new ShopException(
+                    ShopErrorCode.SHOP_INVALID_ADDRESS
+            );
         }
 
-        // 구/군/시 모두 없으면 예외
-        throw new ShopException(ShopErrorCode.SHOP_INVALID_ADDRESS);
+        return new String[]{
+                firstDepth, secondDepth, thirdDepth
+        };
     }
 }

@@ -1,34 +1,41 @@
 package com.amoa.server.domain.common.entity;
 
+import com.amoa.server.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(
         name = "region",
         uniqueConstraints = @UniqueConstraint(
-                name = "uk_region_name",
-                columnNames = "name"
+                name = "uk_region",
+                columnNames = {
+                        "first_depth",
+                        "second_depth",
+                        "third_depth"
+                }
         )
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Region {
+public class Region extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "region_id")
-    private Long regionId;
+    private Long id;
 
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
+    // 1Depth (시/도)
+    @Column(name = "first_depth", nullable = false, length = 50)
+    private String firstDepth;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    // 2Depth (시/군/구)
+    @Column(name = "second_depth", nullable = false, length = 50)
+    private String secondDepth;
 
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    // 3Depth (읍/면/동)
+    @Column(name = "third_depth", nullable = false, length = 50)
+    private String thirdDepth;
 }
