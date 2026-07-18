@@ -21,7 +21,7 @@ public enum UserSuccessCode implements BaseSuccessCode {
 
     USER_WITHDRAW_SUCCESS(
             HttpStatus.OK,
-            "탈퇴에 설공하였습니다.",
+            "탈퇴에 성공하였습니다.",
             "USER200_2"
     );
 
