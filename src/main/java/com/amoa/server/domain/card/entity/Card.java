@@ -35,7 +35,7 @@ public class Card extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shop_id")
+    @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
     @Column(name = "max_price", nullable = false)
