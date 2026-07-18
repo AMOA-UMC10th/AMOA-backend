@@ -2,6 +2,7 @@ package com.amoa.server.domain.card.entity.mapping;
 
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.common.entity.DesignTag;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
