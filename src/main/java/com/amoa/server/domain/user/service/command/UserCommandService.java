@@ -52,10 +52,9 @@ public class UserCommandService {
 
         return userRepository.findBySocialUidIncludingInactive(socialUid)
                 .map(user -> {
+
                     if (!Boolean.TRUE.equals(user.getIsActive())) {
-                        throw new GeneralException(
-                                UserErrorCode.MEMBER_UNAUTHORIZED
-                        );
+                        user.reactivate();
                     }
 
                     return user;
@@ -76,9 +75,7 @@ public class UserCommandService {
                                 .orElseThrow(() -> exception);
 
                         if (!Boolean.TRUE.equals(user.getIsActive())) {
-                            throw new GeneralException(
-                                    UserErrorCode.MEMBER_UNAUTHORIZED
-                            );
+                            user.reactivate();
                         }
 
                         return user;

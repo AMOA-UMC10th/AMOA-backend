@@ -60,9 +60,6 @@ public class User extends BaseEntity {
     @Column(name = "social_uid", nullable = false, length = 255)
     private String socialUid;
 
-    @Column(name = "refresh_token")
-    private String refreshToken;
-
     @Column(name = "user_phone_number", length = 20)
     private String userPhoneNumber;
 
@@ -75,8 +72,14 @@ public class User extends BaseEntity {
     @Builder.Default
     private Boolean isActive = true;
 
-    //온보딩
+    // 온보딩 완료
     public void completeOnboarding() {
         this.role = Role.USER;
+    }
+
+    // 계정 재활성화
+    public void reactivate() {
+        this.isActive = true;
+        this.role = Role.NEW_USER;
     }
 }

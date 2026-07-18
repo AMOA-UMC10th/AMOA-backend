@@ -46,7 +46,8 @@ public class KakaoLocalClient {
                             .build())
                     .header("Authorization", "KakaoAK " + kakaoApiKey)
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                    })
                     .block();
 
             List<Map<String, Object>> documents =
@@ -82,7 +83,8 @@ public class KakaoLocalClient {
                             .build())
                     .header("Authorization", "KakaoAK " + kakaoApiKey)
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                    })
                     .block();
 
             List<Map<String, Object>> documents =

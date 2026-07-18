@@ -1,5 +1,6 @@
 package com.amoa.server.domain.user.controller;
 
+import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
 import com.amoa.server.domain.user.exception.code.UserSuccessCode;
 import com.amoa.server.domain.user.service.command.UserCommandService;
 import com.amoa.server.global.apiPayload.ApiResponse;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
-public class UserController {
+public class UserController implements UserControllerDocs {
 
     private final UserCommandService userCommandService;
 
+    @Override
     @DeleteMapping("/me")
     public ApiResponse<String> withdraw(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,

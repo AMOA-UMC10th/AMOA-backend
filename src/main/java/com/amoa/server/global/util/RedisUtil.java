@@ -1,7 +1,11 @@
 package com.amoa.server.global.util;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HexFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -83,18 +87,51 @@ public class RedisUtil {
         return Long.valueOf(1L).equals(result);
     }
 
+    //로그아웃시 리프레시토큰 삭제
     public void deleteRefreshToken(Long userId) {
         delete(REFRESH_PREFIX + userId);
     }
 
+    //로그아웃된 AccessToken을 블랙리스트에 저장
     public void saveBlackList(
             String accessToken,
-            Duration duration
+            Duration expiration
     ) {
-        set(BLACKLIST_PREFIX + accessToken, "logout", duration);
+        if (expiration.isZero() || expiration.isNegative()) {
+            return;
+        }
+
+        String tokenHash = hashToken(accessToken);
+
+        set(
+                BLACKLIST_PREFIX + tokenHash,
+                "logout",
+                expiration
+        );
     }
 
+    // Access Token이 블랙리스트에 포함되어 있는지 확인
     public boolean isBlackListed(String accessToken) {
-        return hasKey(BLACKLIST_PREFIX + accessToken);
+        String tokenHash = hashToken(accessToken);
+
+        return hasKey(BLACKLIST_PREFIX + tokenHash);
+    }
+
+    private String hashToken(String token) {
+        try {
+            MessageDigest messageDigest =
+                    MessageDigest.getInstance("SHA-256");
+
+            byte[] hash = messageDigest.digest(
+                    token.getBytes(StandardCharsets.UTF_8)
+            );
+
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(
+                    "토큰 해시 생성 중 오류가 발생했습니다.",
+                    e
+            );
+        }
     }
 }
