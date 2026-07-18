@@ -1,8 +1,8 @@
 package com.amoa.server.domain.shop.controller.docs;
 
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
-import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.global.apiPayload.ApiResponse;
+import com.amoa.server.global.auth.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -15,7 +15,8 @@ public interface SavedShopControllerDocs {
     ApiResponse<SavedShopResDTO.LikeResultDTO> createShopLike(
             @Parameter(description = "샵 ID")
             Long shopId,
-            User user
+            @Parameter(hidden = true)
+            CustomUserDetails customUserDetails
     );
 
 
@@ -26,6 +27,7 @@ public interface SavedShopControllerDocs {
     ApiResponse<Void> deleteShopLike(
             @Parameter(description = "샵 ID")
             Long shopId,
-            User user
+            @Parameter(hidden = true)
+            CustomUserDetails customUserDetails
     );
 }
