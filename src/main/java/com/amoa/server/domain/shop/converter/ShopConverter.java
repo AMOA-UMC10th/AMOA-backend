@@ -1,5 +1,6 @@
 package com.amoa.server.domain.shop.converter;
 
+import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.common.entity.Region;
 import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 public class ShopConverter {
 
@@ -81,6 +83,33 @@ public class ShopConverter {
                 placeName,
                 address,
                 phone
+        );
+    }
+
+    // Card Entity → CardResponse DTO 변환
+    public static ShopResDTO.CardResponse toCardResponse(Card card, boolean isLiked) {
+        return new ShopResDTO.CardResponse(
+                card.getId(),
+                card.getShop().getRegion().getSecondDepth() + " " + card.getShop().getRegion().getThirdDepth(),  // 구+동
+                card.getMinPrice(),
+                card.getMaxPrice(),
+                card.getArtType().name(),
+                isLiked
+        );
+    }
+
+    // Card 목록 → CardListResponse DTO 변환
+    public static ShopResDTO.CardListResponse toCardListResponse(
+            Shop shop,
+            Page<Card> cards,
+            List<ShopResDTO.CardResponse> cardResponses) {
+        return new ShopResDTO.CardListResponse(
+                shop.getId(),
+                shop.getShopName(),
+                (int) cards.getTotalElements(),
+                cards.getNumber(),
+                cards.getSize(),
+                cardResponses
         );
     }
 }
