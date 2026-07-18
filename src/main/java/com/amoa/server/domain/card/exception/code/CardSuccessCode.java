@@ -10,7 +10,12 @@ import org.springframework.http.HttpStatus;
 public enum CardSuccessCode implements BaseSuccessCode {
     CARD_CREATED(HttpStatus.CREATED,
             "CARD201_1",
-            "카드가 등록되었습니다.");
+            "카드가 등록되었습니다."),
+    CARD_KAKAO_CHANNEL_FOUND(
+            HttpStatus.OK,
+            "CARD200_1",
+            "카카오 채널 URL 조회 성공"
+    );
 
     private final HttpStatus httpStatus;
     private final String code;

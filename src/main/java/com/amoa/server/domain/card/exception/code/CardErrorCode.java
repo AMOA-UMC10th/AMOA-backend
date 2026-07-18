@@ -8,6 +8,11 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum CardErrorCode implements BaseErrorCode {
+
+    CARD_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "CARD404_1",
+            "존재하지 않는 카드ID 입니다."),
+
     CARD_INVALID_DESIGN_TAG(HttpStatus.BAD_REQUEST,
             "CARD400_1",
             "존재하지 않는 디자인 태그ID입니다."),
