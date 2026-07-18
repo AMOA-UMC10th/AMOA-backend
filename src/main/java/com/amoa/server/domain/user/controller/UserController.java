@@ -1,5 +1,7 @@
 package com.amoa.server.domain.user.controller;
 
+import com.amoa.server.domain.auth.exception.AuthException;
+import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
 import com.amoa.server.domain.user.exception.code.UserSuccessCode;
 import com.amoa.server.domain.user.service.command.UserCommandService;
@@ -38,9 +40,15 @@ public class UserController implements UserControllerDocs {
         String authorization = request.getHeader("Authorization");
 
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("Access Token이 존재하지 않습니다.");
+            throw new AuthException(AuthErrorCode.TOKEN_INVALID);
         }
 
-        return authorization.substring(7);
+        String accessToken = authorization.substring(7).trim();
+
+        if (accessToken.isBlank()) {
+            throw new AuthException(AuthErrorCode.TOKEN_INVALID);
+        }
+
+        return accessToken;
     }
 }
