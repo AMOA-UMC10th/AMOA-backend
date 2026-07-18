@@ -26,6 +26,7 @@ public class CardDesignTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "card_designtag_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
