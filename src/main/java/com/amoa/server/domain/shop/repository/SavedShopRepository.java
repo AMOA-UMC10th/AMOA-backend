@@ -13,4 +13,6 @@ public interface SavedShopRepository extends JpaRepository<SavedShop, Long> {
     Optional<SavedShop> findByUserAndShop(User user, Shop shop);
 
     boolean existsByUserAndShop(User user, Shop shop);
+
+    int countByShop(Shop shop);  // 샵 찜 수
 }
