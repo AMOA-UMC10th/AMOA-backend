@@ -1,5 +1,6 @@
 package com.amoa.server.domain.user.controller;
 
+import com.amoa.server.domain.user.exception.code.UserSuccessCode;
 import com.amoa.server.domain.user.service.command.UserCommandService;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
@@ -28,7 +29,7 @@ public class UserController {
                 customUserDetails.user().getId(),
                 accessToken
         );
-        return ApiResponse.onSuccess("회원 탈퇴가 완료되었습니다.");
+        return ApiResponse.onSuccess(UserSuccessCode.USER_WITHDRAW_SUCCESS, "회원 탈퇴가 완료되었습니다.");
     }
 
     private String resolveAccessToken(HttpServletRequest request) {

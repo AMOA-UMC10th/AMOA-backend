@@ -76,7 +76,7 @@ public class User extends BaseEntity {
     private Boolean isActive = true;
 
     //온보딩
-    public void CompleteOnboarding() {
+    public void completeOnboarding() {
         this.role = Role.USER;
     }
 }

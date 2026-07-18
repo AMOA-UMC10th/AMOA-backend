@@ -34,6 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+
         // Authorization 헤더에서 토큰 추출
         String authHeader = request.getHeader("Authorization");
         String token = null;
@@ -50,6 +51,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (!"access".equals(category)) {
                 logger.warn("access token이 아닌 토큰으로 인증을 시도하셨습니다.");
                 throw new AuthException(AuthErrorCode.TOKEN_INVALID);
+            }
+
+            if (redisUtil.isBlackListed(token)) {
+                logger.warn("블랙리스트에 포함된 토큰으로 인증을 시도했습니다.");
+                throw new AuthException(AuthErrorCode.TOKEN_BLACKLIST);
             }
 
             userId = Long.parseLong(claims.getSubject());

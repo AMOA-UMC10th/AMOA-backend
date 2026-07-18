@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RedisUtil {
     private static final String REFRESH_PREFIX = "refresh:";
+    private static final String BLACKLIST_PREFIX = "blacklist:";
 
     private static final DefaultRedisScript<Long> ROTATE_REFRESH_TOKEN_SCRIPT =
             new DefaultRedisScript<>(
@@ -84,5 +85,16 @@ public class RedisUtil {
 
     public void deleteRefreshToken(Long userId) {
         delete(REFRESH_PREFIX + userId);
+    }
+
+    public void saveBlackList(
+            String accessToken,
+            Duration duration
+    ) {
+        set(BLACKLIST_PREFIX + accessToken, "logout", duration);
+    }
+
+    public boolean isBlackListed(String accessToken) {
+        return hasKey(BLACKLIST_PREFIX + accessToken);
     }
 }
