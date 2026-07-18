@@ -8,10 +8,12 @@ import com.amoa.server.domain.shop.exception.code.ShopSuccessCode;
 import com.amoa.server.domain.shop.service.command.ShopCommandService;
 import com.amoa.server.domain.shop.service.query.ShopQueryService;
 import com.amoa.server.global.apiPayload.ApiResponse;
+import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,11 +48,13 @@ public class ShopController implements ShopControllerDocs {
                 .body(ApiResponse.onSuccess(ShopSuccessCode.SHOP_CREATED, result));
     }
 
-    // GET /api/shops/{shopId} - 샵 상세 조회 (유저) ← 추가
+    // GET /api/shops/{shopId} - 샵 상세 조회 (유저)
     @GetMapping("/api/shops/{shopId}")
     public ApiResponse<ShopResDTO.ShopDetailResponse> getShopDetail(
-            @PathVariable Long shopId) {
-        ShopResDTO.ShopDetailResponse result = shopQueryService.getShopDetail(shopId);
+            @PathVariable Long shopId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.user().getId();
+        ShopResDTO.ShopDetailResponse result = shopQueryService.getShopDetail(shopId, userId);
         return ApiResponse.onSuccess(ShopSuccessCode.SHOP_FOUND, result);
     }
 }

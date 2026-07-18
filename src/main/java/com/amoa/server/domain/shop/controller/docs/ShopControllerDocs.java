@@ -4,9 +4,11 @@ import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO.CreateShopResponse;
 import com.amoa.server.global.apiPayload.ApiResponse;
+import com.amoa.server.global.auth.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,5 +27,7 @@ public interface ShopControllerDocs {
             @RequestBody ShopReqDTO.CreateShopRequest request);
 
     @Operation(summary = "샵 상세 조회", description = "유저가 샵 상세 정보를 조회합니다.")
-    ApiResponse<ShopResDTO.ShopDetailResponse> getShopDetail(@PathVariable Long shopId);
+    ApiResponse<ShopResDTO.ShopDetailResponse> getShopDetail(
+            @PathVariable Long shopId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails);
 }
