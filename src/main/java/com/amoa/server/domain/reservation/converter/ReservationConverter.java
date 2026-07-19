@@ -6,17 +6,13 @@ import com.amoa.server.domain.reservation.dto.response.ReservationResDTO;
 import com.amoa.server.domain.reservation.dto.response.ReservationResDTO.SelectedOptionResponse;
 import com.amoa.server.domain.reservation.entity.Reservation;
 import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOption;
-import com.amoa.server.domain.reservation.enums.PaymentStatus;
 import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.entity.mapping.ShopOption;
 import com.amoa.server.domain.user.entity.User;
-import java.time.LocalTime;
 import java.util.List;
 
 public final class ReservationConverter {
-
-    private ReservationConverter() {}
 
     // 예약 생성 요청 → Reservation 엔티티
     public static Reservation toReservation(
@@ -25,35 +21,20 @@ public final class ReservationConverter {
             Card card,
             ReservationReqDTO.CreateReservationRequest request,
             String reservationNumber,
-            LocalTime reservationEndTime,
             int totalPrice,
-            int depositAmount,
             int totalDurationMinutes
     ) {
         return Reservation.builder()
                 .user(user)
-                .shop(shop)
+                .shop(card.getShop())
                 .card(card)
                 .reservationNumber(reservationNumber)
-                .reservationDate(request.reservationDate())
-                .reservationStartTime(request.reservationStartTime())
-                .reservationEndTime(reservationEndTime)
-                .customerName(request.customerName())
-                .customerPhoneNumber(request.customerPhoneNumber())
-                .requestMessage(request.requestMessage())
                 .handState(request.handState())
                 .gelRemovalType(request.gelRemovalType())
-                .extensionRemovalCount(
-                        request.extensionRemovalCount() == null
-                        ? 0
-                        : request.extensionRemovalCount())
+                .extensionRemovalCount(request.extensionRemovalCount())
                 .totalPrice(totalPrice)
-                .depositAmount(depositAmount)
                 .totalDurationMinutes(totalDurationMinutes)
-                .paymentMethod(request.paymentMethod())
-                .reservationStatus(ReservationStatus.PENDING)
-                .paymentStatus(PaymentStatus.PENDING)
-                .isRefundPolicyAgreed(Boolean.TRUE.equals(request.refundPolicyAgreed()))
+                .reservationStatus(ReservationStatus.DRAFT)
                 .build();
     }
 
@@ -63,7 +44,7 @@ public final class ReservationConverter {
             ShopOption shopOption,
             int quantity
     ) {
-        int optionPrice = shopOption.getOptionPrice();
+        int optionTotalPrice = shopOption.getOptionPrice() * quantity;
 
         return ReservationSelectedOption.builder()
                 .reservation(reservation)
@@ -82,10 +63,11 @@ public final class ReservationConverter {
         return new ReservationResDTO.CreateReservationResponse(
                 reservation.getId(),
                 reservation.getReservationNumber(),
+                reservation.getCard().getId(),
+                reservation.getShop().getId(),
                 reservation.getTotalPrice(),
-                reservation.getDepositAmount(),
                 reservation.getTotalDurationMinutes(),
-                reservation.getReservationEndTime()
+                reservation.getReservationStatus()
         );
     }
 

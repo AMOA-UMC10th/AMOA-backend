@@ -90,6 +90,24 @@ public enum ReservationErrorCode implements BaseErrorCode {
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_9",
             "옵션 수량은 1개 이상이어야 합니다."
+    ),
+
+    ART_OPTION_REQUIRED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_10",
+            "아트 옵션은 반드시 하나 선택해야 합니다."
+    ),
+
+    MULTIPLE_ART_OPTIONS_NOT_ALLOWED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_11",
+            "아트 옵션은 하나만 선택할 수 있습니다."
+    ),
+
+    INVALID_ART_OPTION_QUANTITY(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_12",
+            "아트 옵션의 수량은 1이어야 합니다."
     );
 
     private final HttpStatus httpStatus;
