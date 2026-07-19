@@ -1,9 +1,12 @@
 package com.amoa.server.domain.shop.entity.mapping;
 
+import com.amoa.server.domain.reservation.enums.ShopOptionType;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +36,10 @@ public class ShopOption extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "option_type", nullable = false)
+    private ShopOptionType optionType;
 
     @Column(name = "option_name", nullable = false, length = 50)
     private String optionName;

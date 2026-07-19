@@ -56,19 +56,19 @@ public class Reservation extends BaseEntity {
     @Column(name = "reservation_number", nullable = false, unique = true)
     private String reservationNumber;
 
-    @Column(name = "reservation_date", nullable = false)
+    @Column(name = "reservation_date")
     private LocalDate reservationDate;
 
-    @Column(name = "reservation_start_time", nullable = false)
+    @Column(name = "reservation_start_time")
     private LocalTime reservationStartTime;
 
-    @Column(name = "reservation_end_time", nullable = false)
+    @Column(name = "reservation_end_time")
     private LocalTime reservationEndTime;
 
-    @Column(name = "customer_name", nullable = false, length = 20)
+    @Column(name = "customer_name", length = 20)
     private String customerName;
 
-    @Column(name = "customer_phone_number", nullable = false, length = 20)
+    @Column(name = "customer_phone_number", length = 20)
     private String customerPhoneNumber;
 
     @Column(name = "request_message", length = 500)
@@ -85,10 +85,10 @@ public class Reservation extends BaseEntity {
     @Column(name = "extension_removal_count", nullable = false)
     private int extensionRemovalCount;
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "total_price")
     private int totalPrice;
 
-    @Column(name = "deposit_amount", nullable = false)
+    @Column(name = "deposit_amount")
     private int depositAmount;
 
     @Column(name = "total_duration_minutes", nullable = false)
@@ -99,13 +99,36 @@ public class Reservation extends BaseEntity {
     private ReservationStatus reservationStatus;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_status", nullable = false)
+    @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", nullable = false)
+    @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
     @Column(name = "is_refund_policy_agreed", nullable = false)
     private boolean isRefundPolicyAgreed;
+
+    @Builder
+    private Reservation(
+            User user,
+            Shop shop,
+            Card card,
+            String reservationNumber,
+            HandState handState,
+            GelRemovalType gelRemovalType,
+            int extensionRemovalCount,
+            int totalDurationMinutes,
+            ReservationStatus reservationStatus
+    ) {
+        this.user = user;
+        this.shop = shop;
+        this.card = card;
+        this.reservationNumber = reservationNumber;
+        this.handState = handState;
+        this.gelRemovalType = gelRemovalType;
+        this.extensionRemovalCount = extensionRemovalCount;
+        this.totalDurationMinutes = totalDurationMinutes;
+        this.reservationStatus = reservationStatus;
+    }
 }
