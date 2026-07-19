@@ -1,8 +1,11 @@
 package com.amoa.server.global.kakao;
 
+import com.amoa.server.domain.common.exception.RegionException;
+import com.amoa.server.domain.common.exception.code.RegionErrorCode;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.exception.ShopException;
 import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
+import com.amoa.server.global.kakao.dto.response.KakaoRegionResDTO;
 import io.netty.channel.ChannelOption;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
@@ -103,6 +106,54 @@ public class KakaoLocalClient {
         } catch (Exception e) {
             log.error("카카오 로컬 API 호출 중 오류 발생: {}", e.getMessage(), e);
             throw new ShopException(ShopErrorCode.KAKAO_API_ERROR, e);
+        }
+    }
+
+
+    // 카카오 좌표 -> 법정동 코드 조회
+    public String getLegalCode(
+            BigDecimal latitude,
+            BigDecimal longitude
+    ) {
+        try {
+
+            KakaoRegionResDTO.Response response = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/v2/local/geo/coord2regioncode.json")
+                            .queryParam("x", longitude)
+                            .queryParam("y", latitude)
+                            .build())
+                    .header("Authorization", "KakaoAK " + kakaoApiKey)
+                    .retrieve()
+                    .bodyToMono(KakaoRegionResDTO.Response.class)
+                    .block();
+
+            if (response == null
+                    || response.documents() == null
+                    || response.documents().isEmpty()) {
+                throw new RegionException(
+                        RegionErrorCode.REGION_NOT_FOUND
+                );
+            }
+
+            return response.documents().stream()
+                    .filter(document -> "B".equals(document.regionType()))
+                    .findFirst()
+                    .orElseThrow(() ->
+                            new RegionException(
+                                    RegionErrorCode.REGION_NOT_FOUND
+                            ))
+                    .code();
+
+        } catch (RegionException e) {
+            throw e;
+
+        } catch (Exception e) {
+            log.error("카카오 좌표→법정동 코드 조회 실패", e);
+
+            throw new RegionException(
+                    RegionErrorCode.KAKAO_API_ERROR
+            );
         }
     }
 }
