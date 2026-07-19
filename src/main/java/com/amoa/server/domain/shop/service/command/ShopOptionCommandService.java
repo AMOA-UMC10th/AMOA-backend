@@ -103,7 +103,16 @@ public class ShopOptionCommandService {
                 request.maxQuantity()
         );
 
-        // 5. 수정된 옵션을 포함한 전체 활성 옵션 목록 조회
+        // 5. 검사 직후 다른 요청이 같은 이름으로 생성·수정 막기
+        try {
+            shopOptionRepository.saveAndFlush(option);
+        } catch (DataIntegrityViolationException e) {
+            throw new ShopException(
+                    ShopErrorCode.SHOP_OPTION_NAME_DUPLICATED
+            );
+        }
+
+        // 6. 수정된 옵션을 포함한 전체 활성 옵션 목록 조회
         List<ShopOption> options = shopOptionRepository
                 .findAllByShop_IdAndIsActiveTrueOrderByIdAsc(shopId);
 

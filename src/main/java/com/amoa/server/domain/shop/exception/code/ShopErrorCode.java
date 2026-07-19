@@ -20,8 +20,9 @@ public enum ShopErrorCode implements BaseErrorCode {
     KAKAO_SEARCH_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOP404_3", "검색 결과가 없습니다."),
     REGION_NOT_FOUND(HttpStatus.BAD_REQUEST, "SHOP400_5", "존재하지 않는 지역입니다."),
     DUPLICATE_SHOP_OPTION(HttpStatus.CONFLICT, "SHOP409_2", "이미 등록된 옵션입니다."),
-    SHOP_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOP404_4", "샵 옵션을 찾을 수 없습니다.");
-
+    SHOP_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOP404_4", "샵 옵션을 찾을 수 없습니다."),
+    SHOP_OPTION_NAME_DUPLICATED(HttpStatus.CONFLICT, "SHOP409_3", "이미 등록된 옵션명입니다."
+    );
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
