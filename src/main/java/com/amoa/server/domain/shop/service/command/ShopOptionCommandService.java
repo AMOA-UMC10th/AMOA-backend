@@ -10,6 +10,7 @@ import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
 import com.amoa.server.domain.shop.repository.ShopOptionRepository;
 import com.amoa.server.domain.shop.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,13 @@ public class ShopOptionCommandService {
         ShopOption option =
                 ShopOptionConverter.toShopOption(shop, request);
 
-        shopOptionRepository.save(option);
+        try {
+            shopOptionRepository.saveAndFlush(option);
+        } catch (DataIntegrityViolationException e) {
+            throw new ShopException(
+                    ShopErrorCode.DUPLICATE_SHOP_OPTION
+            );
+        }
 
         return ShopOptionConverter.toCreateResult(option);
     }

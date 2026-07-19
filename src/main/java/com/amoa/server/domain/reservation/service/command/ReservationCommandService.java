@@ -280,7 +280,8 @@ public class ReservationCommandService {
                 ReservationOptionPolicy.BUSINESS_CLOSE_TIME
                         .minusMinutes(totalDurationMinutes);
 
-        if (startTime.isAfter(latestStartTime)) {
+        if (startTime.isBefore(ReservationOptionPolicy.BUSINESS_OPEN_TIME)
+                || startTime.isAfter(latestStartTime)) {
             throw new ReservationException(
                     ReservationErrorCode.N_SELECT_RESERVATION_TIME
             );
