@@ -47,6 +47,9 @@ public class Shop {
     @Column(name = "longitude", nullable = false, precision = 10, scale = 7)
     private BigDecimal longitude;
 
+    @Column(name = "legal_code", length = 20)
+    private String legalCode;
+
     @Column(name = "shop_phone_number", length = 20)
     private String shopPhoneNumber;
 

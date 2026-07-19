@@ -44,6 +44,7 @@ public class ShopConverter {
                 .address(request.address())
                 .latitude(latitude)
                 .longitude(longitude)
+                .legalCode(request.legalCode())
                 .shopPhoneNumber(request.shopPhoneNumber())
                 .businessHours(request.businessHours())
                 .shopStatus(ShopStatus.DRAFT)
