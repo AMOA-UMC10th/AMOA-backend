@@ -68,7 +68,7 @@ public class KakaoLocalClient {
 
         } catch (Exception e) {
             log.error("카카오 키워드 검색 중 오류 발생: {}", e.getMessage(), e);
-            throw new ShopException(ShopErrorCode.KAKAO_API_ERROR, e);
+            throw new ShopException(ShopErrorCode.KAKAO_API_ERROR);
         }
     }
 
@@ -102,7 +102,7 @@ public class KakaoLocalClient {
 
         } catch (Exception e) {
             log.error("카카오 로컬 API 호출 중 오류 발생: {}", e.getMessage(), e);
-            throw new ShopException(ShopErrorCode.KAKAO_API_ERROR, e);
+            throw new ShopException(ShopErrorCode.KAKAO_API_ERROR);
         }
     }
 }
