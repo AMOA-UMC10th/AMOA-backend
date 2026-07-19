@@ -120,8 +120,8 @@ public class KakaoLocalClient {
             KakaoRegionResDTO.Response response = webClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/v2/local/geo/coord2regioncode.json")
-                            .queryParam("x", longitude)
-                            .queryParam("y", latitude)
+                            .queryParam("x", longitude.toPlainString())
+                            .queryParam("y", latitude.toPlainString())
                             .build())
                     .header("Authorization", "KakaoAK " + kakaoApiKey)
                     .retrieve()
