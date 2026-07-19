@@ -16,8 +16,6 @@ public class ReservationReqDTO {
     //예약 생성 요청 DTO
     public record CreateReservationRequest(
             Long cardId,
-            LocalDate reservationDate,
-            LocalTime reservationStartTime,
             String customerName,
             String customerPhoneNumber,
             String requestMessage,

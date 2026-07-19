@@ -28,8 +28,11 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,17 +118,18 @@ public class ReservationCommandService {
         int optionTotalPrice = 0;
         int optionTotalDuration = 0;
 
-        for (int i = 0; i < optionRequests.size(); i++) {
-            ReservationReqDTO.SelectedOptionRequest optionRequest =
-                    optionRequests.get(i);
+        Map<Long, ShopOption> optionMap =
+                shopOptions.stream()
+                        .collect(Collectors.toMap(
+                                ShopOption::getId,
+                                Function.identity()
+                        ));
 
-            ShopOption shopOption = shopOptions.get(i);
+        for (ReservationReqDTO.SelectedOptionRequest selectedOption : optionRequests) {
+            ShopOption option = optionMap.get(selectedOption.shopOptionId());
 
-            optionTotalPrice +=
-                    shopOption.getOptionPrice() * optionRequest.quantity();
-
-            optionTotalDuration +=
-                    shopOption.getDurationMinutes() * optionRequest.quantity();
+            optionTotalPrice += option.getOptionPrice() * selectedOption.quantity();
+            optionTotalDuration += option.getDurationMinutes() * selectedOption.quantity();
         }
 
         //피그마상으로 보인 기본 가격 추후 삭제 가능성 있음
@@ -135,11 +139,6 @@ public class ReservationCommandService {
         //총 가격 & 시간
         int totalPrice = basePrice + optionTotalPrice;
         int totalDurationMinutes = baseDuration + optionTotalDuration;
-
-        //종료 시간
-        LocalTime reservationEndTime =
-                request.reservationStartTime()
-                        .plusMinutes(totalDurationMinutes);
 
         int depositAmount = calculateDepositAmount(totalPrice);
 
@@ -151,7 +150,6 @@ public class ReservationCommandService {
                 card,
                 request,
                 reservationNumber,
-                reservationEndTime,
                 totalPrice,
                 depositAmount,
                 totalDurationMinutes

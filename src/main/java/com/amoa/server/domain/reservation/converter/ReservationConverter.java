@@ -25,7 +25,6 @@ public final class ReservationConverter {
             Card card,
             ReservationReqDTO.CreateReservationRequest request,
             String reservationNumber,
-            LocalTime reservationEndTime,
             int totalPrice,
             int depositAmount,
             int totalDurationMinutes
@@ -48,7 +47,7 @@ public final class ReservationConverter {
                 .depositAmount(depositAmount)
                 .totalDurationMinutes(totalDurationMinutes)
                 .paymentMethod(request.paymentMethod())
-                .reservationStatus(ReservationStatus.PENDING)
+                .reservationStatus(ReservationStatus.DRAFT)
                 .paymentStatus(PaymentStatus.PENDING)
                 .isRefundPolicyAgreed(Boolean.TRUE.equals(request.refundPolicyAgreed()))
                 .build();
