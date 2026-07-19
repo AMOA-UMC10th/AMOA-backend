@@ -4,6 +4,7 @@ import static com.amoa.server.domain.reservation.constant.ReservationOptionPolic
 
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.repository.CardRepository;
+import com.amoa.server.domain.reservation.constant.ReservationOptionPolicy;
 import com.amoa.server.domain.reservation.converter.ReservationConverter;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO.SelectedOptionRequest;
@@ -12,6 +13,7 @@ import com.amoa.server.domain.reservation.entity.Reservation;
 import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOption;
 import com.amoa.server.domain.reservation.enums.GelRemovalType;
 import com.amoa.server.domain.reservation.enums.HandState;
+import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import com.amoa.server.domain.reservation.exception.ReservationException;
 import com.amoa.server.domain.reservation.exception.code.ReservationErrorCode;
 import com.amoa.server.domain.reservation.repository.ReservationRepository;
@@ -21,6 +23,7 @@ import com.amoa.server.domain.shop.entity.mapping.ShopOption;
 import com.amoa.server.domain.shop.repository.ShopOptionRepository;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -250,6 +253,110 @@ public class ReservationCommandService {
                         ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
                 );
             }
+        }
+    }
+
+    //예약 확정 service
+    public void confirmReservationSchedule(
+            Long userId,
+            Long reservationId,
+            ReservationReqDTO.ConfirmScheduleRequest request
+    ) {
+        Reservation reservation = reservationRepository
+                .findByIdAndUser_Id(reservationId, userId)
+                .orElseThrow(() ->
+                        new ReservationException(
+                                ReservationErrorCode.RESERVATION_NOT_FOUND
+                        )
+                );
+
+        validateDraftStatus(reservation);
+
+        LocalDate reservationDate = request.reservationDate();
+        LocalTime startTime = request.reservationStartTime();
+        int totalDurationMinutes = reservation.getTotalDurationMinutes();
+
+        validateDateAndTime(reservationDate, startTime);
+
+        LocalTime latestStartTime =
+                ReservationOptionPolicy.BUSINESS_CLOSE_TIME
+                        .minusMinutes(totalDurationMinutes);
+
+        if (startTime.isAfter(latestStartTime)) {
+            throw new ReservationException(
+                    ReservationErrorCode.N_SELECT_RESERVATION_TIME
+            );
+        }
+
+        LocalTime endTime = startTime.plusMinutes(totalDurationMinutes);
+
+        validateOverlap(
+                reservation.getShop().getId(),
+                reservationDate,
+                startTime,
+                endTime
+        );
+
+        reservation.confirmSchedule(
+                reservationDate,
+                startTime,
+                endTime
+        );
+    }
+
+    //상태검증
+    private void validateDraftStatus(Reservation reservation) {
+        if (reservation.getReservationStatus()
+                != ReservationStatus.DRAFT) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_ALREADY_CONFIRMED
+            );
+        }
+    }
+
+    //날짜와 현재 시간 검증
+    private void validateDateAndTime(
+            LocalDate reservationDate,
+            LocalTime reservationStartTime
+    ) {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        if (reservationDate.isBefore(today)) {
+            throw new ReservationException(
+                    ReservationErrorCode.PAST_RESERVATION_DATE
+            );
+        }
+
+        if (reservationDate.isEqual(today)
+                && !reservationStartTime.isAfter(now)) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_TIME
+            );
+        }
+    }
+
+    //중복 검증
+    private void validateOverlap(
+            Long shopId,
+            LocalDate reservationDate,
+            LocalTime startTime,
+            LocalTime endTime
+    ) {
+        boolean hasConflict = !reservationRepository
+                .findOverlappingReservations(
+                        shopId,
+                        reservationDate,
+                        ReservationStatus.CONFIRMED,
+                        startTime,
+                        endTime
+                )
+                .isEmpty();
+
+        if (hasConflict) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_TIME_CONFLICT
+            );
         }
     }
 }

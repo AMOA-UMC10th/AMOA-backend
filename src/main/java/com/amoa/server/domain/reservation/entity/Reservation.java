@@ -108,4 +108,15 @@ public class Reservation extends BaseEntity {
 
     @Column(name = "is_refund_policy_agreed", nullable = false)
     private boolean isRefundPolicyAgreed;
+
+    public void confirmSchedule(
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            LocalTime reservationEndTime
+    ) {
+        this.reservationDate = reservationDate;
+        this.reservationStartTime = reservationStartTime;
+        this.reservationEndTime = reservationEndTime;
+        this.reservationStatus = ReservationStatus.CONFIRMED;
+    }
 }

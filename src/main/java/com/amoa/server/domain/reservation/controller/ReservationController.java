@@ -11,6 +11,8 @@ import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,26 @@ public class ReservationController implements ReservationControllerDocs {
         return ApiResponse.onSuccess(
                 ReservationSuccessCode.RESERVATION_CREATED,
                 reservationCommandService.createReservation(userId, request)
+        );
+    }
+
+    @Override
+    @PatchMapping("/{reservationId}/schedule")
+    public ApiResponse<Void> confirmReservationSchedule(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long reservationId,
+            @Valid @RequestBody
+            ReservationReqDTO.ConfirmScheduleRequest request
+    ) {
+        reservationCommandService.confirmReservationSchedule(
+                userDetails.user().getId(),
+                reservationId,
+                request
+        );
+
+        return ApiResponse.onSuccess(
+                ReservationSuccessCode.RESERVATION_SCHEDULE_CONFIRMED,
+                null
         );
     }
 }
