@@ -9,11 +9,15 @@ import com.amoa.server.domain.reservation.service.query.ReservationQueryService;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReservationController implements ReservationControllerDocs {
 
     private final ReservationCommandService reservationCommandService;
+    private final ReservationQueryService reservationQueryService;
 
     @Override
     @PostMapping
@@ -34,6 +39,25 @@ public class ReservationController implements ReservationControllerDocs {
         return ApiResponse.onSuccess(
                 ReservationSuccessCode.RESERVATION_CREATED,
                 reservationCommandService.createReservation(userId, request)
+        );
+    }
+
+    @Override
+    @GetMapping("/{reservationId}/available-times")
+    public ApiResponse<ReservationResDTO.AvailableTimesResponse>
+    getAvailableTimes(
+            @PathVariable Long reservationId,
+            @RequestParam LocalDate date,
+            @AuthenticationPrincipal CustomUserDetails principal
+    ) {
+        return ApiResponse.onSuccess(
+                ReservationSuccessCode
+                        .RESERVATION_AVAILABLE_TIMES_FOUND,
+                reservationQueryService.getAvailableTimes(
+                        principal.user().getId(),
+                        reservationId,
+                        date
+                )
         );
     }
 }
