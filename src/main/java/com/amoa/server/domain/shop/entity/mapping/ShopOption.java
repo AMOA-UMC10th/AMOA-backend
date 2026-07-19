@@ -78,13 +78,11 @@ public class ShopOption extends BaseEntity {
             String optionName,
             int optionPrice,
             int durationMinutes,
-            int maxQuantity,
-            boolean isActive
+            int maxQuantity
     ) {
         this.optionName = optionName;
         this.optionPrice = optionPrice;
         this.durationMinutes = durationMinutes;
         this.maxQuantity = maxQuantity;
-        this.isActive = isActive;
     }
 }
