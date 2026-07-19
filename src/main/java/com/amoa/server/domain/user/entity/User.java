@@ -72,8 +72,14 @@ public class User extends BaseEntity {
     @Builder.Default
     private Boolean isActive = true;
 
-    //온보딩
-    public void CompleteOnboarding() {
+    // 온보딩 완료
+    public void completeOnboarding() {
         this.role = Role.USER;
+    }
+
+    // 계정 재활성화
+    public void reactivate() {
+        this.isActive = true;
+        this.role = Role.NEW_USER;
     }
 }
