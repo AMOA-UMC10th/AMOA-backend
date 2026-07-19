@@ -33,6 +33,8 @@ public class UserCardCommandService {
         UserCard userCard = new UserCard(user, card);
         userCardRepository.save(userCard);
 
+        cardRepository.increaseLikeCount(cardId);
+
         return UserCardResDTO.LikeResultDTO.builder()
                 .userCardId(userCard.getId())
                 .cardId(card.getId())
@@ -51,5 +53,7 @@ public class UserCardCommandService {
                 .orElseThrow(() -> new GeneralException(CardErrorCode.CARD_LIKE_NOT_FOUND));
 
         userCardRepository.delete(userCard);
+
+        cardRepository.decreaseLikeCount(cardId);
     }
 }

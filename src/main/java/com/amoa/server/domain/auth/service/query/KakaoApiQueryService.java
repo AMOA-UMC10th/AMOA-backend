@@ -1,7 +1,7 @@
 package com.amoa.server.domain.auth.service.query;
 
 import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
-import com.amoa.server.domain.user.dto.respose.KakaoUserInfoResDTO;
+import com.amoa.server.domain.user.dto.response.KakaoUserInfoResDTO;
 import com.amoa.server.global.apiPayload.exception.GeneralException;
 import com.amoa.server.global.config.KaKaoProperties;
 import lombok.RequiredArgsConstructor;

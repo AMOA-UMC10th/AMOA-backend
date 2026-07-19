@@ -14,7 +14,15 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "user_card")
+@Table(
+        name = "user_card",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_user_card_user_card",
+                        columnNames = {"user_id", "card_id"}
+                )
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class UserCard {
