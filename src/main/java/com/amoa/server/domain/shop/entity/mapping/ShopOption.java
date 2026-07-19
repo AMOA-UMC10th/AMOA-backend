@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 public class ShopOption extends BaseEntity {
 
     @Id
@@ -44,9 +43,39 @@ public class ShopOption extends BaseEntity {
     private int durationMinutes;
 
     @Column(name = "max_quantity", nullable = false)
-    @Builder.Default
     private int maxQuantity = 10;
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
+
+    @Builder
+    public ShopOption(
+            Shop shop,
+            String optionName,
+            int optionPrice,
+            int durationMinutes,
+            int maxQuantity,
+            boolean isActive
+    ) {
+        this.shop = shop;
+        this.optionName = optionName;
+        this.optionPrice = optionPrice;
+        this.durationMinutes = durationMinutes;
+        this.maxQuantity = maxQuantity;
+        this.isActive = isActive;
+    }
+
+    public void update(
+            String optionName,
+            int optionPrice,
+            int durationMinutes,
+            int maxQuantity,
+            boolean isActive
+    ) {
+        this.optionName = optionName;
+        this.optionPrice = optionPrice;
+        this.durationMinutes = durationMinutes;
+        this.maxQuantity = maxQuantity;
+        this.isActive = isActive;
+    }
 }
