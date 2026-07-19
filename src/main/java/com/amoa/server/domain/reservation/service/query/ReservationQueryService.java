@@ -82,12 +82,18 @@ public class ReservationQueryService {
                 BUSINESS_CLOSE_TIME
         );
 
-        List<Reservation> existingReservations =
-                reservationRepository.findAllByShop_IdAndReservationDateAndReservationStatusNot(
-                        reservation.getShop().getId(),
-                        reservationDate,
-                        ReservationStatus.DRAFT
+        List<ReservationStatus> blockingStatuses = List.of(
+                ReservationStatus.PENDING,
+                ReservationStatus.CONFIRMED
         );
+
+        List<Reservation> existingReservations =
+                reservationRepository
+                        .findAllByShop_IdAndReservationDateAndReservationStatusIn(
+                                reservation.getShop().getId(),
+                                reservationDate,
+                                blockingStatuses
+                        );
 
         /*
          * 조회 대상 예약 자체가 같은 날짜에 저장돼 있는 경우,

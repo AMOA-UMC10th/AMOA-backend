@@ -20,9 +20,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     );
 
     List<Reservation>
-    findAllByShop_IdAndReservationDateAndReservationStatusNot(
+    findAllByShop_IdAndReservationDateAndReservationStatusIn(
             Long shopId,
             LocalDate reservationDate,
-            ReservationStatus reservationStatus
+            List<ReservationStatus> reservationStatus
     );
 }
