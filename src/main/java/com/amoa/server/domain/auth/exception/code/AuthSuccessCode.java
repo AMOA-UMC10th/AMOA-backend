@@ -9,13 +9,14 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum AuthSuccessCode implements BaseSuccessCode {
     AUTH_LOGIN_OK(HttpStatus.OK,
-            "로그인을 완료하였습니다",
-            "AUTH200_1"),
+            "AUTH200_1",
+            "로그인을 완료하였습니다"
+            ),
     AUTH_REISSUE_OK(HttpStatus.OK,
-            "토큰 재발행을 완료하였습니다.",
-            "AUTH200_2");
+            "AUTH200_2",
+            "토큰 재발행을 완료하였습니다.");
 
     private final HttpStatus httpStatus;
-    private final String message;
     private final String code;
+    private final String message;
 }

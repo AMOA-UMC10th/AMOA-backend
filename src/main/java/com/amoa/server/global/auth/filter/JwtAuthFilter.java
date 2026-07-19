@@ -49,6 +49,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             Claims claims = jwtUtil.getClaimsFromToken(token);
 
             String category = claims.get("category", String.class);
+            String role = claims.get("role", String.class);
+
+            logger.info(
+                    "JWT 인증 확인 - subject: " + claims.getSubject()
+                            + ", category: " + category
+                            + ", role: " + role
+            );
 
             //AccessToken 여부 확인
             if (!"access".equals(category)) {
@@ -63,6 +70,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
             userId = Long.parseLong(claims.getSubject());
+            
         }
 
         // 토큰이 유효하고, SecurityContext에 인증 정보가 없는 경우에 인증 처리

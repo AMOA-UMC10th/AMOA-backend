@@ -21,6 +21,10 @@ public enum CardSuccessCode implements BaseSuccessCode {
             HttpStatus.OK,
             "CARD200_2",
             "카드 찜 취소에 성공했습니다."
+    CARD_KAKAO_CHANNEL_FOUND(
+            HttpStatus.OK,
+            "CARD200_1",
+            "카카오톡 채널 URL을 성공적으로 조회했습니다."
     );
 
     private final HttpStatus httpStatus;
