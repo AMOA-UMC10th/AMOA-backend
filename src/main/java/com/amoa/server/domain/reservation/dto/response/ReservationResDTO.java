@@ -61,4 +61,19 @@ public class ReservationResDTO {
             Integer optionPrice,
             Integer optionTotalPrice
     ) {}
+
+    public record AvailableTimesResponse(
+            Long reservationId,
+            LocalDate reservationDate,
+            Integer totalDurationMinutes,
+            Integer requiredSlotCount,
+            LocalTime businessOpeningTime,
+            LocalTime businessClosingTime,
+            List<AvailableTimeResponse> availableTimes
+    ) {}
+
+    public record AvailableTimeResponse(
+            LocalTime time,
+            Integer isAvailable
+    ) {}
 }
