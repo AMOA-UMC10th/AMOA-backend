@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
@@ -95,14 +97,25 @@ public class UserCommandService {
         Long remainingTime =
                 jwtUtil.getExpirationTime(accessToken);
 
-        redisUtil.deleteRefreshToken(userId);
+        // @SQLDelete에 의해 is_active = false 처리
+        userRepository.delete(user);
 
-        if (remainingTime > 0) {
-            redisUtil.saveBlackList(
-                    accessToken,
-                    Duration.ofMillis(remainingTime)
-            );
-        }
+        // DB 커밋이 성공한 뒤 Redis 토큰 무효화
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        redisUtil.deleteRefreshToken(userId);
+
+                        if (remainingTime > 0) {
+                            redisUtil.saveBlackList(
+                                    accessToken,
+                                    Duration.ofMillis(remainingTime)
+                            );
+                        }
+                    }
+                }
+        );
 
         // @SQLDelete에 의해 is_active = false 처리
         userRepository.delete(user);
