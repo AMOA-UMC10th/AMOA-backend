@@ -16,11 +16,6 @@ public enum CardErrorCode implements BaseErrorCode {
     CARD_INVALID_DESIGN_TAG(HttpStatus.BAD_REQUEST,
             "CARD400_1",
             "존재하지 않는 디자인 태그ID입니다."),
-    CARD_NOT_FOUND(
-            HttpStatus.NOT_FOUND,
-            "CARD404_1",
-            "카드를 찾을 수 없습니다."
-    ),
     CARD_ALREADY_LIKED(
             HttpStatus.CONFLICT,
             "CARD409_1",
