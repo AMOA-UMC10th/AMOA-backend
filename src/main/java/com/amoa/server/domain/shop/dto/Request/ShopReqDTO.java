@@ -18,6 +18,7 @@ public class ShopReqDTO {
             @NotBlank(message = "주소는 필수입니다.")
             String address,
 
+            String legalCode,
             String shopPhoneNumber,
             String businessHours,
 
