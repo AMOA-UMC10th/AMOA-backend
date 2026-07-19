@@ -11,7 +11,7 @@ public enum AuthErrorCode implements BaseErrorCode {
     KAKAO_4XX(
             HttpStatus.BAD_REQUEST,
             "카카오로부터 4XX 응답을 받았습니다.",
-            "KAKAO4XX"),
+            "KAKAO400_1"),
     KAKAO_5XX(
             HttpStatus.BAD_GATEWAY,
             "카카오 서버와 통신하는 중 오류가 발생했습니다.",

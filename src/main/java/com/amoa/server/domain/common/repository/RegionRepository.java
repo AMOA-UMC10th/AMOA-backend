@@ -16,6 +16,8 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
             String thirdDepth
     );
 
+    Optional<Region> findByLegalCode(String legalCode);
+
     // 샵 등록 시 정확한 행정구역 조회
     Optional<Region> findByFirstDepthAndSecondDepthAndThirdDepth(
             String firstDepth,

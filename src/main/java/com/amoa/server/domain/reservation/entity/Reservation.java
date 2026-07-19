@@ -56,13 +56,13 @@ public class Reservation extends BaseEntity {
     @Column(name = "reservation_number", nullable = false, unique = true)
     private String reservationNumber;
 
-    @Column(name = "reservation_date", nullable = false)
+    @Column(name = "reservation_date")
     private LocalDate reservationDate;
 
-    @Column(name = "reservation_start_time", nullable = false)
+    @Column(name = "reservation_start_time")
     private LocalTime reservationStartTime;
 
-    @Column(name = "reservation_end_time", nullable = false)
+    @Column(name = "reservation_end_time")
     private LocalTime reservationEndTime;
 
     @Column(name = "customer_name", nullable = false, length = 20)
@@ -94,9 +94,10 @@ public class Reservation extends BaseEntity {
     @Column(name = "total_duration_minutes", nullable = false)
     private int totalDurationMinutes;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "reservation_status", nullable = false)
-    private ReservationStatus reservationStatus;
+    private ReservationStatus reservationStatus = ReservationStatus.DRAFT;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
