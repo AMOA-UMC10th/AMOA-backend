@@ -44,7 +44,7 @@ public final class ReservationConverter {
             ShopOption shopOption,
             int quantity
     ) {
-        int optionTotalPrice = shopOption.getOptionPrice() * quantity;
+        int optionPrice = shopOption.getOptionPrice();
 
         return ReservationSelectedOption.builder()
                 .reservation(reservation)

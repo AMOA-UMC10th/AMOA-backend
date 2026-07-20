@@ -131,4 +131,15 @@ public class Reservation extends BaseEntity {
         this.totalDurationMinutes = totalDurationMinutes;
         this.reservationStatus = reservationStatus;
     }
+
+    public void confirmSchedule(
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            LocalTime reservationEndTime
+    ) {
+        this.reservationDate = reservationDate;
+        this.reservationStartTime = reservationStartTime;
+        this.reservationEndTime = reservationEndTime;
+        this.reservationStatus = ReservationStatus.CONFIRMED;
+    }
 }

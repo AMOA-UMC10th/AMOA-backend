@@ -66,7 +66,7 @@ public class ShopCommandService {
                     .findByIdIn(request.designtagIds());
 
             if (designTags.size() != request.designtagIds().size()) {
-                throw new ShopException(ShopErrorCode.SHOP_INVALID_DESIGNTAG);
+                throw new ShopException(ShopErrorCode.SHOP_INVALID_DESIGN_TAG);
             }
 
             List<ShopDesignTag> shopDesignTags = designTags.stream()

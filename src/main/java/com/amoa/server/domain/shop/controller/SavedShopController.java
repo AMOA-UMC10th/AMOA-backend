@@ -9,6 +9,7 @@ import com.amoa.server.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import com.amoa.server.global.auth.CustomUserDetails;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +22,10 @@ public class SavedShopController implements SavedShopControllerDocs{
     @PostMapping("/{shopId}/like")
     public ApiResponse<SavedShopResDTO.LikeResultDTO> createShopLike(
             @PathVariable Long shopId,
-            @AuthenticationPrincipal User user
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
+
+        User user = customUserDetails.user();
 
         SavedShopResDTO.LikeResultDTO result = savedShopCommandService.createShopLike(user, shopId);
 
@@ -34,11 +37,14 @@ public class SavedShopController implements SavedShopControllerDocs{
     @DeleteMapping("/{shopId}/like")
     public ApiResponse<Void> deleteShopLike(
             @PathVariable Long shopId,
-            @AuthenticationPrincipal User user
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
+
+        User user = customUserDetails.user();
 
         savedShopCommandService.deleteShopLike(user, shopId);
 
         return ApiResponse.onSuccess(ShopSuccessCode.SHOP_UNLIKED,null);
     }
+
 }
