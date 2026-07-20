@@ -37,6 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // Authorization 헤더에서 토큰 추출
         String authHeader = request.getHeader("Authorization");
+
         String token = null;
         Long userId = null;
 

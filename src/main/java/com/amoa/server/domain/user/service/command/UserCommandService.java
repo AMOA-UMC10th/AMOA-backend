@@ -1,6 +1,6 @@
 package com.amoa.server.domain.user.service.command;
 
-import com.amoa.server.domain.user.dto.respose.KakaoUserInfoResDTO;
+import com.amoa.server.domain.user.dto.response.KakaoUserInfoResDTO;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.enums.Role;
 import com.amoa.server.domain.user.exception.UserException;
