@@ -12,8 +12,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    Optional<Reservation> findByIdAndUser_Id(Long reservationId, Long userId);
-
     @Query("""
         SELECT r
         FROM Reservation r
@@ -29,5 +27,21 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("status") ReservationStatus status,
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime
+      
+    Optional<Reservation> findByIdAndUser_Id(
+            Long reservationId,
+            Long userId
+    );
+
+    List<Reservation> findAllByShop_IdAndReservationDate(
+            Long shopId,
+            LocalDate reservationDate
+    );
+
+    List<Reservation>
+    findAllByShop_IdAndReservationDateAndReservationStatusIn(
+            Long shopId,
+            LocalDate reservationDate,
+            List<ReservationStatus> reservationStatus
     );
 }
