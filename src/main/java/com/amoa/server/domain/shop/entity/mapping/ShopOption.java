@@ -1,7 +1,7 @@
 package com.amoa.server.domain.shop.entity.mapping;
 
-import com.amoa.server.domain.reservation.enums.ShopOptionType;
 import com.amoa.server.domain.shop.entity.Shop;
+import com.amoa.server.domain.shop.enums.ShopOptionType;
 import com.amoa.server.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

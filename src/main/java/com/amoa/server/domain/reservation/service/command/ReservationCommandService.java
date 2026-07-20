@@ -15,18 +15,18 @@ import com.amoa.server.domain.reservation.entity.Reservation;
 import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOption;
 import com.amoa.server.domain.reservation.enums.GelRemovalType;
 import com.amoa.server.domain.reservation.enums.HandState;
-import com.amoa.server.domain.reservation.enums.ShopOptionType;
+import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import com.amoa.server.domain.reservation.exception.ReservationException;
 import com.amoa.server.domain.reservation.exception.code.ReservationErrorCode;
 import com.amoa.server.domain.reservation.repository.ReservationRepository;
 import com.amoa.server.domain.reservation.repository.ReservationSelectedOptionRepository;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.entity.mapping.ShopOption;
+import com.amoa.server.domain.shop.enums.ShopOptionType;
 import com.amoa.server.domain.shop.repository.ShopOptionRepository;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -161,11 +161,11 @@ public class ReservationCommandService {
 
             //옵션 총 가격 = 옵션 단가 × 선택 수량
             optionTotalPrice +=
-                    shopOption.getOptionPrice() * optionRequest.quantity();
+                    option.getOptionPrice() * selectedOption.quantity();
 
             //옵션 총 소요 시간 = 옵션 소요 시간 × 선택 수량
             optionTotalDuration +=
-                    shopOption.getDurationMinutes() * optionRequest.quantity();
+                    option.getDurationMinutes() * selectedOption.quantity();
         }
 
         int totalPrice = optionTotalPrice;
@@ -317,6 +317,7 @@ public class ReservationCommandService {
     }
 
     //예약 확정 service
+    @Transactional
     public void confirmReservationSchedule(
             Long userId,
             Long reservationId,
@@ -361,7 +362,10 @@ public class ReservationCommandService {
         reservation.confirmSchedule(
                 reservationDate,
                 startTime,
-                endTime
+                endTime,
+                request.requestMessage(),
+                request.paymentMethod(),
+                request.refundPolicyAgreed()
         );
     }
 
@@ -408,7 +412,7 @@ public class ReservationCommandService {
                 .findOverlappingReservations(
                         shopId,
                         reservationDate,
-                        ReservationStatus.CONFIRMED,
+                        ReservationStatus.RESERVED,
                         startTime,
                         endTime
                 )

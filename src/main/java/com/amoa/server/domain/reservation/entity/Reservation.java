@@ -109,37 +109,21 @@ public class Reservation extends BaseEntity {
     @Column(name = "is_refund_policy_agreed", nullable = false)
     private boolean isRefundPolicyAgreed;
 
-    @Builder
-    private Reservation(
-            User user,
-            Shop shop,
-            Card card,
-            String reservationNumber,
-            HandState handState,
-            GelRemovalType gelRemovalType,
-            int extensionRemovalCount,
-            int totalDurationMinutes,
-            ReservationStatus reservationStatus
-    ) {
-        this.user = user;
-        this.shop = shop;
-        this.card = card;
-        this.reservationNumber = reservationNumber;
-        this.handState = handState;
-        this.gelRemovalType = gelRemovalType;
-        this.extensionRemovalCount = extensionRemovalCount;
-        this.totalDurationMinutes = totalDurationMinutes;
-        this.reservationStatus = reservationStatus;
-    }
-
     public void confirmSchedule(
             LocalDate reservationDate,
             LocalTime reservationStartTime,
-            LocalTime reservationEndTime
+            LocalTime reservationEndTime,
+            String requestMessage,
+            PaymentMethod paymentMethod,
+            Boolean refundPolicyAgreed
     ) {
         this.reservationDate = reservationDate;
         this.reservationStartTime = reservationStartTime;
         this.reservationEndTime = reservationEndTime;
-        this.reservationStatus = ReservationStatus.CONFIRMED;
+        this.requestMessage = requestMessage;
+        this.paymentMethod = paymentMethod;
+        this.isRefundPolicyAgreed = refundPolicyAgreed;
+        this.reservationStatus = ReservationStatus.RESERVED;
+        this.paymentStatus = PaymentStatus.PAID; // MVP
     }
 }

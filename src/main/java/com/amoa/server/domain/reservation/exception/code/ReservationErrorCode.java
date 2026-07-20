@@ -24,7 +24,7 @@ public enum ReservationErrorCode implements BaseErrorCode {
     SHOP_OPTION_NOT_FOUND(
             HttpStatus.NOT_FOUND,
             "RESERVATION404_3",
-            "예약 옵션을 찾을 수 없습니다."
+            "샵 옵션을 찾을 수 없습니다."
     ),
 
     RESERVATION_NOT_FOUND(

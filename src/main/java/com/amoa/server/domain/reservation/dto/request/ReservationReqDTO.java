@@ -2,10 +2,13 @@ package com.amoa.server.domain.reservation.dto.request;
 
 import com.amoa.server.domain.reservation.enums.GelRemovalType;
 import com.amoa.server.domain.reservation.enums.HandState;
+import com.amoa.server.domain.reservation.enums.PaymentMethod;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -43,7 +46,17 @@ public class ReservationReqDTO {
             LocalDate reservationDate,
 
             @NotNull(message = "예약 시작 시간은 필수입니다.")
-            LocalTime reservationStartTime
+            LocalTime reservationStartTime,
+
+            @Size(max = 500)
+            String requestMessage,
+
+            @NotNull
+            PaymentMethod paymentMethod,
+
+            @NotNull
+            @AssertTrue(message = "환불 정책에 동의해야 합니다.")
+            Boolean refundPolicyAgreed
     ) {
     }
 }
