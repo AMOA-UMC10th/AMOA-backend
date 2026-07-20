@@ -1,5 +1,7 @@
 package com.amoa.server.domain.shop.service.query;
 
+import com.amoa.server.domain.card.repository.CardRepository;
+import com.amoa.server.domain.card.repository.UserCardRepository;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.common.repository.DesignTagRepository;
 import com.amoa.server.domain.shop.converter.ShopConverter;
@@ -31,6 +33,7 @@ public class ShopQueryService {
     private final ShopDesignTagRepository shopDesignTagRepository;
     private final SavedShopRepository savedShopRepository;
     private final UserRepository userRepository;
+    private final CardRepository cardRepository;
 
     // GET /api/admin/shops/designtag - 디자인태그 목록 조회
     public ShopResDTO.DesignTagListResponse getDesignTags() {
@@ -70,12 +73,13 @@ public class ShopQueryService {
         // 3) 샵 찜 수
         int shopLikeCount = savedShopRepository.countByShop(shop);
 
-        // 4) 아트 찜 수 (일단 0, 나중에 추가)
-        int cardLikeCount = 0;
+        // 4) 아트 찜 수
+        int cardLikeCount = cardRepository.countCardLikesByShopId(shopId);
 
         // 5) 현재 유저의 샵 찜 여부
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ShopException(ShopErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ShopException(ShopErrorCode.USER_NOT_FOUND));
+        // User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
+
         boolean isLiked = savedShopRepository.existsByUserAndShop(user, shop);
 
         return ShopConverter.toShopDetailResponse(shop, designTags, cardLikeCount, shopLikeCount, isLiked);
