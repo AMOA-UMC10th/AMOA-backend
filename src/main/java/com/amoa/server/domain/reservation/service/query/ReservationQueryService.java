@@ -83,8 +83,7 @@ public class ReservationQueryService {
         );
 
         List<ReservationStatus> blockingStatuses = List.of(
-                ReservationStatus.PENDING,
-                ReservationStatus.CONFIRMED
+                ReservationStatus.RESERVED
         );
 
         List<Reservation> existingReservations =

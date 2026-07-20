@@ -85,26 +85,25 @@ public class Reservation extends BaseEntity {
     @Column(name = "extension_removal_count", nullable = false)
     private int extensionRemovalCount;
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "total_price")
     private int totalPrice;
 
-    @Column(name = "deposit_amount", nullable = false)
+    @Column(name = "deposit_amount")
     private int depositAmount;
 
     @Column(name = "total_duration_minutes", nullable = false)
     private int totalDurationMinutes;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "reservation_status", nullable = false)
-    private ReservationStatus reservationStatus = ReservationStatus.DRAFT;
+    private ReservationStatus reservationStatus;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_status", nullable = false)
+    @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", nullable = false)
+    @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
     @Column(name = "is_refund_policy_agreed", nullable = false)
@@ -113,11 +112,18 @@ public class Reservation extends BaseEntity {
     public void confirmSchedule(
             LocalDate reservationDate,
             LocalTime reservationStartTime,
-            LocalTime reservationEndTime
+            LocalTime reservationEndTime,
+            String requestMessage,
+            PaymentMethod paymentMethod,
+            Boolean refundPolicyAgreed
     ) {
         this.reservationDate = reservationDate;
         this.reservationStartTime = reservationStartTime;
         this.reservationEndTime = reservationEndTime;
-        this.reservationStatus = ReservationStatus.CONFIRMED;
+        this.requestMessage = requestMessage;
+        this.paymentMethod = paymentMethod;
+        this.isRefundPolicyAgreed = refundPolicyAgreed;
+        this.reservationStatus = ReservationStatus.RESERVED;
+        this.paymentStatus = PaymentStatus.PAID; // MVP
     }
 }

@@ -15,10 +15,12 @@ public class ReservationResDTO {
     public record CreateReservationResponse(
             Long reservationId,
             String reservationNumber,
-            Integer totalPrice,
-            Integer depositAmount,
+            Long cardId,
+            Long shopId,
+            int totalPrice,
             Integer totalDurationMinutes,
-            LocalTime reservationEndTime
+            ReservationStatus reservationStatus
+
     ) {}
 
     public record ReservationDetailResponse(
