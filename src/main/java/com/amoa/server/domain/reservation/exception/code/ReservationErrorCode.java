@@ -114,6 +114,12 @@ public enum ReservationErrorCode implements BaseErrorCode {
             HttpStatus.CONFLICT,
             "RESERVATION409_1",
             "이미 예약된 시간과 겹칩니다."
+    ),
+
+    INVALID_RESERVATION_DURATION(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_x",
+            "선택한 시간으로는 예약할 수 없습니다."
     );
 
     private final HttpStatus httpStatus;

@@ -32,7 +32,7 @@ public enum ReservationSuccessCode implements BaseSuccessCode {
             "RESERVATION200_4",
             "예약 일정 확정에 성공했습니다."
     ),
-  
+
     RESERVATION_AVAILABLE_TIMES_FOUND(
             HttpStatus.OK,
             "RESERVATION200_5",

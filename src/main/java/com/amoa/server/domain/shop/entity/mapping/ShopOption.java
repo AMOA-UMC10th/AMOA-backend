@@ -46,13 +46,13 @@ public class ShopOption extends BaseEntity {
     private String optionName;
 
     @Column(name = "option_price", nullable = false)
-    private int optionPrice;
+    private Integer optionPrice;
 
     @Column(name = "duration_minutes", nullable = false)
-    private int durationMinutes;
+    private Integer durationMinutes;
 
     @Column(name = "max_quantity", nullable = false)
-    private int maxQuantity = 10;
+    private Integer maxQuantity = 10;
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
@@ -61,9 +61,9 @@ public class ShopOption extends BaseEntity {
     public ShopOption(
             Shop shop,
             String optionName,
-            int optionPrice,
-            int durationMinutes,
-            int maxQuantity,
+            Integer optionPrice,
+            Integer durationMinutes,
+            Integer maxQuantity,
             boolean isActive
     ) {
         this.shop = shop;
@@ -76,9 +76,9 @@ public class ShopOption extends BaseEntity {
 
     public void update(
             String optionName,
-            int optionPrice,
-            int durationMinutes,
-            int maxQuantity
+            Integer optionPrice,
+            Integer durationMinutes,
+            Integer maxQuantity
     ) {
         this.optionName = optionName;
         this.optionPrice = optionPrice;
