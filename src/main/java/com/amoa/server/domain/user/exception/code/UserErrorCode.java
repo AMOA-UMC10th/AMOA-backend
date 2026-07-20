@@ -17,8 +17,8 @@ public enum UserErrorCode implements BaseErrorCode{
     MEMBER_UNAUTHORIZED(
             HttpStatus.UNAUTHORIZED,
             "MEMBER401_2",
-            "권한이 없습니다."
-    );
+            "권한이 없습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -55,7 +55,5 @@ public class SavedShopCommandService {
 
         savedShopRepository.delete(savedShop);
 
-        //Check ERD first
-        //shop.decreaseLikeCount();
     }
 }
