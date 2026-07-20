@@ -36,4 +36,10 @@ public interface ShopControllerDocs {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             @AuthenticationPrincipal CustomUserDetails customUserDetails);
+
+    @Operation(summary = "샵 상세 조회", description = "유저가 샵 상세 정보를 조회합니다.")
+    ApiResponse<ShopResDTO.ShopDetailResponse> getShopDetail(
+            @PathVariable Long shopId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+
 }

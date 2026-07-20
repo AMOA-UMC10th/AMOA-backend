@@ -12,6 +12,9 @@ import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.exception.ShopException;
 import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
+import com.amoa.server.domain.shop.entity.mapping.ShopDesignTag;
+import com.amoa.server.domain.shop.repository.SavedShopRepository;
+import com.amoa.server.domain.shop.repository.ShopDesignTagRepository;
 import com.amoa.server.domain.shop.repository.ShopRepository;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
@@ -37,6 +40,8 @@ public class ShopQueryService {
     private final ShopRepository shopRepository;
     private final UserCardRepository userCardRepository;
     private final UserRepository userRepository;
+    private final ShopDesignTagRepository shopDesignTagRepository;
+    private final SavedShopRepository savedShopRepository;
 
     // GET /api/admin/shops/designtag - 디자인태그 목록 조회
     public ShopResDTO.DesignTagListResponse getDesignTags() {
@@ -104,5 +109,34 @@ public class ShopQueryService {
                 .toList();
 
         return ShopConverter.toCardListResponse(shop, cards, cardResponses);
+
+    }
+
+    // GET /api/shops/{shop_id} - 샵 상세 조회 (유저)
+    public ShopResDTO.ShopDetailResponse getShopDetail (Long shopId, Long userId){
+
+        // 1) 샵 조회
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new ShopException(ShopErrorCode.SHOP_NOT_FOUND));
+
+        // 2) 디자인태그 조회
+        List<DesignTag> designTags = shopDesignTagRepository.findByShop_Id(shopId)
+                .stream()
+                .map(ShopDesignTag::getDesignTag)
+                .toList();
+
+        // 3) 샵 찜 수
+        int shopLikeCount = savedShopRepository.countByShop(shop);
+
+        // 4) 아트 찜 수
+        int cardLikeCount = cardRepository.countCardLikesByShopId(shopId);
+
+        // 5) 현재 유저의 샵 찜 여부
+        User user = userRepository.findById(userId).orElseThrow(() -> new ShopException(ShopErrorCode.USER_NOT_FOUND));
+        // User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
+
+        boolean isLiked = savedShopRepository.existsByUserAndShop(user, shop);
+
+        return ShopConverter.toShopDetailResponse(shop, designTags, cardLikeCount, shopLikeCount, isLiked);
     }
 }

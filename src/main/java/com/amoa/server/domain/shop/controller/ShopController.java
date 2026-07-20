@@ -42,7 +42,7 @@ public class ShopController implements ShopControllerDocs {
 
     // POST /api/admin/shops - 샵 등록
     @PostMapping("/api/admin/shops")
-    public ResponseEntity<ApiResponse<CreateShopResponse>> createShop(
+    public ResponseEntity<ApiResponse<ShopResDTO.CreateShopResponse>> createShop(
             @RequestBody @Valid ShopReqDTO.CreateShopRequest request) {
         ShopResDTO.CreateShopResponse result = shopCommandService.createShop(request);
         return ResponseEntity
@@ -59,9 +59,20 @@ public class ShopController implements ShopControllerDocs {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        // Long userId = customUserDetails.user().getId();
-        Long userId = customUserDetails != null ? customUserDetails.user().getId() : null; // 인증 에러 문제 나는 동안만 사용
+        Long userId = customUserDetails.user().getId();
+        // Long userId = customUserDetails != null ? customUserDetails.user().getId() : null; // 인증 에러 문제 나는 동안만 사용
         ShopResDTO.CardListResponse result = shopQueryService.getShopCards(shopId, artType, sort, page, size, userId);
         return ApiResponse.onSuccess(ShopSuccessCode.CARD_LIST_FOUND, result);
+    }
+
+    // GET /api/shops/{shopId} - 샵 상세 조회 (유저)
+    @GetMapping("/api/shops/{shopId}")
+    public ApiResponse<ShopResDTO.ShopDetailResponse> getShopDetail(
+            @PathVariable Long shopId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.user().getId();
+        // Long userId = customUserDetails != null ? customUserDetails.user().getId() : null;
+        ShopResDTO.ShopDetailResponse result = shopQueryService.getShopDetail(shopId, userId);
+        return ApiResponse.onSuccess(ShopSuccessCode.SHOP_FOUND, result);
     }
 }
