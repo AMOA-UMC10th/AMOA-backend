@@ -8,6 +8,7 @@ import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 public class ReservationResDTO {
 
@@ -17,8 +18,11 @@ public class ReservationResDTO {
             String reservationNumber,
             Long cardId,
             Long shopId,
+            Set<HandState> handStates,
+            GelRemovalType gelRemovalType,
+            int extensionRemovalCount,
             int totalPrice,
-            Integer totalDurationMinutes,
+            int totalDurationMinutes,
             ReservationStatus reservationStatus
 
     ) {}
@@ -39,7 +43,7 @@ public class ReservationResDTO {
             String customerPhoneNumber,
             String requestMessage,
 
-            HandState handState,
+            Set<HandState> handStates,
             GelRemovalType gelRemovalType,
             Integer extensionRemovalCount,
 

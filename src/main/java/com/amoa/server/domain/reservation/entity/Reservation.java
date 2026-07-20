@@ -9,7 +9,9 @@ import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.global.entity.BaseEntity;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,6 +24,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -74,9 +78,15 @@ public class Reservation extends BaseEntity {
     @Column(name = "request_message", length = 500)
     private String requestMessage;
 
+    @Builder.Default
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "reservation_hand_state",
+            joinColumns = @JoinColumn(name = "reservation_id")
+    )
     @Enumerated(EnumType.STRING)
     @Column(name = "hand_state", nullable = false)
-    private HandState handState;
+    private Set<HandState> handStates = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gel_removal_type")
