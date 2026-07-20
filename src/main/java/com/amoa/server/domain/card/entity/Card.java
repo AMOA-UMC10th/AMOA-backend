@@ -1,7 +1,6 @@
 package com.amoa.server.domain.card.entity;
 
-import com.amoa.server.domain.card.enums.ArtDesign;
-import com.amoa.server.domain.card.enums.ArtType;
+import com.amoa.server.domain.common.enums.ArtType;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.global.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -36,7 +35,7 @@ public class Card extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shop_id")
+    @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
     @Column(name = "max_price", nullable = false)
@@ -45,6 +44,12 @@ public class Card extends BaseEntity {
     @Column(name = "min_price", nullable = false)
     private Integer minPrice;
 
+    //예약에서의 시간계산을 위한 아트 소요 시간
+    //일단 디폴트로 1시간 부여
+    @Column(name = "duration_minutes", nullable = false)
+    @Builder.Default
+    private Integer durationMinutes = 60;
+
     @Column(name = "art_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private ArtType artType;
@@ -52,10 +57,6 @@ public class Card extends BaseEntity {
     @Column(name = "like_card", nullable = false)
     @Builder.Default
     private Integer likeCard = 0;
-
-    @Column(name = "art_design", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ArtDesign artDesign;
 
     @Column(name = "instagram_url")
     private String instagramUrl;

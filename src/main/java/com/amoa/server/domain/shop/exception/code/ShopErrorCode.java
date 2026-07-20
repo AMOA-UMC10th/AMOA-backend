@@ -19,7 +19,8 @@ public enum ShopErrorCode implements BaseErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOP404_4", "존재하지 않는 유저입니다."),
     KAKAO_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SHOP500_1", "카카오 로컬 API 호출 중 오류가 발생했습니다."),
     KAKAO_SEARCH_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOP404_3", "검색 결과가 없습니다."),
-    REGION_NOT_FOUND(HttpStatus.BAD_REQUEST, "SHOP400_5", "존재하지 않는 지역입니다.");
+    REGION_NOT_FOUND(HttpStatus.BAD_REQUEST, "SHOP400_5", "존재하지 않는 지역입니다."),
+    DUPLICATE_SHOP_OPTION(HttpStatus.CONFLICT, "SHOP409_2", "이미 등록된 옵션입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

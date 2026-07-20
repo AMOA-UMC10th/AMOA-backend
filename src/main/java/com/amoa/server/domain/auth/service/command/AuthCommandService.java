@@ -5,7 +5,7 @@ import com.amoa.server.domain.auth.dto.response.AuthResDTO;
 import com.amoa.server.domain.auth.exception.AuthException;
 import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
 import com.amoa.server.domain.auth.service.query.KakaoApiQueryService;
-import com.amoa.server.domain.user.dto.respose.KakaoUserInfoResDTO;
+import com.amoa.server.domain.user.dto.response.KakaoUserInfoResDTO;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.enums.Role;
 import com.amoa.server.domain.user.exception.UserException;
