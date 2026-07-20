@@ -2,6 +2,7 @@ package com.amoa.server.domain.shop.service.query;
 
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.repository.CardRepository;
+import com.amoa.server.domain.card.repository.UserCardRepository;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.common.enums.ArtType;
 import com.amoa.server.domain.common.enums.SortType;
@@ -12,6 +13,8 @@ import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.exception.ShopException;
 import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
 import com.amoa.server.domain.shop.repository.ShopRepository;
+import com.amoa.server.domain.user.entity.User;
+import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.kakao.KakaoLocalClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +35,8 @@ public class ShopQueryService {
     private final KakaoLocalClient kakaoLocalClient;
     private final CardRepository cardRepository;
     private final ShopRepository shopRepository;
+    private final UserCardRepository userCardRepository;
+    private final UserRepository userRepository;
 
     // GET /api/admin/shops/designtag - 디자인태그 목록 조회
     public ShopResDTO.DesignTagListResponse getDesignTags() {
@@ -89,9 +94,13 @@ public class ShopQueryService {
             cards = cardRepository.findByShop_IdAndArtTypeAndDeletedAtIsNull(shopId, artType, pageable);
         }
 
-        // 4) 찜 여부 (임시로 false, 나중에 UserCard 생기면 수정)
+        // 4) 찜 여부
+        User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
         List<ShopResDTO.CardResponse> cardResponses = cards.getContent().stream()
-                .map(card -> ShopConverter.toCardResponse(card, false))
+                .map(card -> {
+                    boolean isLiked = user != null && userCardRepository.existsByUserAndCard(user, card);
+                    return ShopConverter.toCardResponse(card, isLiked);
+                })
                 .toList();
 
         return ShopConverter.toCardListResponse(shop, cards, cardResponses);
