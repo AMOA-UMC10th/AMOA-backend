@@ -119,7 +119,13 @@ public enum ReservationErrorCode implements BaseErrorCode {
     INVALID_RESERVATION_DURATION(
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_13",
-            "선택한 시간으로는 예약할 수 없습니다."
+            "예약 시간이 올바르지 않습니다."
+    ),
+
+    RESERVATION_ALREADY_SCHEDULED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_14",
+            "이미 저장된 예약입니다"
     );
 
     private final HttpStatus httpStatus;
