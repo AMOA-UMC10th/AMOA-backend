@@ -5,7 +5,7 @@ import com.amoa.server.domain.common.entity.Region;
 import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.entity.Shop;
-import com.amoa.server.domain.shop.entity.ShopDesignTag;
+import com.amoa.server.domain.shop.entity.mapping.ShopDesignTag;
 import com.amoa.server.domain.shop.enums.ShopStatus;
 
 import java.math.BigDecimal;
@@ -82,6 +82,31 @@ public class ShopConverter {
                 placeName,
                 address,
                 phone
+        );
+    }
+
+    // Shop Entity → ShopDetailResponse DTO 변환
+    public static ShopResDTO.ShopDetailResponse toShopDetailResponse(
+            Shop shop,
+            List<DesignTag> designTags,
+            int cardLikeCount,
+            int shopLikeCount,
+            boolean isLiked) {
+
+        List<ShopResDTO.DesignTagResponse> designTagResponses = designTags.stream()
+                .map(ShopConverter::toDesignTagResponse)
+                .collect(Collectors.toList());
+
+        return new ShopResDTO.ShopDetailResponse(
+                shop.getId(),
+                shop.getShopName(),
+                shop.getAddress(),
+                shop.getShopPhoneNumber(),
+                shop.getBusinessHours(),
+                designTagResponses,
+                cardLikeCount,
+                shopLikeCount,
+                isLiked
         );
     }
 }
