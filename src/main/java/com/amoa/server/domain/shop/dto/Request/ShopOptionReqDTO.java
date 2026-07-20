@@ -1,5 +1,6 @@
 package com.amoa.server.domain.shop.dto.Request;
 
+import com.amoa.server.domain.shop.enums.ShopOptionType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -13,6 +14,9 @@ public class ShopOptionReqDTO {
             @NotBlank
             @Size(max = 50)
             String optionName,
+
+            @NotNull
+            ShopOptionType optionType,
 
             @NotNull
             @PositiveOrZero
@@ -32,6 +36,9 @@ public class ShopOptionReqDTO {
             @NotBlank
             @Size(max = 50)
             String optionName,
+
+            @NotNull
+            ShopOptionType optionType,
 
             @PositiveOrZero
             Integer optionPrice,

@@ -34,9 +34,12 @@ public class ShopOptionCommandService {
                 .orElseThrow(() ->
                         new ShopException(ShopErrorCode.SHOP_NOT_FOUND));
 
-        if (shopOptionRepository.existsByShop_IdAndOptionName(
-                shopId,
-                request.optionName())) {
+        if (shopOptionRepository
+                .existsByShop_IdAndOptionNameAndOptionTypeAndIsActiveTrue(
+                        shopId,
+                        request.optionName(),
+                        request.optionType()
+                )) {
 
             throw new ShopException(
                     ShopErrorCode.DUPLICATE_SHOP_OPTION
@@ -57,6 +60,7 @@ public class ShopOptionCommandService {
         return ShopOptionConverter.toOptionResult(option);
     }
 
+    //옵션 수정
     @Transactional
     public ShopOptionResDTO.OptionListResult updateShopOption(
             Long shopId,
@@ -83,9 +87,10 @@ public class ShopOptionCommandService {
         // 3. 자기 자신을 제외한 옵션명 중복 확인
         boolean duplicated =
                 shopOptionRepository
-                        .existsByShop_IdAndOptionNameAndIdNot(
+                        .existsByShop_IdAndOptionNameAndOptionTypeAndIdNotAndIsActiveTrue(
                                 shopId,
                                 request.optionName(),
+                                request.optionType(),
                                 optionId
                         );
 
@@ -98,6 +103,7 @@ public class ShopOptionCommandService {
         // 4. 옵션 수정
         option.update(
                 request.optionName(),
+                request.optionType(),
                 request.optionPrice(),
                 request.durationMinutes(),
                 request.maxQuantity()
