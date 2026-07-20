@@ -29,4 +29,8 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Modifying
     @Query("UPDATE Card c SET c.likeCard = c.likeCard - 1 WHERE c.id = :cardId")
     void decreaseLikeCount(@Param("cardId") Long cardId);
+
+    // 샵의 전체 카드 찜 수
+    @Query("SELECT COUNT(uc) FROM UserCard uc WHERE uc.card.shop.id = :shopId")
+    int countCardLikesByShopId(@Param("shopId") Long shopId);
 }
