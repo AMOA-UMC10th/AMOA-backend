@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ShopOptionRepository
         extends JpaRepository<ShopOption, Long> {
 
-    List<ShopOption> findAllByShop_IdAndIsActiveTrueOrderByIdAsc(
-            Long shopId
+    boolean existsByShop_IdAndOptionName(
+            Long shopId,
+            String optionName
     );
 }

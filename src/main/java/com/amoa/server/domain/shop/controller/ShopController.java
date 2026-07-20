@@ -26,7 +26,7 @@ public class ShopController implements ShopControllerDocs {
     @GetMapping("/designtag")
     public ApiResponse<ShopResDTO.DesignTagListResponse> getDesignTags() {
         ShopResDTO.DesignTagListResponse result = shopQueryService.getDesignTags();
-        return ApiResponse.onSuccess(ShopSuccessCode.DESIGNTAG_LIST_FOUND, result);
+        return ApiResponse.onSuccess(ShopSuccessCode.DESIGN_TAG_LIST_FOUND, result);
     }
 
     // GET /api/admin/shops/search - 샵 이름으로 카카오 로컬 API 검색

@@ -1,11 +1,8 @@
 package com.amoa.server.domain.reservation.dto.request;
 
-import com.amoa.server.domain.reservation.dto.response.ReservationResDTO.SelectedOptionResponse;
 import com.amoa.server.domain.reservation.enums.GelRemovalType;
 import com.amoa.server.domain.reservation.enums.HandState;
 import com.amoa.server.domain.reservation.enums.PaymentMethod;
-import com.amoa.server.domain.reservation.enums.PaymentStatus;
-import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -46,13 +43,13 @@ public class ReservationReqDTO {
             List<SelectedOptionRequest> selectedOptions
     ) {}
 
-    public record ConfirmReservationScheduleRequest(
-
-            @NotNull
-            @FutureOrPresent
+    public record ConfirmScheduleRequest(
+            @NotNull(message = "예약 날짜는 필수입니다.")
+            @FutureOrPresent(message = "과거 날짜는 선택할 수 없습니다.")
             LocalDate reservationDate,
 
-            @NotNull
+            @NotNull(message = "예약 시작 시간은 필수입니다.")
             LocalTime reservationStartTime
-    ) {}
+    ) {
+    }
 }
