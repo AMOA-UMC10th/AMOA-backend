@@ -7,11 +7,13 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 public class ReservationReqDTO {
 
@@ -20,8 +22,8 @@ public class ReservationReqDTO {
             @NotNull(message = "카드 ID는 필수입니다.")
             Long cardId,
 
-            @NotNull(message = "손 상태 선택은 필수입니다.")
-            HandState handState,
+            @NotEmpty(message = "손 상태 선택은 필수입니다.")
+            Set<@NotNull(message = "손 상태 값은 null일 수 없습니다.") HandState> handStates,
             GelRemovalType gelRemovalType,
 
             @Min(0)

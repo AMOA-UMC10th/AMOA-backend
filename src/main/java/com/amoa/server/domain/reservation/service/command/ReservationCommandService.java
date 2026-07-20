@@ -42,17 +42,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ReservationCommandService {
-
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final ShopOptionRepository shopOptionRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationSelectedOptionRepository reservationSelectedOptionRepository;
 
-    //옵션 선택 결과를 바탕으로 임시 예약을 생성합니다.
-    @Transactional
     public ReservationResDTO.CreateReservationResponse createReservation(
             Long userId,
             ReservationReqDTO.CreateReservationRequest request
@@ -78,7 +75,7 @@ public class ReservationCommandService {
 
         // 손 상태에 따른 제거 옵션 검증
         validateHandStateOptions(
-                request.handState(),
+                request.handStates(),
                 request.gelRemovalType(),
                 request.extensionRemovalCount()
         );
@@ -272,14 +269,14 @@ public class ReservationCommandService {
                 .toUpperCase();
     }
 
-    //손 상태에 따라 젤 제거 유형과 연장 제거 개수의 조합을 검증
+    // 손 상태에 따라 젤 제거 유형과 연장 제거 개수의 조합을 검증
     private void validateHandStateOptions(
-            HandState handState,
+            Set<HandState> handStates,
             GelRemovalType gelRemovalType,
             Integer extensionRemovalCount
     ) {
         //GEL_NAIL이 아닌데 젤 제거 유형을 선택한 경우
-        if (handState != HandState.GEL_NAIL
+        if (!handStates.contains(HandState.GEL_NAIL)
                 && gelRemovalType != null
                 && gelRemovalType != GelRemovalType.NONE) {
             throw new ReservationException(
@@ -288,12 +285,11 @@ public class ReservationCommandService {
         }
 
         //EXTENSION_NAIL이 아닌데 연장 제거 개수를 입력한 경우
-        if (handState != HandState.EXTENSION_NAIL
+        if (!handStates.contains(HandState.EXTENSION_NAIL)
                 && extensionRemovalCount != null
                 && extensionRemovalCount > 0) {
             throw new ReservationException(
-                    ReservationErrorCode
-                            .INVALID_EXTENSION_REMOVAL_COUNT
+                    ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
             );
         }
 

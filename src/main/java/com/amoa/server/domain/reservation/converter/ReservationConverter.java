@@ -32,7 +32,7 @@ public final class ReservationConverter {
                 .reservationNumber(reservationNumber)
                 .customerName(user.getNickname())
                 .customerPhoneNumber(user.getUserPhoneNumber())
-                .handState(request.handState())
+                .handStates(request.handStates())
                 .gelRemovalType(request.gelRemovalType())
                 .extensionRemovalCount(request.extensionRemovalCount())
                 .totalPrice(totalPrice)
@@ -69,6 +69,9 @@ public final class ReservationConverter {
                 reservation.getReservationNumber(),
                 reservation.getCard().getId(),
                 reservation.getShop().getId(),
+                reservation.getHandStates(),
+                reservation.getGelRemovalType(),
+                reservation.getExtensionRemovalCount(),
                 reservation.getTotalPrice(),
                 reservation.getDepositAmount(),
                 reservation.getTotalDurationMinutes(),
@@ -99,7 +102,7 @@ public final class ReservationConverter {
                 reservation.getCustomerName(),
                 reservation.getCustomerPhoneNumber(),
                 reservation.getRequestMessage(),
-                reservation.getHandState(),
+                reservation.getHandStates(),
                 reservation.getGelRemovalType(),
                 reservation.getExtensionRemovalCount(),
                 optionResponses,
