@@ -54,6 +54,7 @@ public class ShopController implements ShopControllerDocs {
             @PathVariable Long shopId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.user().getId();
+        // Long userId = customUserDetails != null ? customUserDetails.user().getId() : null;
         ShopResDTO.ShopDetailResponse result = shopQueryService.getShopDetail(shopId, userId);
         return ApiResponse.onSuccess(ShopSuccessCode.SHOP_FOUND, result);
     }
