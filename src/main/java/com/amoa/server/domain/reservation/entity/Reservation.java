@@ -9,7 +9,9 @@ import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.global.entity.BaseEntity;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,6 +24,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,27 +60,33 @@ public class Reservation extends BaseEntity {
     @Column(name = "reservation_number", nullable = false, unique = true)
     private String reservationNumber;
 
-    @Column(name = "reservation_date", nullable = false)
+    @Column(name = "reservation_date")
     private LocalDate reservationDate;
 
-    @Column(name = "reservation_start_time", nullable = false)
+    @Column(name = "reservation_start_time")
     private LocalTime reservationStartTime;
 
-    @Column(name = "reservation_end_time", nullable = false)
+    @Column(name = "reservation_end_time")
     private LocalTime reservationEndTime;
 
-    @Column(name = "customer_name", nullable = false, length = 20)
+    @Column(name = "customer_name", length = 20)
     private String customerName;
 
-    @Column(name = "customer_phone_number", nullable = false, length = 20)
+    @Column(name = "customer_phone_number", length = 20)
     private String customerPhoneNumber;
 
     @Column(name = "request_message", length = 500)
     private String requestMessage;
 
+    @Builder.Default
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "reservation_hand_state",
+            joinColumns = @JoinColumn(name = "reservation_id")
+    )
     @Enumerated(EnumType.STRING)
     @Column(name = "hand_state", nullable = false)
-    private HandState handState;
+    private Set<HandState> handStates = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gel_removal_type")
@@ -85,10 +95,10 @@ public class Reservation extends BaseEntity {
     @Column(name = "extension_removal_count", nullable = false)
     private int extensionRemovalCount;
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "total_price")
     private int totalPrice;
 
-    @Column(name = "deposit_amount", nullable = false)
+    @Column(name = "deposit_amount")
     private int depositAmount;
 
     @Column(name = "total_duration_minutes", nullable = false)
@@ -99,13 +109,31 @@ public class Reservation extends BaseEntity {
     private ReservationStatus reservationStatus;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_status", nullable = false)
+    @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", nullable = false)
+    @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
     @Column(name = "is_refund_policy_agreed", nullable = false)
     private boolean isRefundPolicyAgreed;
+
+    public void confirmSchedule(
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            LocalTime reservationEndTime,
+            String requestMessage,
+            PaymentMethod paymentMethod,
+            Boolean refundPolicyAgreed
+    ) {
+        this.reservationDate = reservationDate;
+        this.reservationStartTime = reservationStartTime;
+        this.reservationEndTime = reservationEndTime;
+        this.requestMessage = requestMessage;
+        this.paymentMethod = paymentMethod;
+        this.isRefundPolicyAgreed = refundPolicyAgreed;
+        this.reservationStatus = ReservationStatus.RESERVED;
+        this.paymentStatus = PaymentStatus.PAID; // MVP
+    }
 }

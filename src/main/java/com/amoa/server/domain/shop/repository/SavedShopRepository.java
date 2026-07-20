@@ -16,4 +16,7 @@ public interface SavedShopRepository extends JpaRepository<SavedShop, Long> {
 
 
     Page<SavedShop> findAllByUserOrderByCreatedAtDesc(User user, Pageable pageable);
+    boolean existsByUserAndShop(User user, Shop shop);
+
+    int countByShop(Shop shop);  // 샵 찜 수
 }

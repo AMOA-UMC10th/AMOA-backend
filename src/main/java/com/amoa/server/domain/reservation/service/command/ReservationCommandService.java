@@ -1,5 +1,8 @@
 package com.amoa.server.domain.reservation.service.command;
 
+
+import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.BUSINESS_CLOSE_TIME;
+import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.BUSINESS_OPEN_TIME;
 import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.EXTENSION_REMOVAL_MAX_QUANTITY;
 
 import com.amoa.server.domain.card.entity.Card;
@@ -12,21 +15,27 @@ import com.amoa.server.domain.reservation.entity.Reservation;
 import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOption;
 import com.amoa.server.domain.reservation.enums.GelRemovalType;
 import com.amoa.server.domain.reservation.enums.HandState;
+import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import com.amoa.server.domain.reservation.exception.ReservationException;
 import com.amoa.server.domain.reservation.exception.code.ReservationErrorCode;
 import com.amoa.server.domain.reservation.repository.ReservationRepository;
 import com.amoa.server.domain.reservation.repository.ReservationSelectedOptionRepository;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.entity.mapping.ShopOption;
+import com.amoa.server.domain.shop.enums.ShopOptionType;
 import com.amoa.server.domain.shop.repository.ShopOptionRepository;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,12 +75,12 @@ public class ReservationCommandService {
 
         // 손 상태에 따른 제거 옵션 검증
         validateHandStateOptions(
-                request.handState(),
+                request.handStates(),
                 request.gelRemovalType(),
                 request.extensionRemovalCount()
         );
 
-        //selectedOptions null 처리
+        //추가 옵션을 선택하지 않은 경우 selectedOptions null 처리
         List<SelectedOptionRequest> optionRequests =
                 request.selectedOptions() == null
                         ? Collections.emptyList()
@@ -84,12 +93,15 @@ public class ReservationCommandService {
         List<ShopOption> shopOptions =
                 optionRequests.stream()
                         .map(optionRequest -> {
+
+                            //같은 shopOptionId가 중복 요청된 경우 예외 처리
                             if (!optionIds.add(optionRequest.shopOptionId())) {
                                 throw new ReservationException(
                                         ReservationErrorCode.DUPLICATE_SHOP_OPTION
                                 );
                             }
 
+                            //같은 shopOptionId가 중복 요청된 경우 예외 처리
                             ShopOption shopOption = shopOptionRepository
                                     .findById(optionRequest.shopOptionId())
                                     .orElseThrow(() ->
@@ -98,106 +110,148 @@ public class ReservationCommandService {
                                             )
                                     );
 
+                            //해당 샵의 옵션인지, 활성화된 옵션인지,수량이 유효한지 검증
                             validateShopOption(
                                     shopOption,
                                     shop,
                                     optionRequest.quantity()
                             );
-
                             return shopOption;
                         })
                         .toList();
 
-        //가격 계산 & 시간 계산
+        //ADDITIONAL 옵션은 선택하지 않거나 여러 개 선택 가능
+        //ART 옵션은 필수이며 하나만 허용
+        long selectedArtCount =
+                shopOptions.stream()
+                        .filter(shopOption ->
+                                shopOption.getOptionType()
+                                        == ShopOptionType.ART
+                        )
+                        .count();
+
+        if (selectedArtCount == 0) {
+            throw new ReservationException(
+                    ReservationErrorCode.ART_OPTION_REQUIRED
+            );
+        }
+
+        if (selectedArtCount > 1) {
+            throw new ReservationException(
+                    ReservationErrorCode.MULTIPLE_ART_OPTIONS_NOT_ALLOWED
+            );
+        }
+
+        //선택한 추가 옵션의 전체 가격과 소요 시간 계산
         int optionTotalPrice = 0;
         int optionTotalDuration = 0;
 
-        for (int i = 0; i < optionRequests.size(); i++) {
-            ReservationReqDTO.SelectedOptionRequest optionRequest =
-                    optionRequests.get(i);
+        Map<Long, ShopOption> optionMap =
+                shopOptions.stream()
+                        .collect(Collectors.toMap(
+                                ShopOption::getId,
+                                Function.identity()
+                        ));
 
-            ShopOption shopOption = shopOptions.get(i);
+        for (ReservationReqDTO.SelectedOptionRequest selectedOption : optionRequests) {
+            ShopOption option = optionMap.get(selectedOption.shopOptionId());
 
+            //옵션 총 가격 = 옵션 단가 × 선택 수량
             optionTotalPrice +=
-                    shopOption.getOptionPrice() * optionRequest.quantity();
+                    option.getOptionPrice() * selectedOption.quantity();
 
+            //옵션 총 소요 시간 = 옵션 소요 시간 × 선택 수량
             optionTotalDuration +=
-                    shopOption.getDurationMinutes() * optionRequest.quantity();
+                    option.getDurationMinutes() * selectedOption.quantity();
         }
 
-        //피그마상으로 보인 기본 가격 추후 삭제 가능성 있음
-        int basePrice = card.getMinPrice();
-        int baseDuration = card.getDurationMinutes();
+        int totalPrice = optionTotalPrice;
+        int totalDurationMinutes = optionTotalDuration;
 
-        //총 가격 & 시간
-        int totalPrice = basePrice + optionTotalPrice;
-        int totalDurationMinutes = baseDuration + optionTotalDuration;
-
-        //종료 시간
-        LocalTime reservationEndTime =
-                request.reservationStartTime()
-                        .plusMinutes(totalDurationMinutes);
-
-        int depositAmount = calculateDepositAmount(totalPrice);
-
+        //사용자에게 노출할 예약 번호 생성
         String reservationNumber = createReservationNumber();
 
-        Reservation reservation = ReservationConverter.toReservation(
-                user,
-                shop,
-                card,
-                request,
-                reservationNumber,
-                reservationEndTime,
-                totalPrice,
-                depositAmount,
-                totalDurationMinutes
-        );
+        //임시 예약 엔티티 생성
+        Reservation reservation =
+                ReservationConverter.toReservation(
+                        user,
+                        shop,
+                        card,
+                        request,
+                        reservationNumber,
+                        totalPrice,
+                        totalDurationMinutes
+                );
 
-        reservationRepository.save(reservation);
+        //임시 예약 저장
+        Reservation savedReservation =
+                reservationRepository.save(reservation);
 
+        //사용자가 선택한 추가 옵션 저장
         for (int i = 0; i < optionRequests.size(); i++) {
-            ReservationReqDTO.SelectedOptionRequest optionRequest =
+            SelectedOptionRequest optionRequest =
                     optionRequests.get(i);
 
-            ShopOption shopOption = shopOptions.get(i);
+            ShopOption shopOption =
+                    shopOptions.get(i);
 
             ReservationSelectedOption selectedOption =
-                    ReservationConverter.toReservationSelectedOption(
-                            reservation,
-                            shopOption,
-                            optionRequest.quantity()
-                    );
+                    ReservationConverter
+                            .toReservationSelectedOption(
+                                    savedReservation,
+                                    shopOption,
+                                    optionRequest.quantity()
+                            );
 
-            reservationSelectedOptionRepository.save(selectedOption);
+            reservationSelectedOptionRepository.save(
+                    selectedOption
+            );
         }
 
-        return ReservationConverter.toCreateReservationResponse(reservation);
+        //생성된 임시 예약 정보 반환
+        return ReservationConverter
+                .toCreateReservationResponse(
+                        savedReservation
+                );
     }
 
+    //선택한 추가 옵션의 유효성을 검증
     private void validateShopOption(
             ShopOption shopOption,
             Shop shop,
             Integer quantity
     ) {
-        if (!shopOption.getShop().getId().equals(shop.getId())) {
+        //선택한 옵션이 카드의 샵에 속하는지 검증
+        if (!shopOption.getShop().getId()
+                .equals(shop.getId())) {
             throw new ReservationException(
                     ReservationErrorCode.INVALID_SHOP_OPTION
             );
         }
 
+        //현재 사용 가능한 옵션인지 검증
         if (!shopOption.isActive()) {
             throw new ReservationException(
                     ReservationErrorCode.INACTIVE_SHOP_OPTION
             );
         }
 
+        // 옵션 수량이 유효한지 검증
         if (quantity == null || quantity <= 0) {
             throw new ReservationException(
                     ReservationErrorCode.INVALID_OPTION_QUANTITY
             );
         }
 
+        // 아트 옵션은 반드시 1개만 선택 가능
+        if (shopOption.getOptionType() == ShopOptionType.ART
+                && quantity != 1) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_ART_OPTION_QUANTITY
+            );
+        }
+
+        //샵에서 설정한 최대 선택 수량을 넘는지 검증
         if (quantity > shopOption.getMaxQuantity()) {
             throw new ReservationException(
                     ReservationErrorCode.OPTION_QUANTITY_EXCEEDED
@@ -205,24 +259,24 @@ public class ReservationCommandService {
         }
     }
 
-    private int calculateDepositAmount(int totalPrice) {
-        return totalPrice / 10;
-    }
-
+    //사용자에게 노출할 예약 번호를 생성
     private String createReservationNumber() {
         return "AMOA-"
                 + UUID.randomUUID()
                 .toString()
+                .replace("-", "")
                 .substring(0, 8)
                 .toUpperCase();
     }
 
+    // 손 상태에 따라 젤 제거 유형과 연장 제거 개수의 조합을 검증
     private void validateHandStateOptions(
-            HandState handState,
+            Set<HandState> handStates,
             GelRemovalType gelRemovalType,
             Integer extensionRemovalCount
     ) {
-        if (handState != HandState.GEL_NAIL
+        //GEL_NAIL이 아닌데 젤 제거 유형을 선택한 경우
+        if (!handStates.contains(HandState.GEL_NAIL)
                 && gelRemovalType != null
                 && gelRemovalType != GelRemovalType.NONE) {
             throw new ReservationException(
@@ -230,7 +284,8 @@ public class ReservationCommandService {
             );
         }
 
-        if (handState != HandState.EXTENSION_NAIL
+        //EXTENSION_NAIL이 아닌데 연장 제거 개수를 입력한 경우
+        if (!handStates.contains(HandState.EXTENSION_NAIL)
                 && extensionRemovalCount != null
                 && extensionRemovalCount > 0) {
             throw new ReservationException(
@@ -238,18 +293,131 @@ public class ReservationCommandService {
             );
         }
 
+        //연장 제거 개수가 음수이거나 최대 허용 수량을 초과하는지 검증
         if (extensionRemovalCount != null) {
             if (extensionRemovalCount < 0) {
                 throw new ReservationException(
-                        ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
+                        ReservationErrorCode
+                                .INVALID_EXTENSION_REMOVAL_COUNT
                 );
             }
 
-            if (extensionRemovalCount > EXTENSION_REMOVAL_MAX_QUANTITY) {
+            if (extensionRemovalCount
+                    > EXTENSION_REMOVAL_MAX_QUANTITY) {
                 throw new ReservationException(
-                        ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
+                        ReservationErrorCode
+                                .INVALID_EXTENSION_REMOVAL_COUNT
                 );
             }
+        }
+    }
+
+    //예약 확정 service
+    @Transactional
+    public void confirmReservationSchedule(
+            Long userId,
+            Long reservationId,
+            ReservationReqDTO.ConfirmScheduleRequest request
+    ) {
+        Reservation reservation = reservationRepository
+                .findByIdAndUser_Id(reservationId, userId)
+                .orElseThrow(() ->
+                        new ReservationException(
+                                ReservationErrorCode.RESERVATION_NOT_FOUND
+                        )
+                );
+
+        validateDraftStatus(reservation);
+
+        LocalDate reservationDate = request.reservationDate();
+        LocalTime startTime = request.reservationStartTime();
+        int totalDurationMinutes = reservation.getTotalDurationMinutes();
+
+        validateDateAndTime(reservationDate, startTime);
+
+        LocalTime latestStartTime =
+                BUSINESS_CLOSE_TIME
+                        .minusMinutes(totalDurationMinutes);
+
+        if (startTime.isBefore(BUSINESS_OPEN_TIME)
+                || startTime.isAfter(latestStartTime)) {
+            throw new ReservationException(
+                    ReservationErrorCode.N_SELECT_RESERVATION_TIME
+            );
+        }
+
+        LocalTime endTime = startTime.plusMinutes(totalDurationMinutes);
+
+        validateOverlap(
+                reservation.getShop().getId(),
+                reservationDate,
+                startTime,
+                endTime
+        );
+
+        reservation.confirmSchedule(
+                reservationDate,
+                startTime,
+                endTime,
+                request.requestMessage(),
+                request.paymentMethod(),
+                request.refundPolicyAgreed()
+        );
+    }
+
+    //상태검증
+    private void validateDraftStatus(Reservation reservation) {
+        if (reservation.getReservationStatus()
+                != ReservationStatus.DRAFT) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_ALREADY_CONFIRMED
+            );
+        }
+    }
+
+    //날짜와 현재 시간 검증
+    private void validateDateAndTime(
+            LocalDate reservationDate,
+            LocalTime reservationStartTime
+    ) {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        if (reservationDate.isBefore(today)) {
+            throw new ReservationException(
+                    ReservationErrorCode.PAST_RESERVATION_DATE
+            );
+        }
+
+        if (reservationDate.isEqual(today)
+                && !reservationStartTime.isAfter(now)) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_TIME
+            );
+        }
+    }
+
+    //중복 검증
+    private void validateOverlap(
+            Long shopId,
+            LocalDate reservationDate,
+            LocalTime startTime,
+            LocalTime endTime
+    ) {
+        boolean hasConflict = !reservationRepository
+                .findOverlappingReservations(
+                        shopId,
+                        reservationDate,
+                        ReservationStatus.RESERVED,
+                        startTime,
+                        endTime
+                )
+                .isEmpty();
+
+        if (hasConflict) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_TIME_CONFLICT
+            );
         }
     }
 }
