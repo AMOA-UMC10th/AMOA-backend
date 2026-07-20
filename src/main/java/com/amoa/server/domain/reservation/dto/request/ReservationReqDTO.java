@@ -23,7 +23,7 @@ public class ReservationReqDTO {
             Long cardId,
 
             @NotEmpty(message = "손 상태 선택은 필수입니다.")
-            Set<HandState> handStates,
+            Set<@NotNull(message = "손 상태 값은 null일 수 없습니다.") HandState> handStates,
             GelRemovalType gelRemovalType,
 
             @Min(0)
