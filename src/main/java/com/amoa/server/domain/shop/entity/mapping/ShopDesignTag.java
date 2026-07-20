@@ -15,7 +15,7 @@ public class ShopDesignTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "shop_designtag_id")
+    @Column(name = "shop_design_tag_id")
     private Long shopDesignTagId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -23,6 +23,6 @@ public class ShopDesignTag {
     private Shop shop;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "designtag_id", nullable = false)
+    @JoinColumn(name = "design_tag_id", nullable = false)
     private DesignTag designTag;
 }
