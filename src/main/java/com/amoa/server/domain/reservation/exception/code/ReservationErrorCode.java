@@ -121,6 +121,7 @@ public enum ReservationErrorCode implements BaseErrorCode {
             "RESERVATION400_13",
             "예약 시간이 올바르지 않습니다."
     ),
+
     RESERVATION_ALREADY_SCHEDULED(
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_14",

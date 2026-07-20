@@ -65,10 +65,10 @@ public class Reservation extends BaseEntity {
     @Column(name = "reservation_end_time")
     private LocalTime reservationEndTime;
 
-    @Column(name = "customer_name", nullable = false, length = 20)
+    @Column(name = "customer_name", length = 20)
     private String customerName;
 
-    @Column(name = "customer_phone_number", nullable = false, length = 20)
+    @Column(name = "customer_phone_number", length = 20)
     private String customerPhoneNumber;
 
     @Column(name = "request_message", length = 500)

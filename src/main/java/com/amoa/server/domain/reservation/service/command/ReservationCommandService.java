@@ -6,7 +6,6 @@ import static com.amoa.server.domain.reservation.constant.ReservationOptionPolic
 
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.repository.CardRepository;
-import com.amoa.server.domain.reservation.constant.ReservationOptionPolicy;
 import com.amoa.server.domain.reservation.converter.ReservationConverter;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO.SelectedOptionRequest;
@@ -27,7 +26,6 @@ import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -179,7 +177,7 @@ public class ReservationCommandService {
 
         return ReservationConverter.toCreateReservationResponse(reservation);
     }
-    
+
     private void validateSchedule(
             Reservation reservation,
             LocalDate reservationDate,
