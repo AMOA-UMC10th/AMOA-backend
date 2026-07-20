@@ -17,9 +17,13 @@ public class ReservationReqDTO {
 
     //예약 생성 요청 DTO
     public record CreateReservationRequest(
+            @NotNull(message = "카드 ID는 필수입니다.")
             Long cardId,
+
+            @NotNull(message = "손 상태 선택은 필수입니다.")
             HandState handState,
             GelRemovalType gelRemovalType,
+
             @Min(0)
             @Max(10)
             Integer extensionRemovalCount,
@@ -27,17 +31,12 @@ public class ReservationReqDTO {
     ) {}
 
     public record SelectedOptionRequest(
+            @NotNull(message = "샵 옵션 ID는 필수입니다.")
             Long shopOptionId,
-            Integer quantity
-    ) {}
 
-    public record AvailableTimeRequest(
-            Long cardId,
-            LocalDate reservationDate,
-            HandState handState,
-            GelRemovalType gelRemovalType,
-            Integer extensionRemovalCount,
-            List<SelectedOptionRequest> selectedOptions
+            @NotNull(message = "옵션 수량은 필수입니다.")
+            @Min(value = 1, message = "옵션 수량은 1 이상이어야 합니다.")
+            Integer quantity
     ) {}
 
     public record ConfirmScheduleRequest(
