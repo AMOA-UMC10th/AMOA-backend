@@ -18,6 +18,7 @@ public class ReservationResDTO {
             Long cardId,
             Long shopId,
             int totalPrice,
+            int depositAmount,
             Integer totalDurationMinutes,
             ReservationStatus reservationStatus
 
@@ -77,5 +78,20 @@ public class ReservationResDTO {
     public record AvailableTimeResponse(
             LocalTime time,
             Integer isAvailable
+    ) {}
+
+    public record ReservationInfoResponse(
+            Long reservationId,
+            ReservationStatus reservationStatus,
+            String shopName,
+            String artName,
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            int totalPrice,
+            int paymentAmount,
+            String customerName,
+            String customerPhoneNumber,
+            String requestMessage,
+            String kakaoChannelUrl
     ) {}
 }

@@ -57,6 +57,9 @@ public class Shop {
     @Column(name = "business_hours", length = 255)
     private String businessHours;
 
+    @Column(name = "deposit_amount", nullable = false)
+    private int depositAmount;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "shop_status", nullable = false, length = 20)
     @Builder.Default

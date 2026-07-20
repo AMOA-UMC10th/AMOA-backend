@@ -9,6 +9,7 @@ import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOpti
 import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.entity.mapping.ShopOption;
+import com.amoa.server.domain.shop.enums.ShopOptionType;
 import com.amoa.server.domain.user.entity.User;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public final class ReservationConverter {
                 .gelRemovalType(request.gelRemovalType())
                 .extensionRemovalCount(request.extensionRemovalCount())
                 .totalPrice(totalPrice)
+                .depositAmount(shop.getDepositAmount())
                 .totalDurationMinutes(totalDurationMinutes)
                 .reservationStatus(ReservationStatus.DRAFT)
                 .build();
@@ -68,6 +70,7 @@ public final class ReservationConverter {
                 reservation.getCard().getId(),
                 reservation.getShop().getId(),
                 reservation.getTotalPrice(),
+                reservation.getDepositAmount(),
                 reservation.getTotalDurationMinutes(),
                 reservation.getReservationStatus()
         );
@@ -124,6 +127,37 @@ public final class ReservationConverter {
                 selectedOption.getOptionPrice(),
                 selectedOption.getOptionTotalPrice(),
                 shopOption.getDurationMinutes()
+        );
+    }
+
+    //아트 상세 조회
+    public static ReservationResDTO.ReservationInfoResponse
+    toReservationInfoResponse(
+            Reservation reservation,
+            List<ReservationSelectedOption> selectedOptions
+    ) {
+        String artName = selectedOptions.stream()
+                .map(ReservationSelectedOption::getShopOption)
+                .filter(option ->
+                        option.getOptionType() == ShopOptionType.ART
+                )
+                .map(ShopOption::getOptionName)
+                .findFirst()
+                .orElse(null);
+
+        return new ReservationResDTO.ReservationInfoResponse(
+                reservation.getId(),
+                reservation.getReservationStatus(),
+                reservation.getShop().getShopName(),
+                artName,
+                reservation.getReservationDate(),
+                reservation.getReservationStartTime(),
+                reservation.getTotalPrice(),
+                reservation.getDepositAmount(),
+                reservation.getCustomerName(),
+                reservation.getCustomerPhoneNumber(),
+                reservation.getRequestMessage(),
+                reservation.getShop().getKakaoChannelUrl()
         );
     }
 }
