@@ -59,8 +59,8 @@ public class ShopController implements ShopControllerDocs {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long userId = customUserDetails.user().getId();
-        // Long userId = customUserDetails != null ? customUserDetails.user().getId() : null; // 인증 에러 문제 나는 동안만 사용
+        // Long userId = customUserDetails.user().getId();
+        Long userId = customUserDetails != null ? customUserDetails.user().getId() : null; // 인증 에러 문제 나는 동안만 사용
         ShopResDTO.CardListResponse result = shopQueryService.getShopCards(shopId, artType, sort, page, size, userId);
         return ApiResponse.onSuccess(ShopSuccessCode.CARD_LIST_FOUND, result);
     }
@@ -70,8 +70,8 @@ public class ShopController implements ShopControllerDocs {
     public ApiResponse<ShopResDTO.ShopDetailResponse> getShopDetail(
             @PathVariable Long shopId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long userId = customUserDetails.user().getId();
-        // Long userId = customUserDetails != null ? customUserDetails.user().getId() : null;
+        // Long userId = customUserDetails.user().getId();
+        Long userId = customUserDetails != null ? customUserDetails.user().getId() : null;
         ShopResDTO.ShopDetailResponse result = shopQueryService.getShopDetail(shopId, userId);
         return ApiResponse.onSuccess(ShopSuccessCode.SHOP_FOUND, result);
     }
