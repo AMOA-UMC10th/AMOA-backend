@@ -1,5 +1,7 @@
 package com.amoa.server.domain.reservation.service.command;
 
+import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.BUSINESS_CLOSE_TIME;
+import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.BUSINESS_OPEN_TIME;
 import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.EXTENSION_REMOVAL_MAX_QUANTITY;
 
 import com.amoa.server.domain.card.entity.Card;
@@ -25,6 +27,7 @@ import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,9 +50,6 @@ public class ReservationCommandService {
     private final ShopOptionRepository shopOptionRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationSelectedOptionRepository reservationSelectedOptionRepository;
-
-    private static final LocalTime BUSINESS_OPEN_TIME = LocalTime.of(10, 0);
-    private static final LocalTime BUSINESS_CLOSE_TIME = LocalTime.of(20, 0);
 
     public ReservationResDTO.CreateReservationResponse createReservation(
             Long userId,
@@ -183,7 +183,7 @@ public class ReservationCommandService {
     public void confirmReservationSchedule(
             Long userId,
             Long reservationId,
-            ReservationReqDTO.ConfirmReservationScheduleRequest request
+            ReservationReqDTO.ConfirmScheduleRequest request
     ) {
         Reservation reservation = reservationRepository
                 .findByIdAndUser_Id(reservationId, userId)
@@ -399,10 +399,10 @@ public class ReservationCommandService {
         validateDateAndTime(reservationDate, startTime);
 
         LocalTime latestStartTime =
-                ReservationOptionPolicy.BUSINESS_CLOSE_TIME
+                BUSINESS_CLOSE_TIME
                         .minusMinutes(totalDurationMinutes);
 
-        if (startTime.isBefore(ReservationOptionPolicy.BUSINESS_OPEN_TIME)
+        if (startTime.isBefore(BUSINESS_OPEN_TIME)
                 || startTime.isAfter(latestStartTime)) {
             throw new ReservationException(
                     ReservationErrorCode.N_SELECT_RESERVATION_TIME

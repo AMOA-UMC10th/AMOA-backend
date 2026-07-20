@@ -11,4 +11,8 @@ public interface ShopOptionRepository
             Long shopId,
             String optionName
     );
+
+    List<ShopOption> findAllByShop_IdAndIsActiveTrueOrderByIdAsc(
+            Long shopId
+    );
 }

@@ -23,7 +23,7 @@ public class ShopOptionCommandService {
     private final ShopOptionRepository shopOptionRepository;
 
     @Transactional
-    public ShopOptionResDTO.CreateResult createShopOption(
+    public ShopOptionResDTO.OptionResult createShopOption(
             Long shopId,
             ShopOptionCreateReqDTO request
     ) {
@@ -52,6 +52,6 @@ public class ShopOptionCommandService {
             );
         }
 
-        return ShopOptionConverter.toCreateResult(option);
+        return ShopOptionConverter.toOptionResult(option);
     }
 }
