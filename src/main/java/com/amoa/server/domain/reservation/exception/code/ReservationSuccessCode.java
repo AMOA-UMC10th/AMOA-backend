@@ -15,18 +15,6 @@ public enum ReservationSuccessCode implements BaseSuccessCode {
             "예약이 완료되었습니다."
     ),
 
-    RESERVATION_FOUND(
-            HttpStatus.OK,
-            "RESERVATION200_2",
-            "예약 조회에 성공했습니다."
-    ),
-
-    RESERVATION_OPTIONS_FOUND(
-            HttpStatus.OK,
-            "RESERVATION200_3",
-            "예약 가능한 옵션 조회에 성공했습니다."
-    ),
-
     RESERVATION_SCHEDULE_CONFIRMED(
             HttpStatus.OK,
             "RESERVATION200_5",
