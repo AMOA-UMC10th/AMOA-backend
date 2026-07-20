@@ -420,4 +420,40 @@ public class ReservationCommandService {
             );
         }
     }
+
+    //예약 취소
+    @Transactional
+    public void cancelReservation(
+            Long reservationId,
+            Long userId
+    ) {
+        Reservation reservation = reservationRepository
+                .findByIdAndUser_Id(reservationId, userId)
+                .orElseThrow(() ->
+                        new ReservationException(
+                                ReservationErrorCode.RESERVATION_NOT_FOUND
+                        )
+                );
+
+        validateCancelable(reservation);
+
+        reservation.cancel();
+    }
+
+    //예약 취소 검증
+    private void validateCancelable(Reservation reservation) {
+        ReservationStatus status = reservation.getReservationStatus();
+
+        if (status == ReservationStatus.CANCELED) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_ALREADY_CANCELLED
+            );
+        }
+
+        if (status != ReservationStatus.RESERVED) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_CANNOT_CANCEL
+            );
+        }
+    }
 }

@@ -150,6 +150,18 @@ public enum ReservationErrorCode implements BaseErrorCode {
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_17",
             "이미 저장된 예약입니다"
+    ),
+
+    RESERVATION_ALREADY_CANCELLED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_18",
+            "이미 취소된 예약입니다."
+    ),
+
+    RESERVATION_CANNOT_CANCEL(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_19",
+            "취소할 수 없는 예약 상태입니다."
     );
 
     private final HttpStatus httpStatus;
