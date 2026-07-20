@@ -27,4 +27,10 @@ public class CardResDTO {
         ) {
         }
     }
+
+    // 카카오로 시작하기
+    public record KakaoChannel(
+            String kakaoChannelUrl
+    ) {
+    }
 }

@@ -47,7 +47,7 @@ public class CardConverter {
     public CreateCard toCreateCardResponse(Card card, List<CardDesignTag> cardDesignTags) {
         List<DesignTagRes> designTagResList = cardDesignTags.stream()
                 .map(cardDesignTag -> new DesignTagRes(
-                        cardDesignTag.getDesignTag().getDesignTagId(),
+                        cardDesignTag.getDesignTag().getId(),
                         cardDesignTag.getDesignTag().getName()
                 ))
                 .toList();

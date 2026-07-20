@@ -90,6 +90,42 @@ public enum ReservationErrorCode implements BaseErrorCode {
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_9",
             "옵션 수량은 1개 이상이어야 합니다."
+    ),
+
+    RESERVATION_ALREADY_CONFIRMED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_10",
+            "이미 일정이 확정된 예약입니다."
+    ),
+
+    PAST_RESERVATION_DATE(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_11",
+            "과거 날짜는 선택할 수 없습니다."
+    ),
+
+    N_SELECT_RESERVATION_TIME(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_12",
+            "선택할 수 없는 예약 시간입니다."
+    ),
+
+    RESERVATION_TIME_CONFLICT(
+            HttpStatus.CONFLICT,
+            "RESERVATION409_1",
+            "이미 예약된 시간과 겹칩니다."
+    ),
+
+    INVALID_RESERVATION_DURATION(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_13",
+            "예약 시간이 올바르지 않습니다."
+    ),
+
+    RESERVATION_ALREADY_SCHEDULED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_14",
+            "이미 저장된 예약입니다"
     );
 
     private final HttpStatus httpStatus;

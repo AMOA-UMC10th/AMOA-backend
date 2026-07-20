@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class RedisUtil {
     private static final String REFRESH_PREFIX = "refresh:";
     private static final String BLACKLIST_PREFIX = "blacklist:";
+
     private static final DefaultRedisScript<Long> ROTATE_REFRESH_TOKEN_SCRIPT =
             new DefaultRedisScript<>(
                     """

@@ -1,17 +1,20 @@
 package com.amoa.server.domain.user.service.command;
 
-import com.amoa.server.domain.user.dto.respose.KakaoUserInfoResDTO;
+import com.amoa.server.domain.user.dto.response.KakaoUserInfoResDTO;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.enums.Role;
 import com.amoa.server.domain.user.exception.UserException;
 import com.amoa.server.domain.user.exception.code.UserErrorCode;
 import com.amoa.server.domain.user.repository.UserRepository;
-import com.amoa.server.global.apiPayload.exception.GeneralException;
+import com.amoa.server.global.util.JwtUtil;
 import com.amoa.server.global.util.RedisUtil;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
@@ -21,34 +24,7 @@ public class UserCommandService {
     private final UserRepository userRepository;
     private final RedisUtil redisUtil;
     private final UserCreateCommandService userCreateCommandService;
-
-    // 회원 탈퇴
-    @Transactional
-    public void withdrawalUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new UserException(UserErrorCode.MEMBER_NOT_FOUND)
-                );
-
-        redisUtil.deleteRefreshToken(userId);
-
-        /*
-         * 소프트 삭제를 사용할 예정이라면 deleteById 대신
-         * user.withdraw() 같은 상태 변경 메서드를 사용하는 편이 좋음.
-         */
-        userRepository.delete(user);
-    }
-
-    // 로그아웃
-    @Transactional
-    public void logout(Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new UserException(UserErrorCode.MEMBER_NOT_FOUND)
-                );
-
-        redisUtil.deleteRefreshToken(userId);
-    }
+    private final JwtUtil jwtUtil;
 
     // 기존 회원 조회 또는 신규 회원 생성
     @Transactional
@@ -75,10 +51,9 @@ public class UserCommandService {
 
         return userRepository.findBySocialUidIncludingInactive(socialUid)
                 .map(user -> {
+
                     if (!Boolean.TRUE.equals(user.getIsActive())) {
-                        throw new GeneralException(
-                                UserErrorCode.MEMBER_UNAUTHORIZED
-                        );
+                        user.reactivate();
                     }
 
                     return user;
@@ -99,13 +74,50 @@ public class UserCommandService {
                                 .orElseThrow(() -> exception);
 
                         if (!Boolean.TRUE.equals(user.getIsActive())) {
-                            throw new GeneralException(
-                                    UserErrorCode.MEMBER_UNAUTHORIZED
-                            );
+                            user.reactivate();
                         }
 
                         return user;
                     }
         });
+    }
+
+    // 회원 탈퇴
+    @Transactional
+    public void withdrawalUser(
+            Long userId,
+            String accessToken
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new UserException(UserErrorCode.MEMBER_NOT_FOUND)
+                );
+
+        // Access Token 블랙리스트 등록
+        Long remainingTime =
+                jwtUtil.getExpirationTime(accessToken);
+
+        // @SQLDelete에 의해 is_active = false 처리
+        userRepository.delete(user);
+
+        // DB 커밋이 성공한 뒤 Redis 토큰 무효화
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        redisUtil.deleteRefreshToken(userId);
+
+                        if (remainingTime > 0) {
+                            redisUtil.saveBlackList(
+                                    accessToken,
+                                    Duration.ofMillis(remainingTime)
+                            );
+                        }
+                    }
+                }
+        );
+
+        // @SQLDelete에 의해 is_active = false 처리
+        userRepository.delete(user);
     }
 }

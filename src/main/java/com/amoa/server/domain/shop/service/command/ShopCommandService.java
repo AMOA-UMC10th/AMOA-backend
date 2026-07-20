@@ -63,10 +63,10 @@ public class ShopCommandService {
         // 4) DesignTag 조회 및 ShopDesignTag 저장
         if (request.designtagIds() != null && !request.designtagIds().isEmpty()) {
             List<DesignTag> designTags = designTagRepository
-                    .findByDesignTagIdIn(request.designtagIds());
+                    .findByIdIn(request.designtagIds());
 
             if (designTags.size() != request.designtagIds().size()) {
-                throw new ShopException(ShopErrorCode.SHOP_INVALID_DESIGNTAG);
+                throw new ShopException(ShopErrorCode.SHOP_INVALID_DESIGN_TAG);
             }
 
             List<ShopDesignTag> shopDesignTags = designTags.stream()

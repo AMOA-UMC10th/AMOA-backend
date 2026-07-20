@@ -1,5 +1,7 @@
 package com.amoa.server.domain.reservation.service.command;
 
+import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.BUSINESS_CLOSE_TIME;
+import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.BUSINESS_OPEN_TIME;
 import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.EXTENSION_REMOVAL_MAX_QUANTITY;
 
 import com.amoa.server.domain.card.entity.Card;
@@ -12,6 +14,7 @@ import com.amoa.server.domain.reservation.entity.Reservation;
 import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOption;
 import com.amoa.server.domain.reservation.enums.GelRemovalType;
 import com.amoa.server.domain.reservation.enums.HandState;
+import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import com.amoa.server.domain.reservation.exception.ReservationException;
 import com.amoa.server.domain.reservation.exception.code.ReservationErrorCode;
 import com.amoa.server.domain.reservation.repository.ReservationRepository;
@@ -21,12 +24,17 @@ import com.amoa.server.domain.shop.entity.mapping.ShopOption;
 import com.amoa.server.domain.shop.repository.ShopOptionRepository;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,17 +120,18 @@ public class ReservationCommandService {
         int optionTotalPrice = 0;
         int optionTotalDuration = 0;
 
-        for (int i = 0; i < optionRequests.size(); i++) {
-            ReservationReqDTO.SelectedOptionRequest optionRequest =
-                    optionRequests.get(i);
+        Map<Long, ShopOption> optionMap =
+                shopOptions.stream()
+                        .collect(Collectors.toMap(
+                                ShopOption::getId,
+                                Function.identity()
+                        ));
 
-            ShopOption shopOption = shopOptions.get(i);
+        for (ReservationReqDTO.SelectedOptionRequest selectedOption : optionRequests) {
+            ShopOption option = optionMap.get(selectedOption.shopOptionId());
 
-            optionTotalPrice +=
-                    shopOption.getOptionPrice() * optionRequest.quantity();
-
-            optionTotalDuration +=
-                    shopOption.getDurationMinutes() * optionRequest.quantity();
+            optionTotalPrice += option.getOptionPrice() * selectedOption.quantity();
+            optionTotalDuration += option.getDurationMinutes() * selectedOption.quantity();
         }
 
         //피그마상으로 보인 기본 가격 추후 삭제 가능성 있음
@@ -132,11 +141,6 @@ public class ReservationCommandService {
         //총 가격 & 시간
         int totalPrice = basePrice + optionTotalPrice;
         int totalDurationMinutes = baseDuration + optionTotalDuration;
-
-        //종료 시간
-        LocalTime reservationEndTime =
-                request.reservationStartTime()
-                        .plusMinutes(totalDurationMinutes);
 
         int depositAmount = calculateDepositAmount(totalPrice);
 
@@ -148,7 +152,6 @@ public class ReservationCommandService {
                 card,
                 request,
                 reservationNumber,
-                reservationEndTime,
                 totalPrice,
                 depositAmount,
                 totalDurationMinutes
@@ -173,6 +176,79 @@ public class ReservationCommandService {
         }
 
         return ReservationConverter.toCreateReservationResponse(reservation);
+    }
+
+    private void validateSchedule(
+            Reservation reservation,
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            LocalTime reservationEndTime
+    ) {
+        if (reservationDate == null
+                || reservationDate.isBefore(LocalDate.now())) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_DATE
+            );
+        }
+
+        if (reservationStartTime == null) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_TIME
+            );
+        }
+
+        if (reservationStartTime.isBefore(BUSINESS_OPEN_TIME)
+                || reservationEndTime.isAfter(BUSINESS_CLOSE_TIME)) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_TIME
+            );
+        }
+
+        LocalDateTime reservationDateTime =
+                LocalDateTime.of(
+                        reservationDate,
+                        reservationStartTime
+                );
+
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_TIME
+            );
+        }
+
+        List<Reservation> existingReservations =
+                reservationRepository
+                        .findAllByShop_IdAndReservationDate(
+                                reservation.getShop().getId(),
+                                reservationDate
+                        );
+
+        boolean hasConflict =
+                existingReservations.stream()
+                        .filter(existingReservation ->
+                                !existingReservation.getId()
+                                        .equals(reservation.getId())
+                        )
+                        .filter(existingReservation ->
+                                existingReservation.getReservationStatus()
+                                        != ReservationStatus.DRAFT
+                        )
+                        .anyMatch(existingReservation ->
+                                reservationStartTime.isBefore(
+                                        existingReservation
+                                                .getReservationEndTime()
+                                )
+                                        && reservationEndTime.isAfter(
+                                        existingReservation
+                                                .getReservationStartTime()
+                                )
+                        );
+
+        if (hasConflict) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_TIME_CONFLICT
+            );
+        }
     }
 
     private void validateShopOption(
@@ -250,6 +326,111 @@ public class ReservationCommandService {
                         ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
                 );
             }
+        }
+    }
+
+    //예약 확정 service
+    public void confirmReservationSchedule(
+            Long userId,
+            Long reservationId,
+            ReservationReqDTO.ConfirmScheduleRequest request
+    ) {
+        Reservation reservation = reservationRepository
+                .findByIdAndUser_Id(reservationId, userId)
+                .orElseThrow(() ->
+                        new ReservationException(
+                                ReservationErrorCode.RESERVATION_NOT_FOUND
+                        )
+                );
+
+        validateDraftStatus(reservation);
+
+        LocalDate reservationDate = request.reservationDate();
+        LocalTime startTime = request.reservationStartTime();
+        int totalDurationMinutes = reservation.getTotalDurationMinutes();
+
+        validateDateAndTime(reservationDate, startTime);
+
+        LocalTime latestStartTime =
+                BUSINESS_CLOSE_TIME
+                        .minusMinutes(totalDurationMinutes);
+
+        if (startTime.isBefore(BUSINESS_OPEN_TIME)
+                || startTime.isAfter(latestStartTime)) {
+            throw new ReservationException(
+                    ReservationErrorCode.N_SELECT_RESERVATION_TIME
+            );
+        }
+
+        LocalTime endTime = startTime.plusMinutes(totalDurationMinutes);
+
+        validateOverlap(
+                reservation.getShop().getId(),
+                reservationDate,
+                startTime,
+                endTime
+        );
+
+        reservation.confirmSchedule(
+                reservationDate,
+                startTime,
+                endTime
+        );
+    }
+
+    //상태검증
+    private void validateDraftStatus(Reservation reservation) {
+        if (reservation.getReservationStatus()
+                != ReservationStatus.DRAFT) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_ALREADY_CONFIRMED
+            );
+        }
+    }
+
+    //날짜와 현재 시간 검증
+    private void validateDateAndTime(
+            LocalDate reservationDate,
+            LocalTime reservationStartTime
+    ) {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        if (reservationDate.isBefore(today)) {
+            throw new ReservationException(
+                    ReservationErrorCode.PAST_RESERVATION_DATE
+            );
+        }
+
+        if (reservationDate.isEqual(today)
+                && !reservationStartTime.isAfter(now)) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_TIME
+            );
+        }
+    }
+
+    //중복 검증
+    private void validateOverlap(
+            Long shopId,
+            LocalDate reservationDate,
+            LocalTime startTime,
+            LocalTime endTime
+    ) {
+        boolean hasConflict = !reservationRepository
+                .findOverlappingReservations(
+                        shopId,
+                        reservationDate,
+                        ReservationStatus.CONFIRMED,
+                        startTime,
+                        endTime
+                )
+                .isEmpty();
+
+        if (hasConflict) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_TIME_CONFLICT
+            );
         }
     }
 }

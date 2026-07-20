@@ -20,7 +20,7 @@ public class ShopConverter {
     // DesignTag Entity → DesignTagResponse DTO 변환
     public static ShopResDTO.DesignTagResponse toDesignTagResponse(DesignTag designTag) {
         return new ShopResDTO.DesignTagResponse(
-                designTag.getDesignTagId(),
+                designTag.getId(),
                 designTag.getName()
         );
     }
@@ -46,6 +46,7 @@ public class ShopConverter {
                 .address(request.address())
                 .latitude(latitude)
                 .longitude(longitude)
+                .legalCode(request.legalCode())
                 .shopPhoneNumber(request.shopPhoneNumber())
                 .businessHours(request.businessHours())
                 .shopStatus(ShopStatus.DRAFT)

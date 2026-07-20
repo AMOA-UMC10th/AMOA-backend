@@ -1,17 +1,16 @@
 package com.amoa.server.domain.common.converter;
 
-import com.amoa.server.domain.common.dto.response.RegionResDTO;
+import com.amoa.server.domain.common.dto.response.RegionResDTO.RegionInfo;
 import com.amoa.server.domain.common.entity.Region;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RegionConverter {
 
-    // 검색 기반 지역 조회
-    public RegionResDTO.SearchRegion toSearchRegion(
+    public RegionInfo toRegion(
             Region region
     ) {
-        return new RegionResDTO.SearchRegion(
+        return new RegionInfo(
                 region.getId(),
                 region.getFirstDepth(),
                 region.getSecondDepth(),

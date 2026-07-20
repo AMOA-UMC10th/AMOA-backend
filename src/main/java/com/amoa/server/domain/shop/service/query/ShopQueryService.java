@@ -35,7 +35,7 @@ public class ShopQueryService {
 
     // GET /api/admin/shops/designtag - 디자인태그 목록 조회
     public ShopResDTO.DesignTagListResponse getDesignTags() {
-        List<DesignTag> designTags = designTagRepository.findAllByOrderByDesignTagIdAsc();
+        List<DesignTag> designTags = designTagRepository.findAllByOrderByIdAsc();
         return ShopConverter.toDesignTagListResponse(designTags);
     }
 
