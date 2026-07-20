@@ -6,6 +6,7 @@ import static com.amoa.server.domain.reservation.constant.ReservationOptionPolic
 
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.repository.CardRepository;
+import com.amoa.server.domain.reservation.constant.ReservationOptionPolicy;
 import com.amoa.server.domain.reservation.converter.ReservationConverter;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO.SelectedOptionRequest;
@@ -26,6 +27,7 @@ import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -176,6 +178,51 @@ public class ReservationCommandService {
         }
 
         return ReservationConverter.toCreateReservationResponse(reservation);
+    }
+
+    public void confirmReservationSchedule(
+            Long userId,
+            Long reservationId,
+            ReservationReqDTO.ConfirmScheduleRequest request
+    ) {
+        Reservation reservation = reservationRepository
+                .findByIdAndUser_Id(reservationId, userId)
+                .orElseThrow(() ->
+                        new ReservationException(
+                                ReservationErrorCode.RESERVATION_NOT_FOUND
+                        )
+                );
+
+        if (reservation.getReservationStatus()
+                != ReservationStatus.DRAFT) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_ALREADY_SCHEDULED
+            );
+        }
+
+        LocalDate reservationDate =
+                request.reservationDate();
+
+        LocalTime reservationStartTime =
+                request.reservationStartTime();
+
+        LocalTime reservationEndTime =
+                reservationStartTime.plusMinutes(
+                        reservation.getTotalDurationMinutes()
+                );
+
+        validateSchedule(
+                reservation,
+                reservationDate,
+                reservationStartTime,
+                reservationEndTime
+        );
+
+        reservation.confirmSchedule(
+                reservationDate,
+                reservationStartTime,
+                reservationEndTime
+        );
     }
 
     private void validateSchedule(
