@@ -180,51 +180,6 @@ public class ReservationCommandService {
         return ReservationConverter.toCreateReservationResponse(reservation);
     }
 
-    public void confirmReservationSchedule(
-            Long userId,
-            Long reservationId,
-            ReservationReqDTO.ConfirmReservationScheduleRequest request
-    ) {
-        Reservation reservation = reservationRepository
-                .findByIdAndUser_Id(reservationId, userId)
-                .orElseThrow(() ->
-                        new ReservationException(
-                                ReservationErrorCode.RESERVATION_NOT_FOUND
-                        )
-                );
-
-        if (reservation.getReservationStatus()
-                != ReservationStatus.DRAFT) {
-            throw new ReservationException(
-                    ReservationErrorCode.RESERVATION_ALREADY_SCHEDULED
-            );
-        }
-
-        LocalDate reservationDate =
-                request.reservationDate();
-
-        LocalTime reservationStartTime =
-                request.reservationStartTime();
-
-        LocalTime reservationEndTime =
-                reservationStartTime.plusMinutes(
-                        reservation.getTotalDurationMinutes()
-                );
-
-        validateSchedule(
-                reservation,
-                reservationDate,
-                reservationStartTime,
-                reservationEndTime
-        );
-
-        reservation.confirmSchedule(
-                reservationDate,
-                reservationStartTime,
-                reservationEndTime
-        );
-    }
-
     private void validateSchedule(
             Reservation reservation,
             LocalDate reservationDate,

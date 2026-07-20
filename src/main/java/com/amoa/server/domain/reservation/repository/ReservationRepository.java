@@ -27,24 +27,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("status") ReservationStatus status,
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime
+    );
       
-    Optional<Reservation> findByIdAndUser_Id(
-            Long reservationId,
-            Long userId
-    );
-
-    List<Reservation> findAllByShop_IdAndReservationDate(
-            Long shopId,
-            LocalDate reservationDate
-    );
-
-    List<Reservation>
-    findAllByShop_IdAndReservationDateAndReservationStatusIn(
-            Long shopId,
-            LocalDate reservationDate,
-            List<ReservationStatus> reservationStatus
-    );
-
     Optional<Reservation> findByIdAndUser_Id(
             Long reservationId,
             Long userId

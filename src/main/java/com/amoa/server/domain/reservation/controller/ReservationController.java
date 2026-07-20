@@ -61,39 +61,4 @@ public class ReservationController implements ReservationControllerDocs {
                 )
         );
     }
-
-    @Override
-    @PatchMapping("/{reservationId}/schedule")
-    public ApiResponse<Void> confirmReservationSchedule(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long reservationId,
-            @Valid @RequestBody
-            ReservationReqDTO.ConfirmScheduleRequest request
-    ) {
-        reservationCommandService.confirmReservationSchedule(
-                userDetails.user().getId(),
-                reservationId,
-                request
-        );
-
-        return ApiResponse.onSuccess(
-                ReservationSuccessCode.RESERVATION_SCHEDULE_CONFIRMED,
-                null
-    @GetMapping("/{reservationId}/available-times")
-    public ApiResponse<ReservationResDTO.AvailableTimesResponse>
-    getAvailableTimes(
-            @PathVariable Long reservationId,
-            @RequestParam LocalDate date,
-            @AuthenticationPrincipal CustomUserDetails principal
-    ) {
-        return ApiResponse.onSuccess(
-                ReservationSuccessCode
-                        .RESERVATION_AVAILABLE_TIMES_FOUND,
-                reservationQueryService.getAvailableTimes(
-                        principal.user().getId(),
-                        reservationId,
-                        date
-                )
-        );
-    }
 }
