@@ -1,10 +1,11 @@
 package com.amoa.server.domain.reservation.service.command;
 
+import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.BUSINESS_CLOSE_TIME;
+import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.BUSINESS_OPEN_TIME;
 import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.EXTENSION_REMOVAL_MAX_QUANTITY;
 
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.repository.CardRepository;
-import com.amoa.server.domain.reservation.constant.ReservationOptionPolicy;
 import com.amoa.server.domain.reservation.converter.ReservationConverter;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO.SelectedOptionRequest;
@@ -24,6 +25,7 @@ import com.amoa.server.domain.shop.repository.ShopOptionRepository;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -176,6 +178,79 @@ public class ReservationCommandService {
         return ReservationConverter.toCreateReservationResponse(reservation);
     }
 
+    private void validateSchedule(
+            Reservation reservation,
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            LocalTime reservationEndTime
+    ) {
+        if (reservationDate == null
+                || reservationDate.isBefore(LocalDate.now())) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_DATE
+            );
+        }
+
+        if (reservationStartTime == null) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_TIME
+            );
+        }
+
+        if (reservationStartTime.isBefore(BUSINESS_OPEN_TIME)
+                || reservationEndTime.isAfter(BUSINESS_CLOSE_TIME)) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_TIME
+            );
+        }
+
+        LocalDateTime reservationDateTime =
+                LocalDateTime.of(
+                        reservationDate,
+                        reservationStartTime
+                );
+
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new ReservationException(
+                    ReservationErrorCode.INVALID_RESERVATION_TIME
+            );
+        }
+
+        List<Reservation> existingReservations =
+                reservationRepository
+                        .findAllByShop_IdAndReservationDate(
+                                reservation.getShop().getId(),
+                                reservationDate
+                        );
+
+        boolean hasConflict =
+                existingReservations.stream()
+                        .filter(existingReservation ->
+                                !existingReservation.getId()
+                                        .equals(reservation.getId())
+                        )
+                        .filter(existingReservation ->
+                                existingReservation.getReservationStatus()
+                                        != ReservationStatus.DRAFT
+                        )
+                        .anyMatch(existingReservation ->
+                                reservationStartTime.isBefore(
+                                        existingReservation
+                                                .getReservationEndTime()
+                                )
+                                        && reservationEndTime.isAfter(
+                                        existingReservation
+                                                .getReservationStartTime()
+                                )
+                        );
+
+        if (hasConflict) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_TIME_CONFLICT
+            );
+        }
+    }
+
     private void validateShopOption(
             ShopOption shopOption,
             Shop shop,
@@ -277,10 +352,10 @@ public class ReservationCommandService {
         validateDateAndTime(reservationDate, startTime);
 
         LocalTime latestStartTime =
-                ReservationOptionPolicy.BUSINESS_CLOSE_TIME
+                BUSINESS_CLOSE_TIME
                         .minusMinutes(totalDurationMinutes);
 
-        if (startTime.isBefore(ReservationOptionPolicy.BUSINESS_OPEN_TIME)
+        if (startTime.isBefore(BUSINESS_OPEN_TIME)
                 || startTime.isAfter(latestStartTime)) {
             throw new ReservationException(
                     ReservationErrorCode.N_SELECT_RESERVATION_TIME

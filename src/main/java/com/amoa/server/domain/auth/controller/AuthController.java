@@ -6,7 +6,6 @@ import com.amoa.server.domain.auth.dto.response.AuthResDTO;
 import com.amoa.server.domain.auth.exception.code.AuthSuccessCode;
 import com.amoa.server.domain.auth.service.command.AuthCommandService;
 import com.amoa.server.global.apiPayload.ApiResponse;
-import io.swagger.v3.oas.annotations.Operation;
 import com.amoa.server.global.apiPayload.code.GeneralSuccessCode;
 import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
