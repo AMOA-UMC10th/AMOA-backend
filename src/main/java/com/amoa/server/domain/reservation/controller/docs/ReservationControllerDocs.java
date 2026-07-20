@@ -51,4 +51,21 @@ public interface ReservationControllerDocs {
             Long reservationId,
             @Valid ReservationReqDTO.ConfirmScheduleRequest request
     );
+
+    @Operation(
+            summary = "예약 상세 조회 API",
+            description = "로그인한 사용자의 예약 상세 정보를 조회합니다."
+    )
+    ApiResponse<ReservationResDTO.ReservationInfoResponse>
+    getReservationInfo(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal CustomUserDetails principal,
+
+            @Parameter(
+                    description = "조회할 예약 ID",
+                    required = true,
+                    example = "1"
+            )
+            @PathVariable Long reservationId
+    );
 }

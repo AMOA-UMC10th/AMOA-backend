@@ -80,4 +80,20 @@ public class ReservationController implements ReservationControllerDocs {
                 )
         );
     }
+
+    @Override
+    @GetMapping("/{reservationId}")
+    public ApiResponse<ReservationResDTO.ReservationInfoResponse>
+    getReservationInfo(
+            @AuthenticationPrincipal CustomUserDetails principal,
+            @PathVariable Long reservationId
+    ) {
+        return ApiResponse.onSuccess(
+                ReservationSuccessCode.RESERVATION_DETAIL_SUCCESS,
+                reservationQueryService.getReservationInfo(
+                        reservationId,
+                        principal.user().getId()
+                )
+        );
+    }
 }

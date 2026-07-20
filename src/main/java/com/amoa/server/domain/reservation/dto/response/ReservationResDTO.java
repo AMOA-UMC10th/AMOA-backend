@@ -22,7 +22,8 @@ public class ReservationResDTO {
             GelRemovalType gelRemovalType,
             int extensionRemovalCount,
             int totalPrice,
-            int totalDurationMinutes,
+            int depositAmount,
+            Integer totalDurationMinutes,
             ReservationStatus reservationStatus
 
     ) {}
@@ -81,5 +82,20 @@ public class ReservationResDTO {
     public record AvailableTimeResponse(
             LocalTime time,
             Integer isAvailable
+    ) {}
+
+    public record ReservationInfoResponse(
+            Long reservationId,
+            ReservationStatus reservationStatus,
+            String shopName,
+            String artName,
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            int totalPrice,
+            int paymentAmount,
+            String customerName,
+            String customerPhoneNumber,
+            String requestMessage,
+            String kakaoChannelUrl
     ) {}
 }

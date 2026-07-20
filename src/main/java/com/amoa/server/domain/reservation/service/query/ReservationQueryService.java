@@ -32,28 +32,6 @@ public class ReservationQueryService {
     private static final LocalTime BUSINESS_CLOSE_TIME = LocalTime.of(20, 0);
     private static final int SLOT_INTERVAL_MINUTES = 30;
 
-    public ReservationResDTO.ReservationDetailResponse getReservationDetail(
-            Long userId,
-            Long reservationId
-    ) {
-        Reservation reservation = reservationRepository
-                .findByIdAndUser_Id(reservationId, userId)
-                .orElseThrow(() ->
-                        new ReservationException(
-                                ReservationErrorCode.RESERVATION_NOT_FOUND
-                        )
-                );
-
-        List<ReservationSelectedOption> selectedOptions =
-                reservationSelectedOptionRepository
-                        .findAllByReservation_Id(reservationId);
-
-        return ReservationConverter.toReservationDetailResponse(
-                reservation,
-                selectedOptions
-        );
-    }
-
     public ReservationResDTO.AvailableTimesResponse getAvailableTimes(
             Long userId,
             Long reservationId,
@@ -261,4 +239,32 @@ public class ReservationQueryService {
             LocalTime openingTime,
             LocalTime closingTime
     ) {}
+
+    //예약 상세 조회
+    public ReservationResDTO.ReservationInfoResponse getReservationInfo(
+            Long reservationId,
+            Long userId
+    ) {
+        System.out.println("reservationId = " + reservationId);
+        System.out.println("userId = " + userId);
+        
+        Reservation reservation = reservationRepository
+                .findByIdAndUser_IdAndReservationStatusNot(
+                        reservationId,
+                        userId,
+                        ReservationStatus.DRAFT
+                )
+                .orElseThrow(() ->
+                        new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND)
+                );
+
+        List<ReservationSelectedOption> selectedOptions =
+                reservationSelectedOptionRepository
+                        .findAllByReservation_Id(reservationId);
+
+        return ReservationConverter.toReservationInfoResponse(
+                reservation,
+                selectedOptions
+        );
+    }
 }

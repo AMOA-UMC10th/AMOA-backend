@@ -37,6 +37,12 @@ public enum ReservationSuccessCode implements BaseSuccessCode {
             HttpStatus.OK,
             "RESERVATION200_5",
             "예약 가능 시간 조회에 성공했습니다."
+    ),
+
+    RESERVATION_DETAIL_SUCCESS(
+            HttpStatus.OK,
+            "RESERVATION200_6",
+            "예약 상세 조회에 성공했습니다."
     );
 
     private final HttpStatus httpStatus;
