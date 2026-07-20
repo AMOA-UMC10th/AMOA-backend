@@ -144,6 +144,12 @@ public enum ReservationErrorCode implements BaseErrorCode {
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_18",
             "현재 손 상태 선택이 올바르지 않습니다."
+    ),
+
+    RESERVATION_ALREADY_SCHEDULED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_17",
+            "이미 저장된 예약입니다"
     );
 
     private final HttpStatus httpStatus;

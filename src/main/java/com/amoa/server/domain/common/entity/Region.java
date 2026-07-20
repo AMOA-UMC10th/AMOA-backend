@@ -27,6 +27,10 @@ public class Region extends BaseEntity {
     @Column(name = "region_id")
     private Long id;
 
+    // 법정동 코드
+    @Column(name = "legal_code", nullable = false, unique = true)
+    private String legalCode;
+
     // 1Depth (시/도)
     @Column(name = "first_depth", nullable = false, length = 50)
     private String firstDepth;

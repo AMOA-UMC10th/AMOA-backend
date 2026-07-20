@@ -1,24 +1,26 @@
 package com.amoa.server.domain.shop.converter;
 
+import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.common.entity.Region;
 import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.entity.Shop;
-import com.amoa.server.domain.shop.entity.ShopDesignTag;
+import com.amoa.server.domain.shop.entity.mapping.ShopDesignTag;
 import com.amoa.server.domain.shop.enums.ShopStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 public class ShopConverter {
 
     // DesignTag Entity → DesignTagResponse DTO 변환
     public static ShopResDTO.DesignTagResponse toDesignTagResponse(DesignTag designTag) {
         return new ShopResDTO.DesignTagResponse(
-                designTag.getDesignTagId(),
+                designTag.getId(),
                 designTag.getName()
         );
     }
@@ -44,6 +46,7 @@ public class ShopConverter {
                 .address(request.address())
                 .latitude(latitude)
                 .longitude(longitude)
+                .legalCode(request.legalCode())
                 .shopPhoneNumber(request.shopPhoneNumber())
                 .businessHours(request.businessHours())
                 .shopStatus(ShopStatus.DRAFT)
@@ -81,6 +84,58 @@ public class ShopConverter {
                 placeName,
                 address,
                 phone
+        );
+    }
+
+    // Card Entity → CardResponse DTO 변환
+    public static ShopResDTO.CardResponse toCardResponse(Card card, boolean isLiked) {
+        return new ShopResDTO.CardResponse(
+                card.getId(),
+                card.getShop().getRegion().getSecondDepth() + " " + card.getShop().getRegion().getThirdDepth(),  // 구+동
+                card.getMinPrice(),
+                card.getMaxPrice(),
+                card.getArtType() != null ? card.getArtType().name() : null,
+                isLiked
+        );
+    }
+
+    // Card 목록 → CardListResponse DTO 변환
+    public static ShopResDTO.CardListResponse toCardListResponse(
+            Shop shop,
+            Page<Card> cards,
+            List<ShopResDTO.CardResponse> cardResponses) {
+        return new ShopResDTO.CardListResponse(
+                shop.getId(),
+                shop.getShopName(),
+                cards.getTotalElements(),
+                cards.getNumber(),
+                cards.getSize(),
+                cardResponses
+        );
+    }
+
+    // Shop Entity → ShopDetailResponse DTO 변환
+    public static ShopResDTO.ShopDetailResponse toShopDetailResponse(
+            Shop shop,
+            List<DesignTag> designTags,
+            int cardLikeCount,
+            int shopLikeCount,
+            boolean isLiked) {
+
+        List<ShopResDTO.DesignTagResponse> designTagResponses = designTags.stream()
+                .map(ShopConverter::toDesignTagResponse)
+                .collect(Collectors.toList());
+
+        return new ShopResDTO.ShopDetailResponse(
+                shop.getId(),
+                shop.getShopName(),
+                shop.getAddress(),
+                shop.getShopPhoneNumber(),
+                shop.getBusinessHours(),
+                designTagResponses,
+                cardLikeCount,
+                shopLikeCount,
+                isLiked
         );
     }
 }

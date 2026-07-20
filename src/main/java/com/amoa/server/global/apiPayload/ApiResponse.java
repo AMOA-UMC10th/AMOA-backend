@@ -46,4 +46,13 @@ public class ApiResponse<T> {
                 result
         );
     }
+
+    public static <T> ApiResponse<T> onSuccess(BaseSuccessCode code) {
+        return new ApiResponse<>(
+                true,
+                code.getCode(),
+                code.getMessage(),
+                null
+        );
+    }
 }

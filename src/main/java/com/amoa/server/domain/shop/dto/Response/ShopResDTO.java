@@ -38,4 +38,37 @@ public class ShopResDTO {
             ShopStatus shopStatus,
             LocalDateTime createdAt
     ) {}
+
+    // GET /api/shops/{shop_id}/cards (샵 상세 카드 목록 조회)
+    public record CardListResponse(
+            Long shopId,
+            String shopName,
+            long totalCount,
+            int page,
+            int size,
+            List<CardResponse> cards
+    ) {}
+
+    // 카드 단건 응답
+    public record CardResponse(
+            Long cardId,
+            String regionName,
+            int minPrice,
+            int maxPrice,
+            String artType,
+            boolean isLiked
+    ) {}
+
+    // GET /api/shops/{shop_id} (유저용 샵 상세 조회)
+    public record ShopDetailResponse(
+            Long shopId,
+            String shopName,
+            String address,
+            String shopPhoneNumber,
+            String businessHours,
+            List<DesignTagResponse> designtags,
+            int cardLikeCount,
+            int shopLikeCount,
+            boolean isLiked
+    ) {}
 }

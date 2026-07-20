@@ -8,7 +8,7 @@ import com.amoa.server.domain.shop.converter.ShopConverter;
 import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.entity.Shop;
-import com.amoa.server.domain.shop.entity.ShopDesignTag;
+import com.amoa.server.domain.shop.entity.mapping.ShopDesignTag;
 import com.amoa.server.domain.shop.exception.ShopException;
 import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
 import com.amoa.server.domain.shop.repository.ShopDesignTagRepository;
@@ -63,10 +63,10 @@ public class ShopCommandService {
         // 4) DesignTag 조회 및 ShopDesignTag 저장
         if (request.designtagIds() != null && !request.designtagIds().isEmpty()) {
             List<DesignTag> designTags = designTagRepository
-                    .findByDesignTagIdIn(request.designtagIds());
+                    .findByIdIn(request.designtagIds());
 
             if (designTags.size() != request.designtagIds().size()) {
-                throw new ShopException(ShopErrorCode.SHOP_INVALID_DESIGNTAG);
+                throw new ShopException(ShopErrorCode.SHOP_INVALID_DESIGN_TAG);
             }
 
             List<ShopDesignTag> shopDesignTags = designTags.stream()

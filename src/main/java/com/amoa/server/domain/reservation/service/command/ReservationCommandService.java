@@ -42,17 +42,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ReservationCommandService {
-
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final ShopOptionRepository shopOptionRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationSelectedOptionRepository reservationSelectedOptionRepository;
 
-    //옵션 선택 결과를 바탕으로 임시 예약을 생성합니다.
-    @Transactional
     public ReservationResDTO.CreateReservationResponse createReservation(
             Long userId,
             ReservationReqDTO.CreateReservationRequest request
@@ -278,87 +275,38 @@ public class ReservationCommandService {
             GelRemovalType gelRemovalType,
             Integer extensionRemovalCount
     ) {
-        boolean isBareHand = handStates.contains(HandState.BARE_NAIL);
-        boolean hasGelNail = handStates.contains(HandState.GEL_NAIL);
-        boolean hasExtensionNail =
-                handStates.contains(HandState.EXTENSION_NAIL);
-
-        int normalizedExtensionCount =
-                extensionRemovalCount == null
-                        ? 0
-                        : extensionRemovalCount;
-
-        // 손 상태는 하나 이상 선택해야 함
-        if (handStates.isEmpty()) {
+        //GEL_NAIL이 아닌데 젤 제거 유형을 선택한 경우
+        if (!handStates.contains(HandState.GEL_NAIL)
+                && gelRemovalType != null
+                && gelRemovalType != GelRemovalType.NONE) {
             throw new ReservationException(
-                    ReservationErrorCode.INVALID_HAND_STATE
+                    ReservationErrorCode.INVALID_GEL_REMOVAL_TYPE
             );
         }
 
-        // 맨손은 다른 상태와 동시에 선택할 수 없음
-        if (isBareHand && handStates.size() > 1) {
-            throw new ReservationException(
-                    ReservationErrorCode.INVALID_HAND_STATE
-            );
-        }
-
-        // 연장 제거 개수 공통 범위 검증
-        if (normalizedExtensionCount < 0
-                || normalizedExtensionCount
-                > EXTENSION_REMOVAL_MAX_QUANTITY) {
+        //EXTENSION_NAIL이 아닌데 연장 제거 개수를 입력한 경우
+        if (!handStates.contains(HandState.EXTENSION_NAIL)
+                && extensionRemovalCount != null
+                && extensionRemovalCount > 0) {
             throw new ReservationException(
                     ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
             );
         }
 
-        // 맨손인 경우 제거 관련 옵션 선택 불가
-        if (isBareHand) {
-            if (gelRemovalType != null
-                    && gelRemovalType != GelRemovalType.NONE) {
+        //연장 제거 개수가 음수이거나 최대 허용 수량을 초과하는지 검증
+        if (extensionRemovalCount != null) {
+            if (extensionRemovalCount < 0) {
                 throw new ReservationException(
-                        ReservationErrorCode.INVALID_GEL_REMOVAL_TYPE
+                        ReservationErrorCode
+                                .INVALID_EXTENSION_REMOVAL_COUNT
                 );
             }
 
-            if (normalizedExtensionCount > 0) {
+            if (extensionRemovalCount
+                    > EXTENSION_REMOVAL_MAX_QUANTITY) {
                 throw new ReservationException(
-                        ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
-                );
-            }
-
-            return;
-        }
-
-        // 젤 네일을 선택한 경우 자샵/타샵 필수
-        if (hasGelNail) {
-            if (gelRemovalType == null
-                    || gelRemovalType == GelRemovalType.NONE) {
-                throw new ReservationException(
-                        ReservationErrorCode.INVALID_GEL_REMOVAL_TYPE
-                );
-            }
-        } else {
-            // 젤 네일을 선택하지 않았으면 젤 제거 유형 입력 불가
-            if (gelRemovalType != null
-                    && gelRemovalType != GelRemovalType.NONE) {
-                throw new ReservationException(
-                        ReservationErrorCode.INVALID_GEL_REMOVAL_TYPE
-                );
-            }
-        }
-
-        // 연장 네일을 선택한 경우 제거 개수 필수
-        if (hasExtensionNail) {
-            if (normalizedExtensionCount < 1) {
-                throw new ReservationException(
-                        ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
-                );
-            }
-        } else {
-            // 연장 네일을 선택하지 않았으면 제거 개수 입력 불가
-            if (normalizedExtensionCount > 0) {
-                throw new ReservationException(
-                        ReservationErrorCode.INVALID_EXTENSION_REMOVAL_COUNT
+                        ReservationErrorCode
+                                .INVALID_EXTENSION_REMOVAL_COUNT
                 );
             }
         }

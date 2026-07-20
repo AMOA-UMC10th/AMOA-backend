@@ -15,7 +15,7 @@ public class DesignTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "design_tag_id")
-    private Long designTagId;
+    private Long id;
 
     @Column(name = "name", nullable = false, length = 50)
     private String name;

@@ -1,6 +1,7 @@
 package com.amoa.server.domain.shop.entity;
 
 import com.amoa.server.domain.common.entity.Region;
+import com.amoa.server.domain.shop.entity.mapping.ShopDesignTag;
 import com.amoa.server.domain.shop.enums.ShopStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -46,6 +47,9 @@ public class Shop {
 
     @Column(name = "longitude", nullable = false, precision = 10, scale = 7)
     private BigDecimal longitude;
+
+    @Column(name = "legal_code", length = 20)
+    private String legalCode;
 
     @Column(name = "shop_phone_number", length = 20)
     private String shopPhoneNumber;
