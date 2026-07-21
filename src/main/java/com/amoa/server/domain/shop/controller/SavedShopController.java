@@ -51,20 +51,4 @@ public class SavedShopController implements SavedShopControllerDocs{
         return ApiResponse.onSuccess(ShopSuccessCode.SHOP_UNLIKED,null);
     }
 
-    @Override
-    @GetMapping("/liked-shops")
-    public ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            Pageable pageable
-    ) {
-
-        User user = customUserDetails.user();
-
-        SavedShopResDTO.LikedShopListResponse result =
-                savedShopQueryService.getLikedShops(user, pageable);
-
-        return ApiResponse.onSuccess(ShopSuccessCode.LIKED_SHOP_LIST_FOUND,
-                result
-        );
-    }
 }
