@@ -25,7 +25,13 @@ public enum UserErrorCode implements BaseErrorCode{
             HttpStatus.UNAUTHORIZED,
             "MEMBER401_2",
             "권한이 없습니다."
-    );
+    ),
+
+    NICKNAME_INVALID_FORMAT(HttpStatus.BAD_REQUEST,
+            "MEMBER400_1",
+            "닉네임은 한글/영문/숫자 2~10자만 사용할 수 있습니다."),
+    ;
+
 
     private final HttpStatus httpStatus;
     private final String code;

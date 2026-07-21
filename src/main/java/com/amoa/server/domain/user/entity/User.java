@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
@@ -35,8 +36,12 @@ import org.hibernate.annotations.SQLRestriction;
                 @UniqueConstraint(
                         name = "uk_user_social_uid",
                         columnNames = "social_uid"
-                )
-        })
+                )},
+                indexes = {
+                @Index(name = "idx_user_nickname", columnList = "nickname")
+        }
+)
+
 @SQLDelete(sql = "UPDATE user SET is_active = false WHERE user_id = ?") // delete()시 hard delete 하는 것이 아닌 soft delete를 진행
 @SQLRestriction("is_active = true") // 조회시 isActive 필드가 true인 데이터만 조회
 

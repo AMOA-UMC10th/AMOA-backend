@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findBySocialUidIncludingInactive(
             @Param("socialUid") String socialUid
     );
+
+    boolean existsByNickname(String nickname);
 }
