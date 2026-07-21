@@ -84,6 +84,15 @@ public class ReservationResDTO {
             Integer isAvailable
     ) {}
 
+    public record ConfirmScheduleResponse(
+            Long reservationId,
+            String shopName,
+            String artName,
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            int totalPrice
+    ) {}
+
     public record ReservationInfoResponse(
             Long reservationId,
             ReservationStatus reservationStatus,

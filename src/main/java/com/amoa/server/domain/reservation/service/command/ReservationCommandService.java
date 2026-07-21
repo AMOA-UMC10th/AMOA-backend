@@ -11,6 +11,7 @@ import com.amoa.server.domain.reservation.converter.ReservationConverter;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO.SelectedOptionRequest;
 import com.amoa.server.domain.reservation.dto.response.ReservationResDTO;
+import com.amoa.server.domain.reservation.dto.response.ReservationResDTO.ConfirmScheduleResponse;
 import com.amoa.server.domain.reservation.entity.Reservation;
 import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOption;
 import com.amoa.server.domain.reservation.enums.GelRemovalType;
@@ -315,7 +316,7 @@ public class ReservationCommandService {
 
     //예약 확정 service
     @Transactional
-    public void confirmReservationSchedule(
+    public ReservationResDTO.ConfirmScheduleResponse confirmReservationSchedule(
             Long userId,
             Long reservationId,
             ReservationReqDTO.ConfirmScheduleRequest request
@@ -367,6 +368,24 @@ public class ReservationCommandService {
                 request.requestMessage(),
                 request.paymentMethod(),
                 request.refundPolicyAgreed()
+        );
+
+        String artName = reservationSelectedOptionRepository
+                .findAllByReservation_Id(reservation.getId())
+                .stream()
+                .filter(selectedOption ->
+                        selectedOption.getShopOption().getOptionType()
+                                == ShopOptionType.ART
+                )
+                .map(selectedOption ->
+                        selectedOption.getShopOption().getOptionName()
+                )
+                .findFirst()
+                .orElse(null);
+
+        return ReservationConverter.toConfirmScheduleResponse(
+                reservation,
+                artName
         );
     }
 
