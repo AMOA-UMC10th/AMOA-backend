@@ -15,7 +15,7 @@ public class AuthResDTO {
     @NoArgsConstructor
     public static class LoginResultDTO {
         private String email;
-        private String nickname;
+        private String userName;
         private String accessToken;
         private String refreshToken;
         private String tempToken;

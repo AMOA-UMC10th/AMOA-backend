@@ -11,7 +11,7 @@ public class AuthConverter {
     ) {
         return AuthResDTO.LoginResultDTO.builder()
                 .email(user.getEmail())
-                .nickname(user.getNickname())
+                .userName(user.getUserName())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .isNewUser(false)
@@ -26,7 +26,7 @@ public class AuthConverter {
         return AuthResDTO.LoginResultDTO.builder()
                 .tempToken(tempToken)
                 .email(user.getEmail())
-                .nickname(user.getNickname())
+                .userName(user.getUserName())
                 .isNewUser(true)
                 .role(user.getRole())
                 .build();

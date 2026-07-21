@@ -4,6 +4,8 @@ import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
 import com.amoa.server.domain.user.dto.response.KakaoUserInfoResDTO;
 import com.amoa.server.global.apiPayload.exception.GeneralException;
 import com.amoa.server.global.config.KaKaoProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

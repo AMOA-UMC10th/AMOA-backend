@@ -8,17 +8,24 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum UserErrorCode implements BaseErrorCode{
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND,
+
+    MEMBER_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
             "MEMBER404_1",
-            "조회된 회원이 없습니다."),
-    MEMBER_NOT_ACTIVE(HttpStatus.UNAUTHORIZED,
+            "조회된 회원이 없습니다."
+    ),
+
+    MEMBER_NOT_ACTIVE(
+            HttpStatus.UNAUTHORIZED,
             "MEMBER401_1",
-            "탈퇴한 회원입니다."),
+            "탈퇴한 회원입니다."
+    ),
+
     MEMBER_UNAUTHORIZED(
             HttpStatus.UNAUTHORIZED,
             "MEMBER401_2",
-            "권한이 없습니다."),
-    ;
+            "권한이 없습니다."
+    );
 
     private final HttpStatus httpStatus;
     private final String code;
