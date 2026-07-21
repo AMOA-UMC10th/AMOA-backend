@@ -46,7 +46,7 @@ public interface ReservationControllerDocs {
             summary = "예약 일정 확정",
             description = "예약 생성 후 선택한 날짜와 시작 시간을 기준으로 예약 일정을 확정합니다."
     )
-    ApiResponse<Void> confirmReservationSchedule(
+    ApiResponse<ReservationResDTO.ConfirmScheduleResponse> confirmReservationSchedule(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "예약 ID", example = "1")
             Long reservationId,

@@ -134,6 +134,22 @@ public final class ReservationConverter {
         );
     }
 
+    //예약 확정 res
+    public static ReservationResDTO.ConfirmScheduleResponse
+    toConfirmScheduleResponse(
+            Reservation reservation,
+            String artName
+    ) {
+        return new ReservationResDTO.ConfirmScheduleResponse(
+                reservation.getId(),
+                reservation.getShop().getShopName(),
+                artName,
+                reservation.getReservationDate(),
+                reservation.getReservationStartTime(),
+                reservation.getTotalPrice()
+        );
+    }
+
     //아트 상세 조회
     public static ReservationResDTO.ReservationInfoResponse
     toReservationInfoResponse(

@@ -8,7 +8,6 @@ import com.amoa.server.domain.reservation.service.command.ReservationCommandServ
 import com.amoa.server.domain.reservation.service.query.ReservationQueryService;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -46,21 +45,22 @@ public class ReservationController implements ReservationControllerDocs {
 
     @Override
     @PatchMapping("/{reservationId}/schedule")
-    public ApiResponse<Void> confirmReservationSchedule(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<ReservationResDTO.ConfirmScheduleResponse> confirmReservationSchedule(
+            @AuthenticationPrincipal CustomUserDetails principal,
             @PathVariable Long reservationId,
             @Valid @RequestBody
             ReservationReqDTO.ConfirmScheduleRequest request
     ) {
-        reservationCommandService.confirmReservationSchedule(
-                userDetails.user().getId(),
-                reservationId,
-                request
-        );
+        ReservationResDTO.ConfirmScheduleResponse response =
+                reservationCommandService.confirmReservationSchedule(
+                        principal.user().getId(),
+                        reservationId,
+                        request
+                );
 
         return ApiResponse.onSuccess(
                 ReservationSuccessCode.RESERVATION_SCHEDULE_CONFIRMED,
-                null
+                response
         );
     }
 
