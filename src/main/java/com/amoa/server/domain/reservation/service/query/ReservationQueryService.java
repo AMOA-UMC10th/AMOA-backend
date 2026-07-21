@@ -288,7 +288,7 @@ public class ReservationQueryService {
                 reservationRepository.findReservationList(
                         userId,
                         ReservationStatus.DRAFT,
-                        PageRequest.of(0, requestedSize + 1)
+                        PageRequest.of(0, requestedSize)
                 );
 
         List<ReservationResDTO.ReservationSummaryResponse> responses =
