@@ -10,12 +10,15 @@ import com.amoa.server.domain.reservation.exception.ReservationException;
 import com.amoa.server.domain.reservation.exception.code.ReservationErrorCode;
 import com.amoa.server.domain.reservation.repository.ReservationRepository;
 import com.amoa.server.domain.reservation.repository.ReservationSelectedOptionRepository;
+import com.amoa.server.domain.shop.entity.mapping.ShopOption;
+import com.amoa.server.domain.shop.enums.ShopOptionType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -219,7 +222,7 @@ public class ReservationQueryService {
                         candidateStartTime
                 );
 
-        return candidateDateTime.isBefore(
+        return !candidateDateTime.isAfter(
                 LocalDateTime.now()
         );
     }
@@ -265,6 +268,53 @@ public class ReservationQueryService {
         return ReservationConverter.toReservationInfoResponse(
                 reservation,
                 selectedOptions
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationResDTO.ReservationListResponse getReservationList(
+            Long userId,
+            int size
+    ) {
+        if (size < 1 || size > 20) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_PAGE_SIZE_INVALID
+            );
+        }
+
+        int requestedSize = Math.min(size, 20);
+
+        List<Reservation> reservations =
+                reservationRepository.findReservationList(
+                        userId,
+                        ReservationStatus.DRAFT,
+                        PageRequest.of(0, requestedSize + 1)
+                );
+
+        List<ReservationResDTO.ReservationSummaryResponse> responses =
+                reservations.stream()
+                        .map(reservation -> {
+                            String artName =
+                                    reservationSelectedOptionRepository
+                                            .findAllByReservation_Id(reservation.getId())
+                                            .stream()
+                                            .map(ReservationSelectedOption::getShopOption)
+                                            .filter(shopOption ->
+                                                    shopOption.getOptionType() == ShopOptionType.ART
+                                            )
+                                            .map(ShopOption::getOptionName)
+                                            .findFirst()
+                                            .orElse("");
+
+                            return ReservationConverter.toReservationSummaryResponse(
+                                    reservation,
+                                    artName
+                            );
+                        })
+                        .toList();
+
+        return new ReservationResDTO.ReservationListResponse(
+                responses
         );
     }
 }

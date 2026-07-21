@@ -98,4 +98,24 @@ public class ReservationResDTO {
             String requestMessage,
             String kakaoChannelUrl
     ) {}
+
+    public record ReservationListResponse(
+            List<ReservationSummaryResponse> reservations
+    ) {}
+
+    public record ReservationSummaryResponse(
+            Long reservationId,
+            ReservationStatus reservationStatus,
+            String shopName,
+            String artName,
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            int totalPrice
+    ) {}
+
+    public record ReservationCursorResponse(
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            Long reservationId
+    ) {}
 }
