@@ -136,4 +136,8 @@ public class Reservation extends BaseEntity {
         this.reservationStatus = ReservationStatus.RESERVED;
         this.paymentStatus = PaymentStatus.PAID; // MVP
     }
+
+    public void cancel() {
+        this.reservationStatus = ReservationStatus.CANCELED;
+    }
 }
