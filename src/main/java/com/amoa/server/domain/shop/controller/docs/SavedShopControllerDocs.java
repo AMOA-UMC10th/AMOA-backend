@@ -33,14 +33,4 @@ public interface SavedShopControllerDocs {
             @Parameter(hidden = true)
             CustomUserDetails customUserDetails
     );
-
-    @Operation(
-            summary = "찜한 샵 목록 조회",
-            description = "현재 로그인한 사용자가 찜한 샵 목록을 조회합니다."
-    )
-    ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
-            CustomUserDetails customUserDetails,
-            Pageable pageable
-    );
-
 }
