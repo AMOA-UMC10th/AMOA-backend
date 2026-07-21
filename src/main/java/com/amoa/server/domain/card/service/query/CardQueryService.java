@@ -46,11 +46,16 @@ public class CardQueryService {
     ) {
         // 전체 개수 조회(검색 결과가 총 몇 개인지)
         Long totalCount = cardRepository.countCards(request);
+
+        // size 기본값 20, 최소 1, 최대 100으로 제한
+        int size = request.size() == null
+                ? 20
+                : Math.max(1, Math.min(request.size(), 100));
+
         // 현재 페이지 조회
-        List<Card> cards = cardRepository.findCards(request);
+        List<Card> cards = cardRepository.findCards(request, size);
 
         // 커서 페이지네이션
-        int size = request.size() == null ? 20 : request.size();
         boolean hasNext = cards.size() > size;
         if (hasNext) {
             cards = cards.subList(0, size);

@@ -37,7 +37,7 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
 
     // 카드 목록 조회
     @Override
-    public List<Card> findCards(CardSearchRequest request) {
+    public List<Card> findCards(CardSearchRequest request, int size) {
 
         return queryFactory
                 .selectFrom(qCard)
@@ -52,7 +52,7 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         designTagCondition(request.designTagId())
                 )
                 .orderBy(getOrder(request.sort()))                           // 정렬
-                .limit((request.size() == null ? 20 : request.size()) + 1)   // +1 사용으로 다음 페이지 존재를 판단 가능
+                .limit(size + 1)
                 .fetch();
     }
 

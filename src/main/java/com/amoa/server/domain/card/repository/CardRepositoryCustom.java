@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CardRepositoryCustom {
 
-    List<Card> findCards(CardSearchRequest request);
+    List<Card> findCards(CardSearchRequest request, int size);
 
     Long countCards(CardSearchRequest request);
 }
