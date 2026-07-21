@@ -33,4 +33,28 @@ public class CardResDTO {
             String kakaoChannelUrl
     ) {
     }
+
+    // 아트 목록 조회
+    public record CardList(
+            Long totalCount,
+            Integer size,
+            List<CardInfo> cards,
+            Long nextCursor,
+            boolean hasNext
+    ) {
+    }
+
+    // 아트 목록 조회에서 카드 하나의 정보
+    public record CardInfo(
+            Long cardId,
+            String shopName,
+            String instagramUrl,
+            ArtType artType,
+            Integer minPrice,
+            Integer maxPrice,
+            String regionName,
+            String createdMonth,
+            boolean isLiked
+    ) {
+    }
 }

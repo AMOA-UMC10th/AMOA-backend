@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CardRepository extends JpaRepository<Card, Long> {
+public interface CardRepository extends JpaRepository<Card, Long>, CardRepositoryCustom {
 
     @Query("""
             SELECT c
@@ -29,4 +29,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Modifying
     @Query("UPDATE Card c SET c.likeCard = c.likeCard - 1 WHERE c.id = :cardId")
     void decreaseLikeCount(@Param("cardId") Long cardId);
+
+    
 }
