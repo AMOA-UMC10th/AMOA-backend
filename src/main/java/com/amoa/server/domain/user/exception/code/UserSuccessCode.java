@@ -25,6 +25,12 @@ public enum UserSuccessCode implements BaseSuccessCode {
             "USER200_3"
     ),
 
+    NICKNAME_CHECK_SUCCESS(
+            HttpStatus.OK,
+            "닉네임 사용 가능 여부 조회에 성공했습니다.",
+            "USER200_4"
+    ),
+
     USER_WITHDRAW_SUCCESS(
             HttpStatus.OK,
             "탈퇴에 성공하였습니다.",
