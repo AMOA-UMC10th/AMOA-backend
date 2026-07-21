@@ -30,10 +30,10 @@ public class CardDesignTag {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "card_id")
+    @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "design_tag_id")
+    @JoinColumn(name = "design_tag_id", nullable = false)
     private DesignTag designTag;
 }
