@@ -47,10 +47,10 @@ public class SavedShopQueryService {
                         })
                         .toList();
 
-        return SavedShopResDTO.LikedShopListResponse.builder()
-                .likedShops(likedShops)
-                .totalElements(savedShops.getTotalElements())
-                .hasNext(savedShops.hasNext())
-                .build();
+        return new SavedShopResDTO.LikedShopListResponse(
+                likedShops,
+                savedShops.getTotalElements(),
+                savedShops.hasNext()
+                );
     }
 }
