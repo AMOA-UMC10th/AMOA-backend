@@ -9,12 +9,17 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum RegionErrorCode implements BaseErrorCode {
 
-    REGION_NOT_FOUND(HttpStatus.NOT_FOUND,
+    REGION_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
             "REGION404_1",
-            "조회되지 않는 지역입니다."),
-    KAKAO_API_ERROR(HttpStatus.BAD_GATEWAY,
+            "조회되지 않는 지역입니다."
+    ),
+
+    KAKAO_API_ERROR(
+            HttpStatus.BAD_GATEWAY,
             "REGION502_1",
-            "카카오 API 호출 중 오류가 발생했습니다.");
+            "카카오 API 호출 중 오류가 발생했습니다."
+    );
 
     private final HttpStatus httpStatus;
     private final String code;
