@@ -8,19 +8,24 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum CardSuccessCode implements BaseSuccessCode {
-    CARD_CREATED(HttpStatus.CREATED,
+    CARD_CREATED(
+            HttpStatus.CREATED,
             "CARD201_1",
-            "카드가 등록되었습니다."),
+            "카드가 등록되었습니다."
+    ),
+
     CARD_LIKED(
             HttpStatus.OK,
             "CARD200_1",
             "카드 찜 등록에 성공했습니다."
     ),
+
     CARD_UNLIKED(
             HttpStatus.OK,
             "CARD200_2",
             "카드 찜 취소에 성공했습니다."
     ),
+
     CARD_KAKAO_CHANNEL_FOUND(
             HttpStatus.OK,
             "CARD200_3",

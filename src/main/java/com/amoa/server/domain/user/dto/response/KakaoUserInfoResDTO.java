@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true) // 모르는 필드는 무시
 public class KakaoUserInfoResDTO {
-    private Long id; // 카카오 사용자 고유 식별자(Member 엔티티의 socialId에 해당)
+    private Long id; // 카카오 사용자 고유 식별자(User 엔티티의 socialId에 해당)
 
     @JsonProperty("kakao_account")
     private KakaoAccount kakaoAccount;
@@ -23,7 +23,9 @@ public class KakaoUserInfoResDTO {
         @Getter
         @NoArgsConstructor
         public static class Profile {
-            private String nickname;
+
+            @JsonProperty("nickname")
+            private String userName;
         }
     }
 }
