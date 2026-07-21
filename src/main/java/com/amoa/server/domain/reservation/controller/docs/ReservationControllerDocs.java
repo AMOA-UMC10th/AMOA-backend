@@ -18,10 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ReservationControllerDocs {
 
     @Operation(
-            summary = "예약 생성",
+            summary = "1번-손 상태·아트·추가 예약 옵션 선택(최초생성)",
             description = "사용자가 아트 카드와 추가 옵션을 선택하여 예약을 생성합니다."
     )
-    ApiResponse<ReservationResDTO.CreateReservationResponse> createReservation(
+    ApiResponse<ReservationResDTO.CreateReservationResponse>
+    createReservation(
             ReservationReqDTO.CreateReservationRequest request,
 
             @Parameter(hidden = true)
@@ -29,10 +30,11 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "예약 가능 시간 조회 API",
+            summary = "2번-예약 가능한 날짜·시간 조회",
             description = "예약 날짜를 기준으로 선택 가능한 예약 시간을 조회합니다."
     )
-    ApiResponse<ReservationResDTO.AvailableTimesResponse> getAvailableTimes(
+    ApiResponse<ReservationResDTO.AvailableTimesResponse>
+    getAvailableTimes(
             @Parameter(description = "예약 ID", example = "1")
             @PathVariable Long reservationId,
 
@@ -43,10 +45,11 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "예약 일정 확정",
+            summary = "3번-예약 최종 확정",
             description = "예약 생성 후 선택한 날짜와 시작 시간을 기준으로 예약 일정을 확정합니다."
     )
-    ApiResponse<ReservationResDTO.ConfirmScheduleResponse> confirmReservationSchedule(
+    ApiResponse<ReservationResDTO.ConfirmScheduleResponse>
+    confirmReservationSchedule(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "예약 ID", example = "1")
             Long reservationId,
@@ -54,7 +57,7 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "예약 상세 조회 API",
+            summary = "예약 상세 조회",
             description = "로그인한 사용자의 예약 상세 정보를 조회합니다."
     )
     ApiResponse<ReservationResDTO.ReservationInfoResponse>
@@ -71,7 +74,7 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "예약 목록 조회 API",
+            summary = "예약 목록 조회",
             description = "로그인한 사용자의 예약 목록을 최신순으로 조회합니다."
     )
     ApiResponse<ReservationResDTO.ReservationListResponse>
@@ -88,7 +91,7 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "예약 취소 API",
+            summary = "예약 취소",
             description = "로그인한 사용자의 예약을 취소합니다."
     )
     ApiResponse<Void> cancelReservation(
