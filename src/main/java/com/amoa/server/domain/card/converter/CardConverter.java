@@ -1,12 +1,14 @@
 package com.amoa.server.domain.card.converter;
 
 import com.amoa.server.domain.card.dto.request.CardReqDTO;
+import com.amoa.server.domain.card.dto.response.CardResDTO;
 import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard;
 import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard.DesignTagRes;
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.entity.mapping.CardDesignTag;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.shop.entity.Shop;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -63,6 +65,28 @@ public class CardConverter {
                 card.getArtType(),
                 designTagResList,
                 card.getCreatedAt()
+        );
+    }
+
+    // 카드 목록 조회(엔티티->DTO 변환 및 추가 정보 조합)
+    public CardResDTO.CardInfo toCardInfo(Card card, Set<Long> likedCardIds) {
+
+        return new CardResDTO.CardInfo(
+                card.getId(),
+                card.getShop().getShopName(),
+                card.getInstagramUrl(),
+                card.getArtType(),
+                card.getMinPrice(),
+                card.getMaxPrice(),
+                card.getShop()
+                        .getRegion()
+                        .getThirdDepth(),
+                card.getCreatedMonth() == null
+                        ? null
+                        : card.getCreatedMonth()
+                                .toString()
+                                .substring(0, 7),
+                likedCardIds.contains(card.getId())
         );
     }
 }

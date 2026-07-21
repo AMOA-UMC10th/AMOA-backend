@@ -15,16 +15,14 @@ public enum ShopSuccessCode implements BaseSuccessCode {
     SHOP_DELETED(HttpStatus.OK, "SHOP200_4", "샵이 삭제되었습니다."),
     SHOP_LIKED(HttpStatus.OK, "SHOP200_5", "네일샵 찜 등록에 성공했습니다."),
     SHOP_UNLIKED(HttpStatus.OK, "SHOP200_6", "네일샵 찜 취소에 성공했습니다."),
-    DESIGNTAG_LIST_FOUND(HttpStatus.OK, "SHOP200_7", "디자인태그 목록 조회에 성공했습니다."),
-    KAKAO_SEARCH_FOUND(HttpStatus.OK, "SHOP200_8", "카카오 로컬 API 검색에 성공했습니다."),
-    LIKED_SHOP_LIST_FOUND(HttpStatus.OK, "SHOP200_9", "찜한 네일샵 목록 조회에 성공했습니다.");
     DESIGN_TAG_LIST_FOUND(HttpStatus.OK, "SHOP200_7", "디자인태그 목록 조회에 성공했습니다."),
     KAKAO_SEARCH_FOUND(HttpStatus.OK, "SHOP200_8", "카카오 로컬 API 검색에 성공했습니다."),
-    SHOP_OPTION_CREATED(HttpStatus.CREATED, "SHOP201_2", "샵 옵션이 등록되었습니다."),
-    SHOP_OPTION_LIST_FOUND(HttpStatus.OK, "SHOP200_9", "샵 옵션 목록 조회에 성공했습니다."),
+    LIKED_SHOP_LIST_FOUND(HttpStatus.OK, "SHOP200_9", "찜한 네일샵 목록 조회에 성공했습니다."),
     SHOP_OPTION_UPDATED(HttpStatus.OK, "SHOP200_10", "샵 옵션 수정을 성공했습니다."),
     CARD_LIST_FOUND(HttpStatus.OK, "SHOP200_11", "카드 목록 조회에 성공했습니다."),
-    SHOP_CREATED(HttpStatus.CREATED, "SHOP201_1", "샵이 등록되었습니다.");
+    SHOP_OPTION_LIST_FOUND(HttpStatus.OK, "SHOP200_12", "샵 옵션 목록 조회에 성공했습니다."),
+    SHOP_CREATED(HttpStatus.CREATED, "SHOP201_1", "샵이 등록되었습니다."),
+    SHOP_OPTION_CREATED(HttpStatus.CREATED, "SHOP201_2", "샵 옵션이 등록되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

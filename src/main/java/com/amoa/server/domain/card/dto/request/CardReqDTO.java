@@ -1,5 +1,6 @@
 package com.amoa.server.domain.card.dto.request;
 
+import com.amoa.server.domain.common.enums.SortType;
 import jakarta.validation.constraints.Min;
 import com.amoa.server.domain.common.enums.ArtType;
 import java.util.List;
@@ -18,6 +19,19 @@ public class CardReqDTO {
             Integer createdMonth,
             ArtType artType,
             List<Long> designTagIds
+    ) {
+    }
+
+    // 아트 목록 조회
+    public record CardSearchRequest(
+            List<Long> regionIds,
+            Integer minPrice,
+            Integer maxPrice,
+            ArtType artType,
+            Long designTagId,
+            SortType sort,
+            Long cursor,
+            Integer size
     ) {
     }
 }
