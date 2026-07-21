@@ -4,7 +4,6 @@ import com.amoa.server.domain.shop.controller.docs.SavedShopControllerDocs;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.exception.code.ShopSuccessCode;
 import com.amoa.server.domain.shop.service.command.SavedShopCommandService;
-import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class SavedShopController implements SavedShopControllerDocs{
 
     private final SavedShopCommandService savedShopCommandService;
-    private final SavedShopQueryService savedShopQueryService;
 
     @Override
     @PostMapping("/{shopId}/like")
