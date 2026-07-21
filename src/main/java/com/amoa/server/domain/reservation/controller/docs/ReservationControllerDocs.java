@@ -86,4 +86,20 @@ public interface ReservationControllerDocs {
             @RequestParam(defaultValue = "10")
             int size
     );
+
+    @Operation(
+            summary = "예약 취소 API",
+            description = "로그인한 사용자의 예약을 취소합니다."
+    )
+    ApiResponse<Void> cancelReservation(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal CustomUserDetails principal,
+
+            @Parameter(
+                    description = "취소할 예약 ID",
+                    required = true,
+                    example = "1"
+            )
+            @PathVariable Long reservationId
+    );
 }

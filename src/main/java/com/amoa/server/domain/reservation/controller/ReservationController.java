@@ -8,6 +8,7 @@ import com.amoa.server.domain.reservation.service.command.ReservationCommandServ
 import com.amoa.server.domain.reservation.service.query.ReservationQueryService;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -109,6 +110,23 @@ public class ReservationController implements ReservationControllerDocs {
                         principal.user().getId(),
                         size
                 )
+        );
+    }
+
+    @Override
+    @PatchMapping("/{reservationId}/cancel")
+    public ApiResponse<Void> cancelReservation(
+            @AuthenticationPrincipal CustomUserDetails principal,
+            @PathVariable Long reservationId
+    ) {
+        reservationCommandService.cancelReservation(
+                reservationId,
+                principal.user().getId()
+        );
+
+        return ApiResponse.onSuccess(
+                ReservationSuccessCode.RESERVATION_CANCEL_OK,
+                null
         );
     }
 }

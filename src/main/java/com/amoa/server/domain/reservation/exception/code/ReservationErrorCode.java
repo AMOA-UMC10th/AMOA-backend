@@ -162,6 +162,18 @@ public enum ReservationErrorCode implements BaseErrorCode {
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_20",
             "조회 개수는 1개 이상 20개 이하여야 합니다."
+    ),
+
+    RESERVATION_ALREADY_CANCELLED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_21",
+            "이미 취소된 예약입니다."
+    ),
+
+    RESERVATION_CANNOT_CANCEL(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_22",
+            "취소할 수 없는 예약 상태입니다."
     );
 
     private final HttpStatus httpStatus;
