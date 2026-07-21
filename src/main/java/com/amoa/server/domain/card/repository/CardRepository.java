@@ -1,6 +1,12 @@
 package com.amoa.server.domain.card.repository;
 
 import com.amoa.server.domain.card.entity.Card;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.common.enums.ArtType;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -23,6 +29,10 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             """)
     Optional<Card> findByIdWithShop(
             @Param("cardId") Long cardId
+    );
+
+    List<Card> findTop5ByShopAndDeletedAtIsNullOrderByCreatedAtDesc(
+            Shop shop
     );
 
     // 샵 ID로 카드 목록 조회 (art_type 필터링 없이 전체)
