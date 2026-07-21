@@ -45,9 +45,15 @@ public enum ReservationSuccessCode implements BaseSuccessCode {
             "예약 상세 조회에 성공했습니다."
     ),
 
-    RESERVATION_CANCEL_OK(
+    RESERVATION_LIST_OK(
             HttpStatus.OK,
             "RESERVATION200_7",
+            "예약 목록 조회에 성공했습니다."
+    ),
+
+    RESERVATION_CANCEL_OK(
+            HttpStatus.OK,
+            "RESERVATION200_8",
             "예약 취소에 성공했습니다."
     );
 

@@ -3,6 +3,7 @@ package com.amoa.server.domain.reservation.converter;
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO;
 import com.amoa.server.domain.reservation.dto.response.ReservationResDTO;
+import com.amoa.server.domain.reservation.dto.response.ReservationResDTO.ReservationSummaryResponse;
 import com.amoa.server.domain.reservation.dto.response.ReservationResDTO.SelectedOptionResponse;
 import com.amoa.server.domain.reservation.entity.Reservation;
 import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOption;
@@ -161,6 +162,21 @@ public final class ReservationConverter {
                 reservation.getCustomerPhoneNumber(),
                 reservation.getRequestMessage(),
                 reservation.getShop().getKakaoChannelUrl()
+        );
+    }
+
+    public static ReservationSummaryResponse toReservationSummaryResponse(
+            Reservation reservation,
+            String artName
+    ) {
+        return new ReservationSummaryResponse(
+                reservation.getId(),
+                reservation.getReservationStatus(),
+                reservation.getShop().getShopName(),
+                artName,
+                reservation.getReservationDate(),
+                reservation.getReservationStartTime(),
+                reservation.getTotalPrice()
         );
     }
 }

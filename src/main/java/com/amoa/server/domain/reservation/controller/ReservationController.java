@@ -99,6 +99,21 @@ public class ReservationController implements ReservationControllerDocs {
     }
 
     @Override
+    @GetMapping
+    public ApiResponse<ReservationResDTO.ReservationListResponse> getReservationList(
+            @AuthenticationPrincipal CustomUserDetails principal,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.onSuccess(
+                ReservationSuccessCode.RESERVATION_LIST_OK,
+                reservationQueryService.getReservationList(
+                        principal.user().getId(),
+                        size
+                )
+        );
+    }
+
+    @Override
     @PatchMapping("/{reservationId}/cancel")
     public ApiResponse<Void> cancelReservation(
             @AuthenticationPrincipal CustomUserDetails principal,

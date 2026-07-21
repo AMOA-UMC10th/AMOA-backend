@@ -27,6 +27,7 @@ import com.amoa.server.domain.shop.repository.ShopOptionRepository;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -333,7 +334,10 @@ public class ReservationCommandService {
         LocalTime startTime = request.reservationStartTime();
         int totalDurationMinutes = reservation.getTotalDurationMinutes();
 
-        validateDateAndTime(reservationDate, startTime);
+        validateDateAndTime(
+                request.reservationDate(),
+                request.reservationStartTime()
+        );
 
         LocalTime latestStartTime =
                 BUSINESS_CLOSE_TIME
@@ -346,7 +350,8 @@ public class ReservationCommandService {
             );
         }
 
-        LocalTime endTime = startTime.plusMinutes(totalDurationMinutes);
+        LocalTime endTime = request.reservationStartTime()
+                .plusMinutes(reservation.getTotalDurationMinutes());
 
         validateOverlap(
                 reservation.getShop().getId(),
@@ -375,7 +380,7 @@ public class ReservationCommandService {
         }
     }
 
-    //날짜와 현재 시간 검증
+    // 날짜와 현재 시간 검증
     private void validateDateAndTime(
             LocalDate reservationDate,
             LocalTime reservationStartTime

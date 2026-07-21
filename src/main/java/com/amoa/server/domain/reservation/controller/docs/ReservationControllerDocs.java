@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalTime;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.time.LocalDate;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,6 +68,23 @@ public interface ReservationControllerDocs {
                     example = "1"
             )
             @PathVariable Long reservationId
+    );
+
+    @Operation(
+            summary = "예약 목록 조회 API",
+            description = "로그인한 사용자의 예약 목록을 최신순으로 조회합니다."
+    )
+    ApiResponse<ReservationResDTO.ReservationListResponse>
+    getReservationList(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal CustomUserDetails principal,
+
+            @Parameter(
+                    description = "한 번에 조회할 예약 개수",
+                    example = "10"
+            )
+            @RequestParam(defaultValue = "10")
+            int size
     );
 
     @Operation(
