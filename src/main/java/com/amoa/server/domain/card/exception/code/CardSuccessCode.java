@@ -30,7 +30,10 @@ public enum CardSuccessCode implements BaseSuccessCode {
             HttpStatus.OK,
             "CARD200_3",
             "카카오톡 채널 URL을 성공적으로 조회했습니다."
-    );
+    ),
+    CARD_FOUND(HttpStatus.OK,
+            "CARD200_4",
+            "카드를 성공적으로 조회했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
