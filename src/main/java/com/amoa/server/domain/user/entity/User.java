@@ -49,8 +49,10 @@ public class User extends BaseEntity {
     @Column(name = "profile_image_url", length = 500)
     private String profileImageUrl;
 
-    @NotBlank
-    @Column(name = "nickname", length = 50)
+    @Column(name = "user_name", nullable = false, length = 50)
+    private String userName;
+
+    @Column(name = "nickname", unique = true, length = 50)
     private String nickname;
 
     @NotBlank

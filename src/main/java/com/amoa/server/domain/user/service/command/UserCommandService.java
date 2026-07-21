@@ -42,11 +42,11 @@ public class UserCommandService {
                 ? account.getEmail()
                 : "kakao-" + socialUid + "@no-email.local";
 
-        String nickname =
+        String userName =
                 account.getProfile() != null
-                        && account.getProfile().getNickname() != null
-                        && !account.getProfile().getNickname().isBlank()
-                        ? account.getProfile().getNickname()
+                        && account.getProfile().getUserName() != null
+                        && !account.getProfile().getUserName().isBlank()
+                        ? account.getProfile().getUserName()
                         : "익명사용자";
 
         return userRepository.findBySocialUidIncludingInactive(socialUid)
@@ -60,12 +60,12 @@ public class UserCommandService {
                 })
                 .orElseGet(() -> {
                     User newUser = User.builder()
-                        .socialUid(socialUid)
-                        .email(email)
-                        .nickname(nickname)
-                        .role(Role.NEW_USER)
-                        .isActive(true)
-                        .build();
+                            .socialUid(socialUid)
+                            .email(email)
+                            .userName(userName)
+                            .role(Role.NEW_USER)
+                            .isActive(true)
+                            .build();
                     try {
                         return userCreateCommandService.saveAndFlush(newUser);
                     } catch (DataIntegrityViolationException exception) {
@@ -116,8 +116,5 @@ public class UserCommandService {
                     }
                 }
         );
-
-        // @SQLDelete에 의해 is_active = false 처리
-        userRepository.delete(user);
     }
 }
