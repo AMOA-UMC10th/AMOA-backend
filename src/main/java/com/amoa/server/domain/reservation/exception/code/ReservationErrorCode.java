@@ -142,14 +142,26 @@ public enum ReservationErrorCode implements BaseErrorCode {
 
     INVALID_HAND_STATE(
             HttpStatus.BAD_REQUEST,
-            "RESERVATION400_18",
+            "RESERVATION400_17",
             "현재 손 상태 선택이 올바르지 않습니다."
     ),
 
     RESERVATION_ALREADY_SCHEDULED(
             HttpStatus.BAD_REQUEST,
-            "RESERVATION400_17",
+            "RESERVATION400_18",
             "이미 저장된 예약입니다"
+    ),
+
+    RESERVATION_CURSOR_INVALID(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_19",
+            "예약 목록 조회 커서가 올바르지 않습니다."
+    ),
+
+    RESERVATION_PAGE_SIZE_INVALID(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_20",
+            "조회 개수는 1개 이상 20개 이하여야 합니다."
     );
 
     private final HttpStatus httpStatus;
