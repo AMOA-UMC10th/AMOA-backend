@@ -2,6 +2,7 @@ package com.amoa.server.domain.user.controller.docs;
 
 import com.amoa.server.domain.shop.converter.SavedShopConverter;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "User", description = "유저 관련 API")
 public interface UserControllerDocs {
@@ -37,4 +39,11 @@ public interface UserControllerDocs {
             Pageable pageable
     );
 
+    @Operation(
+            summary = "닉네임 중복 확인 API",
+            description = "온보딩/설정 화면에서 입력한 닉네임의 형식 유효성과 중복 여부를 확인합니다."
+    )
+    ApiResponse<NicknameCheckResDTO> checkNickname(
+            @RequestParam String nickname
+    );
 }
