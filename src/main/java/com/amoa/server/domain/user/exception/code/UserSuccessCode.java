@@ -19,6 +19,12 @@ public enum UserSuccessCode implements BaseSuccessCode {
             "USER201_1"
     ),
 
+    USER_LIKED_SHOPS_SUCCESS(
+            HttpStatus.OK,
+            "찜한 네일샵 목록 조회에 성공했습니다.",
+            "USER200_3"
+    ),
+
     USER_WITHDRAW_SUCCESS(
             HttpStatus.OK,
             "탈퇴에 성공하였습니다.",

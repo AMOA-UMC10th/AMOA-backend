@@ -1,6 +1,7 @@
 package com.amoa.server.domain.shop.entity;
 
 import com.amoa.server.domain.common.entity.Region;
+import com.amoa.server.domain.shop.entity.mapping.ShopDesignTag;
 import com.amoa.server.domain.shop.enums.ShopStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -55,6 +56,9 @@ public class Shop {
 
     @Column(name = "business_hours", length = 255)
     private String businessHours;
+
+    @Column(name = "deposit_amount", nullable = false)
+    private int depositAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "shop_status", nullable = false, length = 20)

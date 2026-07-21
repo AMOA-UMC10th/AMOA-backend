@@ -16,6 +16,7 @@ public class ShopOptionConverter {
         return ShopOption.builder()
                 .shop(shop)
                 .optionName(request.optionName())
+                .optionType(request.optionType())
                 .optionPrice(request.optionPrice())
                 .durationMinutes(request.durationMinutes())
                 .maxQuantity(request.maxQuantity())
@@ -29,6 +30,7 @@ public class ShopOptionConverter {
         return new ShopOptionResDTO.OptionResult(
                 option.getId(),
                 option.getOptionName(),
+                option.getOptionType(),
                 option.getOptionPrice(),
                 option.getDurationMinutes(),
                 option.getMaxQuantity()

@@ -1,9 +1,12 @@
 package com.amoa.server.domain.shop.entity.mapping;
 
 import com.amoa.server.domain.shop.entity.Shop;
+import com.amoa.server.domain.shop.enums.ShopOptionType;
 import com.amoa.server.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +27,11 @@ import lombok.NoArgsConstructor;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_shop_option_shop_name",
-                        columnNames = {"shop_id", "option_name"}
+                        columnNames = {
+                                "shop_id",
+                                "option_name",
+                                "option_type"
+                        }
                 )
         }
 )
@@ -42,17 +49,21 @@ public class ShopOption extends BaseEntity {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "option_type", nullable = false)
+    private ShopOptionType optionType;
+
     @Column(name = "option_name", nullable = false, length = 50)
     private String optionName;
 
     @Column(name = "option_price", nullable = false)
-    private int optionPrice;
+    private Integer optionPrice;
 
     @Column(name = "duration_minutes", nullable = false)
-    private int durationMinutes;
+    private Integer durationMinutes;
 
     @Column(name = "max_quantity", nullable = false)
-    private int maxQuantity = 10;
+    private Integer maxQuantity = 10;
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
@@ -60,13 +71,15 @@ public class ShopOption extends BaseEntity {
     @Builder
     public ShopOption(
             Shop shop,
+            ShopOptionType optionType,
             String optionName,
-            int optionPrice,
-            int durationMinutes,
-            int maxQuantity,
+            Integer optionPrice,
+            Integer durationMinutes,
+            Integer maxQuantity,
             boolean isActive
     ) {
         this.shop = shop;
+        this.optionType = optionType;
         this.optionName = optionName;
         this.optionPrice = optionPrice;
         this.durationMinutes = durationMinutes;
@@ -76,15 +89,15 @@ public class ShopOption extends BaseEntity {
 
     public void update(
             String optionName,
-            int optionPrice,
-            int durationMinutes,
-            int maxQuantity,
-            boolean isActive
+            ShopOptionType optionType,
+            Integer optionPrice,
+            Integer durationMinutes,
+            Integer maxQuantity
     ) {
         this.optionName = optionName;
+        this.optionType = optionType;
         this.optionPrice = optionPrice;
         this.durationMinutes = durationMinutes;
         this.maxQuantity = maxQuantity;
-        this.isActive = isActive;
     }
 }

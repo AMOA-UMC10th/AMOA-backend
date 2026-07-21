@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,14 +29,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime
     );
+
     Optional<Reservation> findByIdAndUser_Id(
             Long reservationId,
             Long userId
-    );
-
-    List<Reservation> findAllByShop_IdAndReservationDate(
-            Long shopId,
-            LocalDate reservationDate
     );
 
     List<Reservation>
@@ -43,5 +40,26 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             Long shopId,
             LocalDate reservationDate,
             List<ReservationStatus> reservationStatus
+    );
+
+    Optional<Reservation> findByIdAndUser_IdAndReservationStatusNot(
+            Long reservationId,
+            Long userId,
+            ReservationStatus reservationStatus
+    );
+
+    @Query("""
+    SELECT r
+    FROM Reservation r
+    WHERE r.user.id = :userId
+      AND r.reservationStatus <> :status
+    ORDER BY r.reservationDate DESC,
+             r.reservationStartTime DESC,
+             r.id DESC
+    """)
+    List<Reservation> findReservationList(
+            Long userId,
+            ReservationStatus status,
+            Pageable pageable
     );
 }

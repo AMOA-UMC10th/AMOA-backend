@@ -35,11 +35,10 @@ public class SavedShopCommandService {
             throw new GeneralException((ShopErrorCode.SHOP_ALREADY_LIKED));
         }
 
-        return SavedShopResDTO.LikeResultDTO.builder()
-                .userShopId(savedShop.getId())
-                .shopId(shop.getId())
-                .createdAt(savedShop.getCreatedAt())
-                .build();
+        return new SavedShopResDTO.LikeResultDTO(
+                savedShop.getId(),
+                shop.getId(),
+                savedShop.getCreatedAt());
 
 
     }
@@ -55,7 +54,5 @@ public class SavedShopCommandService {
 
         savedShopRepository.delete(savedShop);
 
-        //Check ERD first
-        //shop.decreaseLikeCount();
     }
 }

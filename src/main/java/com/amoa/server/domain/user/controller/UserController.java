@@ -2,6 +2,8 @@ package com.amoa.server.domain.user.controller;
 
 import com.amoa.server.domain.auth.exception.AuthException;
 import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
+import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
 import com.amoa.server.domain.user.exception.code.UserSuccessCode;
 import com.amoa.server.domain.user.service.command.UserCommandService;
@@ -9,8 +11,12 @@ import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController implements UserControllerDocs {
 
     private final UserCommandService userCommandService;
+    private final SavedShopQueryService savedShopQueryService;
 
     @Override
     @DeleteMapping("/me")
@@ -34,6 +41,25 @@ public class UserController implements UserControllerDocs {
                 accessToken
         );
         return ApiResponse.onSuccess(UserSuccessCode.USER_WITHDRAW_SUCCESS, "회원 탈퇴가 완료되었습니다.");
+    }
+
+    @Override
+    @GetMapping("/me/liked-shops")
+    public ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PageableDefault(
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ){
+        return ApiResponse.onSuccess(
+                UserSuccessCode.USER_LIKED_SHOPS_SUCCESS,
+                savedShopQueryService.getLikedShops(
+                        customUserDetails.user(),
+                        pageable
+                )
+        );
     }
 
     private String resolveAccessToken(HttpServletRequest request) {
@@ -51,4 +77,7 @@ public class UserController implements UserControllerDocs {
 
         return accessToken;
     }
+
+
+
 }

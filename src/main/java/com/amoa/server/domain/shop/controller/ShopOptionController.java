@@ -7,10 +7,10 @@ import com.amoa.server.domain.shop.exception.code.ShopSuccessCode;
 import com.amoa.server.domain.shop.service.command.ShopOptionCommandService;
 import com.amoa.server.domain.shop.service.query.ShopOptionQueryService;
 import com.amoa.server.global.apiPayload.ApiResponse;
-import com.amoa.server.global.apiPayload.code.GeneralSuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,6 +45,23 @@ public class ShopOptionController implements ShopOptionControllerDocs {
         return ApiResponse.onSuccess(
                 ShopSuccessCode.SHOP_OPTION_LIST_FOUND,
                 shopOptionQueryService.getShopOptions(shopId)
+        );
+    }
+
+    @Override
+    @PatchMapping("/{shopId}/options/{optionId}")
+    public ApiResponse<ShopOptionResDTO.OptionListResult> updateShopOption(
+            @PathVariable Long shopId,
+            @PathVariable Long optionId,
+            @Valid @RequestBody ShopOptionReqDTO.UpdateRequest request
+    ) {
+        return ApiResponse.onSuccess(
+                ShopSuccessCode.SHOP_OPTION_UPDATED,
+                shopOptionCommandService.updateShopOption(
+                        shopId,
+                        optionId,
+                        request
+                )
         );
     }
 }

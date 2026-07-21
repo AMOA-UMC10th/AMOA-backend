@@ -8,6 +8,7 @@ import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 public class ReservationResDTO {
 
@@ -15,10 +16,16 @@ public class ReservationResDTO {
     public record CreateReservationResponse(
             Long reservationId,
             String reservationNumber,
-            Integer totalPrice,
-            Integer depositAmount,
+            Long cardId,
+            Long shopId,
+            Set<HandState> handStates,
+            GelRemovalType gelRemovalType,
+            int extensionRemovalCount,
+            int totalPrice,
+            int depositAmount,
             Integer totalDurationMinutes,
-            LocalTime reservationEndTime
+            ReservationStatus reservationStatus
+
     ) {}
 
     public record ReservationDetailResponse(
@@ -37,7 +44,7 @@ public class ReservationResDTO {
             String customerPhoneNumber,
             String requestMessage,
 
-            HandState handState,
+            Set<HandState> handStates,
             GelRemovalType gelRemovalType,
             Integer extensionRemovalCount,
 
@@ -75,5 +82,49 @@ public class ReservationResDTO {
     public record AvailableTimeResponse(
             LocalTime time,
             Integer isAvailable
+    ) {}
+
+    public record ConfirmScheduleResponse(
+            Long reservationId,
+            String shopName,
+            String artName,
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            int totalPrice
+    ) {}
+
+    public record ReservationInfoResponse(
+            Long reservationId,
+            ReservationStatus reservationStatus,
+            String shopName,
+            String artName,
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            int totalPrice,
+            int paymentAmount,
+            String customerName,
+            String customerPhoneNumber,
+            String requestMessage,
+            String kakaoChannelUrl
+    ) {}
+
+    public record ReservationListResponse(
+            List<ReservationSummaryResponse> reservations
+    ) {}
+
+    public record ReservationSummaryResponse(
+            Long reservationId,
+            ReservationStatus reservationStatus,
+            String shopName,
+            String artName,
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            int totalPrice
+    ) {}
+
+    public record ReservationCursorResponse(
+            LocalDate reservationDate,
+            LocalTime reservationStartTime,
+            Long reservationId
     ) {}
 }

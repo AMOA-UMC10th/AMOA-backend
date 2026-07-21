@@ -15,7 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,21 +45,22 @@ public class ReservationController implements ReservationControllerDocs {
 
     @Override
     @PatchMapping("/{reservationId}/schedule")
-    public ApiResponse<Void> confirmReservationSchedule(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<ReservationResDTO.ConfirmScheduleResponse> confirmReservationSchedule(
+            @AuthenticationPrincipal CustomUserDetails principal,
             @PathVariable Long reservationId,
             @Valid @RequestBody
             ReservationReqDTO.ConfirmScheduleRequest request
     ) {
-        reservationCommandService.confirmReservationSchedule(
-                userDetails.user().getId(),
-                reservationId,
-                request
-        );
+        ReservationResDTO.ConfirmScheduleResponse response =
+                reservationCommandService.confirmReservationSchedule(
+                        principal.user().getId(),
+                        reservationId,
+                        request
+                );
 
         return ApiResponse.onSuccess(
                 ReservationSuccessCode.RESERVATION_SCHEDULE_CONFIRMED,
-                null
+                response
         );
     }
 
@@ -73,13 +73,60 @@ public class ReservationController implements ReservationControllerDocs {
             @AuthenticationPrincipal CustomUserDetails principal
     ) {
         return ApiResponse.onSuccess(
-                ReservationSuccessCode
-                        .RESERVATION_AVAILABLE_TIMES_FOUND,
+                ReservationSuccessCode.RESERVATION_AVAILABLE_TIMES_FOUND,
                 reservationQueryService.getAvailableTimes(
                         principal.user().getId(),
                         reservationId,
                         date
                 )
+        );
+    }
+
+    @Override
+    @GetMapping("/{reservationId}")
+    public ApiResponse<ReservationResDTO.ReservationInfoResponse>
+    getReservationInfo(
+            @AuthenticationPrincipal CustomUserDetails principal,
+            @PathVariable Long reservationId
+    ) {
+        return ApiResponse.onSuccess(
+                ReservationSuccessCode.RESERVATION_DETAIL_SUCCESS,
+                reservationQueryService.getReservationInfo(
+                        reservationId,
+                        principal.user().getId()
+                )
+        );
+    }
+
+    @Override
+    @GetMapping
+    public ApiResponse<ReservationResDTO.ReservationListResponse> getReservationList(
+            @AuthenticationPrincipal CustomUserDetails principal,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.onSuccess(
+                ReservationSuccessCode.RESERVATION_LIST_OK,
+                reservationQueryService.getReservationList(
+                        principal.user().getId(),
+                        size
+                )
+        );
+    }
+
+    @Override
+    @PatchMapping("/{reservationId}/cancel")
+    public ApiResponse<Void> cancelReservation(
+            @AuthenticationPrincipal CustomUserDetails principal,
+            @PathVariable Long reservationId
+    ) {
+        reservationCommandService.cancelReservation(
+                reservationId,
+                principal.user().getId()
+        );
+
+        return ApiResponse.onSuccess(
+                ReservationSuccessCode.RESERVATION_CANCEL_OK,
+                null
         );
     }
 }

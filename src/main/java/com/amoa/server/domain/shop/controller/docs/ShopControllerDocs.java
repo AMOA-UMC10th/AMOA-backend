@@ -1,12 +1,17 @@
 package com.amoa.server.domain.shop.controller.docs;
 
+import com.amoa.server.domain.common.enums.ArtType;
+import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO.CreateShopResponse;
 import com.amoa.server.global.apiPayload.ApiResponse;
+import com.amoa.server.global.auth.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -22,4 +27,19 @@ public interface ShopControllerDocs {
     @Operation(summary = "샵 등록", description = "어드민이 새로운 샵을 등록합니다.")
     ResponseEntity<ApiResponse<CreateShopResponse>> createShop(
             @RequestBody ShopReqDTO.CreateShopRequest request);
+
+    @Operation(summary = "샵 상세 카드 목록 조회", description = "샵 상세 페이지에서 카드 목록을 조회합니다.")
+    ApiResponse<ShopResDTO.CardListResponse> getShopCards(
+            @PathVariable Long shopId,
+            @RequestParam(required = false) ArtType artType,
+            @RequestParam(defaultValue = "LATEST") SortType sort,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+
+    @Operation(summary = "샵 상세 조회", description = "유저가 샵 상세 정보를 조회합니다.")
+    ApiResponse<ShopResDTO.ShopDetailResponse> getShopDetail(
+            @PathVariable Long shopId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+
 }

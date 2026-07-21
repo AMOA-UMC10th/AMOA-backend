@@ -10,12 +10,15 @@ import com.amoa.server.domain.reservation.exception.ReservationException;
 import com.amoa.server.domain.reservation.exception.code.ReservationErrorCode;
 import com.amoa.server.domain.reservation.repository.ReservationRepository;
 import com.amoa.server.domain.reservation.repository.ReservationSelectedOptionRepository;
+import com.amoa.server.domain.shop.entity.mapping.ShopOption;
+import com.amoa.server.domain.shop.enums.ShopOptionType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,28 +34,6 @@ public class ReservationQueryService {
     private static final LocalTime BUSINESS_OPEN_TIME = LocalTime.of(10, 0);
     private static final LocalTime BUSINESS_CLOSE_TIME = LocalTime.of(20, 0);
     private static final int SLOT_INTERVAL_MINUTES = 30;
-
-    public ReservationResDTO.ReservationDetailResponse getReservationDetail(
-            Long userId,
-            Long reservationId
-    ) {
-        Reservation reservation = reservationRepository
-                .findByIdAndUser_Id(reservationId, userId)
-                .orElseThrow(() ->
-                        new ReservationException(
-                                ReservationErrorCode.RESERVATION_NOT_FOUND
-                        )
-                );
-
-        List<ReservationSelectedOption> selectedOptions =
-                reservationSelectedOptionRepository
-                        .findAllByReservation_Id(reservationId);
-
-        return ReservationConverter.toReservationDetailResponse(
-                reservation,
-                selectedOptions
-        );
-    }
 
     public ReservationResDTO.AvailableTimesResponse getAvailableTimes(
             Long userId,
@@ -83,8 +64,7 @@ public class ReservationQueryService {
         );
 
         List<ReservationStatus> blockingStatuses = List.of(
-                ReservationStatus.PENDING,
-                ReservationStatus.CONFIRMED
+                ReservationStatus.RESERVED
         );
 
         List<Reservation> existingReservations =
@@ -242,7 +222,7 @@ public class ReservationQueryService {
                         candidateStartTime
                 );
 
-        return candidateDateTime.isBefore(
+        return !candidateDateTime.isAfter(
                 LocalDateTime.now()
         );
     }
@@ -262,4 +242,79 @@ public class ReservationQueryService {
             LocalTime openingTime,
             LocalTime closingTime
     ) {}
+
+    //예약 상세 조회
+    public ReservationResDTO.ReservationInfoResponse getReservationInfo(
+            Long reservationId,
+            Long userId
+    ) {
+        System.out.println("reservationId = " + reservationId);
+        System.out.println("userId = " + userId);
+        
+        Reservation reservation = reservationRepository
+                .findByIdAndUser_IdAndReservationStatusNot(
+                        reservationId,
+                        userId,
+                        ReservationStatus.DRAFT
+                )
+                .orElseThrow(() ->
+                        new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND)
+                );
+
+        List<ReservationSelectedOption> selectedOptions =
+                reservationSelectedOptionRepository
+                        .findAllByReservation_Id(reservationId);
+
+        return ReservationConverter.toReservationInfoResponse(
+                reservation,
+                selectedOptions
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationResDTO.ReservationListResponse getReservationList(
+            Long userId,
+            int size
+    ) {
+        if (size < 1 || size > 20) {
+            throw new ReservationException(
+                    ReservationErrorCode.RESERVATION_PAGE_SIZE_INVALID
+            );
+        }
+
+        int requestedSize = Math.min(size, 20);
+
+        List<Reservation> reservations =
+                reservationRepository.findReservationList(
+                        userId,
+                        ReservationStatus.DRAFT,
+                        PageRequest.of(0, requestedSize)
+                );
+
+        List<ReservationResDTO.ReservationSummaryResponse> responses =
+                reservations.stream()
+                        .map(reservation -> {
+                            String artName =
+                                    reservationSelectedOptionRepository
+                                            .findAllByReservation_Id(reservation.getId())
+                                            .stream()
+                                            .map(ReservationSelectedOption::getShopOption)
+                                            .filter(shopOption ->
+                                                    shopOption.getOptionType() == ShopOptionType.ART
+                                            )
+                                            .map(ShopOption::getOptionName)
+                                            .findFirst()
+                                            .orElse("");
+
+                            return ReservationConverter.toReservationSummaryResponse(
+                                    reservation,
+                                    artName
+                            );
+                        })
+                        .toList();
+
+        return new ReservationResDTO.ReservationListResponse(
+                responses
+        );
+    }
 }

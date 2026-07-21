@@ -24,7 +24,7 @@ public enum ReservationErrorCode implements BaseErrorCode {
     SHOP_OPTION_NOT_FOUND(
             HttpStatus.NOT_FOUND,
             "RESERVATION404_3",
-            "예약 옵션을 찾을 수 없습니다."
+            "샵 옵션을 찾을 수 없습니다."
     ),
 
     RESERVATION_NOT_FOUND(
@@ -92,21 +92,39 @@ public enum ReservationErrorCode implements BaseErrorCode {
             "옵션 수량은 1개 이상이어야 합니다."
     ),
 
-    RESERVATION_ALREADY_CONFIRMED(
+    ART_OPTION_REQUIRED(
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_10",
+            "아트 옵션은 반드시 하나 선택해야 합니다."
+    ),
+
+    MULTIPLE_ART_OPTIONS_NOT_ALLOWED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_11",
+            "아트 옵션은 하나만 선택할 수 있습니다."
+    ),
+
+    INVALID_ART_OPTION_QUANTITY(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_12",
+            "아트 옵션의 수량은 1이어야 합니다."
+    ),
+
+    RESERVATION_ALREADY_CONFIRMED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_13",
             "이미 일정이 확정된 예약입니다."
     ),
 
     PAST_RESERVATION_DATE(
             HttpStatus.BAD_REQUEST,
-            "RESERVATION400_11",
+            "RESERVATION400_14",
             "과거 날짜는 선택할 수 없습니다."
     ),
 
     N_SELECT_RESERVATION_TIME(
             HttpStatus.BAD_REQUEST,
-            "RESERVATION400_12",
+            "RESERVATION400_15",
             "선택할 수 없는 예약 시간입니다."
     ),
 
@@ -118,13 +136,44 @@ public enum ReservationErrorCode implements BaseErrorCode {
 
     INVALID_RESERVATION_DURATION(
             HttpStatus.BAD_REQUEST,
-            "RESERVATION400_13",
+            "RESERVATION400_16",
             "예약 시간이 올바르지 않습니다."
     ),
+
+    INVALID_HAND_STATE(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_17",
+            "현재 손 상태 선택이 올바르지 않습니다."
+    ),
+
     RESERVATION_ALREADY_SCHEDULED(
             HttpStatus.BAD_REQUEST,
-            "RESERVATION400_14",
+            "RESERVATION400_18",
             "이미 저장된 예약입니다"
+    ),
+
+    RESERVATION_CURSOR_INVALID(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_19",
+            "예약 목록 조회 커서가 올바르지 않습니다."
+    ),
+
+    RESERVATION_PAGE_SIZE_INVALID(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_20",
+            "조회 개수는 1개 이상 20개 이하여야 합니다."
+    ),
+
+    RESERVATION_ALREADY_CANCELLED(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_21",
+            "이미 취소된 예약입니다."
+    ),
+
+    RESERVATION_CANNOT_CANCEL(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION400_22",
+            "취소할 수 없는 예약 상태입니다."
     );
 
     private final HttpStatus httpStatus;

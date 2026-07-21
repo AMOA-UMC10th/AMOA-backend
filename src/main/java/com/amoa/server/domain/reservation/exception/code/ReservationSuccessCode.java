@@ -12,7 +12,7 @@ public enum ReservationSuccessCode implements BaseSuccessCode {
     RESERVATION_CREATED(
             HttpStatus.OK,
             "RESERVATION200_1",
-            "예약이 완료되었습니다."
+            "예약이 최초 생성되었습니다."
     ),
 
     RESERVATION_FOUND(
@@ -37,6 +37,24 @@ public enum ReservationSuccessCode implements BaseSuccessCode {
             HttpStatus.OK,
             "RESERVATION200_5",
             "예약 가능 시간 조회에 성공했습니다."
+    ),
+
+    RESERVATION_DETAIL_SUCCESS(
+            HttpStatus.OK,
+            "RESERVATION200_6",
+            "예약 상세 조회에 성공했습니다."
+    ),
+
+    RESERVATION_LIST_OK(
+            HttpStatus.OK,
+            "RESERVATION200_7",
+            "예약 목록 조회에 성공했습니다."
+    ),
+
+    RESERVATION_CANCEL_OK(
+            HttpStatus.OK,
+            "RESERVATION200_8",
+            "예약 취소에 성공했습니다."
     );
 
     private final HttpStatus httpStatus;
