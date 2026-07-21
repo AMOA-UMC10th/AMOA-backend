@@ -23,6 +23,8 @@ public class KakaoUserInfoResDTO {
         @Getter
         @NoArgsConstructor
         public static class Profile {
+
+            @JsonProperty("nickname")
             private String userName;
         }
     }

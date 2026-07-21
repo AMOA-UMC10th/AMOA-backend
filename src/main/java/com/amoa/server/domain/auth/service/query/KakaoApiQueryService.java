@@ -4,6 +4,8 @@ import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
 import com.amoa.server.domain.user.dto.response.KakaoUserInfoResDTO;
 import com.amoa.server.global.apiPayload.exception.GeneralException;
 import com.amoa.server.global.config.KaKaoProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -19,23 +21,34 @@ public class KakaoApiQueryService {
     private final RestClient restClient;
     private final KaKaoProperties kakaoProperties;
 
+    private final ObjectMapper objectMapper;
+
     public KakaoUserInfoResDTO getUserInfo(String accessToken) {
         try {
-            KakaoUserInfoResDTO response = restClient.get()
+            String rawResponse = restClient.get()
                     .uri(kakaoProperties.getUserInfoUri())
                     .header(
                             HttpHeaders.AUTHORIZATION,
                             "Bearer " + accessToken
                     )
                     .retrieve()
-                    .body(KakaoUserInfoResDTO.class);
+                    .body(String.class);
 
-            if (response == null) {
+            if (rawResponse == null) {
                 log.error("카카오 사용자 정보 응답이 null입니다.");
                 throw new GeneralException(AuthErrorCode.KAKAO_RESPONSE_EMPTY);
             }
 
-            return response;
+            log.info("카카오 사용자 정보 원본 응답: {}", rawResponse);
+
+            return objectMapper.readValue(
+                    rawResponse,
+                    KakaoUserInfoResDTO.class
+            );
+
+        } catch (JsonProcessingException exception) {
+            log.error("카카오 사용자 정보 응답 변환 실패", exception);
+            throw new GeneralException(AuthErrorCode.KAKAO_RESPONSE_EMPTY);
 
         } catch (RestClientResponseException exception) {
             log.error(
@@ -49,15 +62,53 @@ public class KakaoApiQueryService {
             }
 
             throw new GeneralException(AuthErrorCode.KAKAO_5XX);
-        }catch (ResourceAccessException exception) {
 
-            log.error(
-                    "카카오 API 통신 실패",
-                    exception
-            );
-
+        } catch (ResourceAccessException exception) {
+            log.error("카카오 API 통신 실패", exception);
             throw new GeneralException(AuthErrorCode.KAKAO_5XX);
-
         }
+        System.out.println("=== getUserInfo 호출됨 ===");
     }
+
+//    public KakaoUserInfoResDTO getUserInfo(String accessToken) {
+//        try {
+//            KakaoUserInfoResDTO response = restClient.get()
+//                    .uri(kakaoProperties.getUserInfoUri())
+//                    .header(
+//                            HttpHeaders.AUTHORIZATION,
+//                            "Bearer " + accessToken
+//                    )
+//                    .retrieve()
+//                    .body(KakaoUserInfoResDTO.class);
+//
+//            if (response == null) {
+//                log.error("카카오 사용자 정보 응답이 null입니다.");
+//                throw new GeneralException(AuthErrorCode.KAKAO_RESPONSE_EMPTY);
+//            }
+//
+//            return response;
+//
+//        } catch (RestClientResponseException exception) {
+//            log.error(
+//                    "카카오 사용자 정보 조회 실패. status: {}, body: {}",
+//                    exception.getStatusCode(),
+//                    exception.getResponseBodyAsString()
+//            );
+//
+//            if (exception.getStatusCode().is4xxClientError()) {
+//                throw new GeneralException(AuthErrorCode.KAKAO_4XX);
+//            }
+//
+//            throw new GeneralException(AuthErrorCode.KAKAO_5XX);
+//        }catch (ResourceAccessException exception) {
+//
+//            log.error(
+//                    "카카오 API 통신 실패",
+//                    exception
+//            );
+//
+//            throw new GeneralException(AuthErrorCode.KAKAO_5XX);
+//
+//        }
+//    }
 }
