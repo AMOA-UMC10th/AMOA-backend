@@ -42,6 +42,7 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
         return queryFactory
                 .selectFrom(qCard)
                 .join(qCard.shop).fetchJoin()
+                .join(qCard.shop.region).fetchJoin()
                 .where(
                         qCard.deletedAt.isNull(),
                         cursorCondition(request.cursor()),                   // 커서 페이지네이션
