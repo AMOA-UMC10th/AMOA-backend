@@ -11,52 +11,37 @@ import java.util.List;
 
 public class SavedShopResDTO {
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class LikeResultDTO{
-        private Long userShopId;
-        private Long shopId;
-        private LocalDateTime createdAt;
+    public record LikeResultDTO(
+            Long userShopId,
+            Long shopId,
+            LocalDateTime createdAt
+    ) {
     }
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class LikedShopListResponse {
-
-        private List<LikedShopResponse> likedShops;
-        private Long totalElements;
-        private Boolean hasNext;
+    public record LikedShopListResponse(
+            List<LikedShopResponse> likedShops,
+            Long totalElements,
+            Boolean hasNext
+    ) {
     }
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class LikedShopResponse {
-
-        private Long shopId;
-        private String shopName;
-        private LocalDateTime likedAt;
-        private String profileImageUrl;
-        private String regionName;
-        private List<CardPreviewDTO> cards;
+    public record LikedShopResponse(
+            Long shopId,
+            String shopName,
+            LocalDateTime likedAt,
+            String profileImageUrl,
+            String regionName,
+            List<CardPreviewDTO> cards
+    ) {
     }
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CardPreviewDTO {
-
-        private Long cardId;
-        private String instagramUrl;
-        private ArtType artType;
-        private Integer maxPrice;
-        private Integer minPrice;
+    public record CardPreviewDTO(
+            Long cardId,
+            String instagramUrl,
+            ArtType artType,
+            Integer maxPrice,
+            Integer minPrice
+    ) {
     }
 
 }
