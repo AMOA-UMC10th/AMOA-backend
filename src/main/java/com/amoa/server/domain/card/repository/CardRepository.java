@@ -29,6 +29,4 @@ public interface CardRepository extends JpaRepository<Card, Long>, CardRepositor
     @Modifying
     @Query("UPDATE Card c SET c.likeCard = c.likeCard - 1 WHERE c.id = :cardId")
     void decreaseLikeCount(@Param("cardId") Long cardId);
-
-    
 }
