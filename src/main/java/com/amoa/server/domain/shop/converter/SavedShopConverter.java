@@ -13,25 +13,25 @@ public class SavedShopConverter {
             SavedShop savedShop,
             List<SavedShopResDTO.CardPreviewDTO> cards
     ) {
-        return SavedShopResDTO.LikedShopResponse.builder()
-                .shopId(savedShop.getShop().getId())
-                .shopName(savedShop.getShop().getShopName())
-                .profileImageUrl(savedShop.getShop().getProfileImageUrl())
-                .likedAt(savedShop.getCreatedAt())
-                .regionName(savedShop.getShop().getRegion().getSecondDepth())
-                .cards(cards)
-                .build();
+        return new SavedShopResDTO.LikedShopResponse(
+                savedShop.getShop().getId(),
+                savedShop.getShop().getShopName(),
+                savedShop.getCreatedAt(),
+                savedShop.getShop().getProfileImageUrl(),
+                savedShop.getShop().getRegion().getSecondDepth(),
+                cards
+        );
 
     }
 
     //Card Entity -> CardPreviewDTO 변환
     public static SavedShopResDTO.CardPreviewDTO toCardPreviewDTO(Card card){
-        return SavedShopResDTO.CardPreviewDTO.builder()
-                .cardId(card.getId())
-                .instagramUrl(card.getInstagramUrl())
-                .artType(card.getArtType())
-                .maxPrice(card.getMaxPrice())
-                .minPrice(card.getMinPrice())
-                .build();
+        return new SavedShopResDTO.CardPreviewDTO(
+                card.getId(),
+                card.getInstagramUrl(),
+                card.getArtType(),
+                card.getMaxPrice(),
+                card.getMinPrice()
+        );
     }
 }
