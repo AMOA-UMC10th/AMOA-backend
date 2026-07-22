@@ -33,7 +33,7 @@ public class UserCommandService {
                 kakaoUserInfo.getKakaoAccount();
 
         if (kakaoUserInfo.getId() == null || account == null) {
-            throw new UserException(UserErrorCode.MEMBER_NOT_FOUND);
+            throw new UserException(UserErrorCode.USER_NOT_FOUND);
         }
 
         String socialUid = kakaoUserInfo.getId().toString();
@@ -90,7 +90,7 @@ public class UserCommandService {
     ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new UserException(UserErrorCode.MEMBER_NOT_FOUND)
+                        new UserException(UserErrorCode.USER_NOT_ACTIVE)
                 );
 
         // Access Token 블랙리스트 등록

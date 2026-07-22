@@ -89,22 +89,22 @@ public class JwtUtil {
     }
 
     // 액세스 토큰 생성
-    public String createAccessToken(Long memberId, Role role) {
-        return createToken(memberId, accessExpiration, role, "access");
+    public String createAccessToken(Long userId, Role role) {
+        return createToken(userId, accessExpiration, role, "access");
     }
 
     // 리프레쉬 토큰 생성
-    public String createRefreshToken(Long memberId) {
-        return createToken(memberId, refreshExpiration, Role.USER, "refresh");
+    public String createRefreshToken(Long userId) {
+        return createToken(userId, refreshExpiration, Role.USER, "refresh");
     }
 
     // 신규 회원용 임시 토큰 생성
-    public String createTempToken(Long memberId) {
-        return createToken(memberId, tempExpiration, Role.NEW_USER, "temp");
+    public String createTempToken(Long userId) {
+        return createToken(userId, tempExpiration, Role.NEW_USER, "temp");
     }
 
     // 개발자 전용 임시 토큰 생성
-    public String createDevToken(Long memberId) {
-        return createToken(memberId, devExpiration, Role.USER, "access");
+    public String createDevToken(Long userId) {
+        return createToken(userId, devExpiration, Role.USER, "access");
     }
 }

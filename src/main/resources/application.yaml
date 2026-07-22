@@ -36,7 +36,7 @@ jwt:
   temp-token:
     expiration-time: 1800000 # 30분
   dev-token:
-    expiration-time: 86400000
+    expiration-time: 43200000 #1일
   issuer: amoa-server
 
 
