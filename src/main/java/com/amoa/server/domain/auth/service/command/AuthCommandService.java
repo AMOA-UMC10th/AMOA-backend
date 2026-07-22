@@ -42,7 +42,7 @@ public class AuthCommandService {
 
         // 탈퇴 또는 비활성 회원 로그인 차단
         if (!Boolean.TRUE.equals(user.getIsActive())) {
-            throw new UserException(UserErrorCode.MEMBER_UNAUTHORIZED);
+            throw new UserException(UserErrorCode.USER_UNAUTHORIZED);
         }
 
         // 온보딩 미완료 회원일 경우 임시 토큰 발급
@@ -88,16 +88,16 @@ public class AuthCommandService {
         Long userId = Long.parseLong(claims.getSubject());
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         // 탈퇴 또는 비활성 회원 토큰 재발행 불가
         if (!Boolean.TRUE.equals(user.getIsActive())) {
-            throw new UserException(UserErrorCode.MEMBER_UNAUTHORIZED);
+            throw new UserException(UserErrorCode.USER_UNAUTHORIZED);
         }
 
         // 온보딩 미완료 회원은 토큰 재발행 불가
         if (user.getRole() == Role.NEW_USER) {
-            throw new UserException(UserErrorCode.MEMBER_UNAUTHORIZED);
+            throw new UserException(UserErrorCode.USER_UNAUTHORIZED);
         }
 
         // 새로운 액세스 토큰과 리프레쉬 토큰 생성

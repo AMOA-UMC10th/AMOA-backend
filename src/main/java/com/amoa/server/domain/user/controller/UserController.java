@@ -6,6 +6,7 @@ import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
+import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.domain.user.exception.code.UserSuccessCode;
 import com.amoa.server.domain.user.service.command.UserCommandService;
 import com.amoa.server.domain.user.service.query.UserQueryService;
@@ -90,6 +91,17 @@ public class UserController implements UserControllerDocs {
         return ApiResponse.onSuccess(
                 UserSuccessCode.NICKNAME_CHECK_SUCCESS,
                 userQueryService.checkNickname(nickname)
+        );
+    }
+
+    @Override
+    @GetMapping("/me/profile")
+    public ApiResponse<UserProfileResDTO> getMyProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ApiResponse.onSuccess(
+                UserSuccessCode.USER_PROFILE_GET_OK,
+                userQueryService.getMyProfile(userDetails.user().getId())
         );
     }
 
