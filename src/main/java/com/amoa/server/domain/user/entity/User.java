@@ -89,4 +89,16 @@ public class User extends BaseEntity {
         this.isActive = true;
         this.role = Role.NEW_USER;
     }
+
+    public void updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+    
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        this.userPhoneNumber = phoneNumber;
+    }
 }

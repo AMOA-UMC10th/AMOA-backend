@@ -47,7 +47,7 @@ public class UserConverter {
             UserRegion userRegion
     ) {
         return InterestedRegionDto.builder()
-                .legalCode(userRegion.getRegion().getLegalCode())
+                .regionId(userRegion.getRegion().getId())
                 .region1DepthName(userRegion.getRegion().getFirstDepth())
                 .region2DepthName(userRegion.getRegion().getSecondDepth())
                 .region3DepthName(userRegion.getRegion().getThirdDepth())

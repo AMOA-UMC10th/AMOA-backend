@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserDesignTagRepository extends JpaRepository<UserDesignTag, Long> {
 
     List<UserDesignTag> findAllByUser_Id(Long userId);
+
+    void deleteAllByUser_Id(Long userId);
 }

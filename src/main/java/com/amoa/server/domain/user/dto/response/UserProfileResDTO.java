@@ -17,16 +17,16 @@ public record UserProfileResDTO(
             List<NotificationSettingDto> notificationSettings
 
     ) {
+
     @Builder
     public record InterestedRegionDto(
 
-            String legalCode,
+            Long regionId,
             String region1DepthName,
             String region2DepthName,
             String region3DepthName
 
-    ) {
-    }
+    ) {}
 
     @Builder
     public record NotificationSettingDto(
@@ -36,6 +36,5 @@ public record UserProfileResDTO(
             String description,
             boolean enabled
 
-    ) {
-    }
+    ) {}
 }
