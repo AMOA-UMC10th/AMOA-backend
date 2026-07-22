@@ -3,14 +3,19 @@ package com.amoa.server.domain.user.controller;
 import com.amoa.server.domain.auth.exception.AuthException;
 import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
+import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
+import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.domain.user.exception.code.UserSuccessCode;
 import com.amoa.server.domain.user.service.command.UserCommandService;
+import com.amoa.server.domain.user.service.query.UserQueryService;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -18,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,6 +33,7 @@ public class UserController implements UserControllerDocs {
 
     private final UserCommandService userCommandService;
     private final SavedShopQueryService savedShopQueryService;
+    private final UserQueryService userQueryService;
 
     @Override
     @DeleteMapping("/me")
@@ -47,9 +54,16 @@ public class UserController implements UserControllerDocs {
     @GetMapping("/me/liked-shops")
     public ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
+
+            @RequestParam(
+                name = "sortType",
+                defaultValue = "LATEST")
+            ShopSort sort,
+
+            @ParameterObject
             @PageableDefault(
-                    sort = "createdAt",
-                    direction = Sort.Direction.DESC
+                    page = 0,
+                    size = 6
             )
             Pageable pageable
     ){
@@ -57,6 +71,7 @@ public class UserController implements UserControllerDocs {
                 UserSuccessCode.USER_LIKED_SHOPS_SUCCESS,
                 savedShopQueryService.getLikedShops(
                         customUserDetails.user(),
+                        sort,
                         pageable
                 )
         );
@@ -78,6 +93,26 @@ public class UserController implements UserControllerDocs {
         return accessToken;
     }
 
+    @Override
+    @GetMapping("/nickname/check")
+    public ApiResponse<NicknameCheckResDTO> checkNickname(
+            @RequestParam String nickname
+    ) {
+        return ApiResponse.onSuccess(
+                UserSuccessCode.NICKNAME_CHECK_SUCCESS,
+                userQueryService.checkNickname(nickname)
+        );
+    }
 
+    @Override
+    @GetMapping("/me/profile")
+    public ApiResponse<UserProfileResDTO> getMyProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ApiResponse.onSuccess(
+                UserSuccessCode.USER_PROFILE_GET_OK,
+                userQueryService.getMyProfile(userDetails.user().getId())
+        );
+    }
 
 }

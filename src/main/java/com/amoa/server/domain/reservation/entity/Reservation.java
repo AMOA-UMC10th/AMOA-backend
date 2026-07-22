@@ -69,7 +69,7 @@ public class Reservation extends BaseEntity {
     @Column(name = "reservation_end_time")
     private LocalTime reservationEndTime;
 
-    @Column(name = "customer_name", length = 20)
+    @Column(name = "customer_name", length = 50)
     private String customerName;
 
     @Column(name = "customer_phone_number", length = 20)
