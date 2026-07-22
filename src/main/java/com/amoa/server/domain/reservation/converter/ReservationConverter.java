@@ -31,7 +31,7 @@ public final class ReservationConverter {
                 .shop(card.getShop())
                 .card(card)
                 .reservationNumber(reservationNumber)
-                .customerName(user.getNickname())
+                .customerName(user.getUserName())
                 .customerPhoneNumber(user.getUserPhoneNumber())
                 .handStates(request.handStates())
                 .gelRemovalType(request.gelRemovalType())

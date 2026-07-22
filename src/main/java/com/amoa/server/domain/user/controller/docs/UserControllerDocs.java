@@ -3,6 +3,8 @@ package com.amoa.server.domain.user.controller.docs;
 import com.amoa.server.domain.shop.converter.SavedShopConverter;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.enums.ShopSort;
+import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
+import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,4 +46,19 @@ public interface UserControllerDocs {
             Pageable pageable
     );
 
+    @Operation(
+            summary = "닉네임 중복 확인 API",
+            description = "온보딩/설정 화면에서 입력한 닉네임의 형식 유효성과 중복 여부를 확인합니다."
+    )
+    ApiResponse<NicknameCheckResDTO> checkNickname(
+            @RequestParam String nickname
+    );
+
+    @Operation(
+            summary = "내 정보 조회 API",
+            description = "로그인한 사용자의 프로필, 선호 디자인 태그, 관심 지역, 알림 설정을 조회합니다."
+    )
+    ApiResponse<UserProfileResDTO> getMyProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    );
 }

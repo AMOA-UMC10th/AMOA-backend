@@ -1,8 +1,10 @@
 package com.amoa.server.domain.card.entity;
 
+import com.amoa.server.domain.card.entity.mapping.CardDesignTag;
 import com.amoa.server.domain.common.enums.ArtType;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.global.entity.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,9 +15,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,6 +42,15 @@ public class Card extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
+
+    @OneToMany(
+            mappedBy = "card",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<CardDesignTag> cardDesignTags = new ArrayList<>();
 
     @Column(name = "max_price", nullable = false)
     private Integer maxPrice;

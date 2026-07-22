@@ -9,35 +9,6 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ReservationErrorCode implements BaseErrorCode {
 
-    CARD_NOT_FOUND(
-            HttpStatus.NOT_FOUND,
-            "RESERVATION404_1",
-            "아트 카드를 찾을 수 없습니다."
-    ),
-
-    SHOP_NOT_FOUND(
-            HttpStatus.NOT_FOUND,
-            "RESERVATION404_2",
-            "샵을 찾을 수 없습니다."
-    ),
-
-    SHOP_OPTION_NOT_FOUND(
-            HttpStatus.NOT_FOUND,
-            "RESERVATION404_3",
-            "샵 옵션을 찾을 수 없습니다."
-    ),
-
-    RESERVATION_NOT_FOUND(
-            HttpStatus.NOT_FOUND,
-            "RESERVATION404_4",
-            "예약을 찾을 수 없습니다."
-    ),
-
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND,
-            "RESERVATION404_5",
-            "유저를 찾을 수 없습니다."
-    ),
-
     INVALID_SHOP_OPTION(
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_1",
@@ -128,12 +99,6 @@ public enum ReservationErrorCode implements BaseErrorCode {
             "선택할 수 없는 예약 시간입니다."
     ),
 
-    RESERVATION_TIME_CONFLICT(
-            HttpStatus.CONFLICT,
-            "RESERVATION409_1",
-            "이미 예약된 시간과 겹칩니다."
-    ),
-
     INVALID_RESERVATION_DURATION(
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_16",
@@ -174,6 +139,41 @@ public enum ReservationErrorCode implements BaseErrorCode {
             HttpStatus.BAD_REQUEST,
             "RESERVATION400_22",
             "취소할 수 없는 예약 상태입니다."
+    ),
+
+    CARD_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "RESERVATION404_1",
+            "아트 카드를 찾을 수 없습니다."
+    ),
+
+    SHOP_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "RESERVATION404_2",
+            "샵을 찾을 수 없습니다."
+    ),
+
+    SHOP_OPTION_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "RESERVATION404_3",
+            "샵 옵션을 찾을 수 없습니다."
+    ),
+
+    RESERVATION_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "RESERVATION404_4",
+            "예약을 찾을 수 없습니다."
+    ),
+
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "RESERVATION404_5",
+            "유저를 찾을 수 없습니다."
+    ),
+
+    RESERVATION_TIME_CONFLICT(
+            HttpStatus.CONFLICT,
+            "RESERVATION409_1",
+            "이미 예약된 시간과 겹칩니다."
     );
 
     private final HttpStatus httpStatus;

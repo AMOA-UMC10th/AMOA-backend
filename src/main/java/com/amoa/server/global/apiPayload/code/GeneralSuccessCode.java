@@ -12,8 +12,7 @@ public enum GeneralSuccessCode implements BaseSuccessCode{
             HttpStatus.OK,
             "COMMON200",
             "성공적으로 요청을 처리했습니다."
-    ),
-    ;
+    );
 
     private final HttpStatus httpStatus;
     private final String code;
