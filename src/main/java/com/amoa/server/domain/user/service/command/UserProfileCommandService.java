@@ -124,10 +124,6 @@ public class UserProfileCommandService {
                 user.getId()
         );
 
-        System.out.println(
-                userDesignTagRepository.findAllByUser_Id(user.getId())
-        );
-
         // 기존 매핑 삭제 SQL을 DB에 먼저 반영
         userDesignTagRepository.flush();
 

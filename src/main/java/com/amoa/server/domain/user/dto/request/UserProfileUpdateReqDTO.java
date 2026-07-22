@@ -2,6 +2,7 @@ package com.amoa.server.domain.user.dto.request;
 
 import com.amoa.server.domain.user.enums.NotificationType;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -27,12 +28,12 @@ public record UserProfileUpdateReqDTO(
         List<Long> interestedRegionIds,
 
         @Valid
-        List<NotificationSettingUpdateRequest> notificationSettings
+        List<@NotNull NotificationSettingUpdateRequest> notificationSettings
 ) {
 
     public record NotificationSettingUpdateRequest(
             NotificationType notificationType,
-            boolean enabled
+            Boolean enabled
     ) {
     }
 }
