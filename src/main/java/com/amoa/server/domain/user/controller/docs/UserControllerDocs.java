@@ -1,7 +1,7 @@
 package com.amoa.server.domain.user.controller.docs;
 
-import com.amoa.server.domain.shop.converter.SavedShopConverter;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,9 +35,13 @@ public interface UserControllerDocs {
     )
     ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
+
+            @RequestParam(defaultValue = "LATEST")
+            ShopSort sort,
+
             @PageableDefault(
-                    sort = "createdAt",
-                    direction = Sort.Direction.DESC
+                    page = 0,
+                    size = 6
             )
             Pageable pageable
     );

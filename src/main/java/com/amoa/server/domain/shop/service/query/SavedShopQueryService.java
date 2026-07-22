@@ -5,11 +5,14 @@ import com.amoa.server.domain.card.repository.CardRepository;
 import com.amoa.server.domain.shop.converter.SavedShopConverter;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.entity.SavedShop;
+import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.shop.repository.SavedShopRepository;
 import com.amoa.server.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +26,29 @@ public class SavedShopQueryService {
     private final SavedShopRepository savedShopRepository;
     private final CardRepository cardRepository;
 
-    public SavedShopResDTO.LikedShopListResponse getLikedShops(User user, Pageable pageable) {
+    public SavedShopResDTO.LikedShopListResponse getLikedShops(
+
+            User user,
+            ShopSort sort,
+            Pageable pageable
+    ) {
+
+        Pageable sortedPageable = switch (sort) {
+            case LATEST -> PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "createdAt")
+            );
+
+            case RECOMMEND -> PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "createdAt") // TODO: 추천순 기준 확정 후 변경
+            );
+        };
 
         Page<SavedShop> savedShops =
-                savedShopRepository.findAllByUserOrderByCreatedAtDesc(user, pageable);
+                savedShopRepository.findAllByUser(user, sortedPageable);
 
         List<SavedShopResDTO.LikedShopResponse> likedShops =
                 savedShops.getContent().stream()
