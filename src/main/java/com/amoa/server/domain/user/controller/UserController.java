@@ -55,7 +55,9 @@ public class UserController implements UserControllerDocs {
     public ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
 
-            @RequestParam(defaultValue = "LATEST")
+            @RequestParam(
+                name = "sortType",
+                defaultValue = "LATEST")
             ShopSort sort,
 
             @ParameterObject
