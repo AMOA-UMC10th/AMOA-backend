@@ -13,6 +13,12 @@ public enum NoticeSuccessCode implements BaseSuccessCode {
             HttpStatus.OK,
             "NOTICE200_1",
             "공지사항 상세 조회에 성공했습니다."
+    ),
+
+    NOTICE_LIST_OK(
+            HttpStatus.OK,
+            "NOTICE200_2",
+            "공지사항 목록 조회에 성공했습니다."
     );
 
     private final HttpStatus httpStatus;
