@@ -1,13 +1,15 @@
 package com.amoa.server.domain.notice.controller.docs;
 
 import com.amoa.server.domain.notice.dto.response.NoticeDetailResDTO;
+import com.amoa.server.domain.notice.dto.response.NoticeListResDTO;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@Tag(name = "User", description = "유저 관련 API")
+@Tag(name = "Notice", description = "공지사항 관련 API")
 public interface NoticeControllerDocs {
 
     @Operation(
@@ -21,4 +23,10 @@ public interface NoticeControllerDocs {
             )
             @PathVariable Long noticeId
     );
+
+    @Operation(
+            summary = "공지사항 목록 조회",
+            description = "공지사항 목록을 최신순으로 조회합니다."
+    )
+    ApiResponse<List<NoticeListResDTO>> getNoticeList();
 }
