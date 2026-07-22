@@ -15,10 +15,10 @@ public enum UserErrorCode implements BaseErrorCode{
             "닉네임은 한글/영문/숫자 2~10자만 사용할 수 있습니다."
     ),
 
-    USER_NOT_FOUND(
-            HttpStatus.NOT_FOUND,
-            "USER404_1",
-            "조회된 회원이 없습니다."
+    INTERESTED_REGION_LIMIT_EXCEEDED(
+            HttpStatus.BAD_REQUEST,
+            "USER400_2",
+            "관심 지역은 최대 3개까지 선택할 수 있습니다."
     ),
 
     USER_NOT_ACTIVE(
@@ -31,8 +31,31 @@ public enum UserErrorCode implements BaseErrorCode{
             HttpStatus.UNAUTHORIZED,
             "USER401_2",
             "권한이 없습니다."
-    );
+    ),
 
+    USER_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "USER404_1",
+            "조회된 회원이 없습니다."
+    ),
+
+    DESIGN_TAG_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "USER404_2",
+            "존재하지 않는 디자인 태그가 포함되어 있습니다."
+    ),
+
+    REGION_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "USER404_3",
+            "존재하지 않는 관심 지역이 포함되어 있습니다."
+    ),
+
+    NICKNAME_DUPLICATED(
+            HttpStatus.CONFLICT,
+            "USER409_1",
+            "이미 사용 중인 닉네임입니다."
+    );
 
     private final HttpStatus httpStatus;
     private final String code;

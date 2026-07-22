@@ -39,6 +39,12 @@ public enum UserSuccessCode implements BaseSuccessCode {
             "사용자 정보 조회에 성공했습니다."
     ),
 
+    USER_PROFILE_UPDATE_OK(
+            HttpStatus.OK,
+            "USER200_6",
+            "내 정보가 수정되었습니다."
+    ),
+
     SAVED_PLACE_CREATE_OK(
             HttpStatus.OK,
             "USER201_1",

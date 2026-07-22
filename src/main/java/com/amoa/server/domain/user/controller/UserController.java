@@ -6,14 +6,17 @@ import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
+import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.domain.user.exception.code.UserSuccessCode;
 import com.amoa.server.domain.user.service.command.UserCommandService;
+import com.amoa.server.domain.user.service.command.UserProfileCommandService;
 import com.amoa.server.domain.user.service.query.UserQueryService;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +25,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController implements UserControllerDocs {
 
     private final UserCommandService userCommandService;
+    private final UserProfileCommandService userProfileCommandService;
     private final SavedShopQueryService savedShopQueryService;
     private final UserQueryService userQueryService;
 
@@ -115,4 +121,22 @@ public class UserController implements UserControllerDocs {
         );
     }
 
+    @Override
+    @PatchMapping("/me/profile")
+    public ApiResponse<UserProfileResDTO> updateMyProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UserProfileUpdateReqDTO request
+    ) {
+        Long userId = userDetails.user().getId();
+
+        userProfileCommandService.updateUserProfile(userId, request);
+
+        UserProfileResDTO response =
+                userQueryService.getMyProfile(userId);
+
+        return ApiResponse.onSuccess(
+                UserSuccessCode.USER_PROFILE_UPDATE_OK,
+                response
+        );
+    }
 }
