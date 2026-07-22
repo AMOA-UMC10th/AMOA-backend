@@ -44,7 +44,7 @@ public class SavedShopController implements SavedShopControllerDocs{
 
         savedShopCommandService.deleteShopLike(user, shopId);
 
-        return ApiResponse.onSuccess(ShopSuccessCode.SHOP_UNLIKED,null);
+        return ApiResponse.onSuccess(ShopSuccessCode.SHOP_UNLIKED, null);
     }
 
 }

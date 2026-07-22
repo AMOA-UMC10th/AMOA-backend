@@ -3,6 +3,7 @@ package com.amoa.server.domain.user.controller;
 import com.amoa.server.domain.auth.exception.AuthException;
 import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
@@ -14,6 +15,7 @@ import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -52,9 +54,16 @@ public class UserController implements UserControllerDocs {
     @GetMapping("/me/liked-shops")
     public ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
+
+            @RequestParam(
+                name = "sortType",
+                defaultValue = "LATEST")
+            ShopSort sort,
+
+            @ParameterObject
             @PageableDefault(
-                    sort = "createdAt",
-                    direction = Sort.Direction.DESC
+                    page = 0,
+                    size = 6
             )
             Pageable pageable
     ){
@@ -62,6 +71,7 @@ public class UserController implements UserControllerDocs {
                 UserSuccessCode.USER_LIKED_SHOPS_SUCCESS,
                 savedShopQueryService.getLikedShops(
                         customUserDetails.user(),
+                        sort,
                         pageable
                 )
         );
