@@ -4,11 +4,13 @@ import com.amoa.server.domain.card.dto.request.CardReqDTO.CardSearchRequest;
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.entity.QCard;
 import com.amoa.server.domain.card.entity.mapping.QCardDesignTag;
+import com.amoa.server.domain.card.util.CardCursor;
 import com.amoa.server.domain.common.enums.ArtType;
 import com.amoa.server.domain.common.enums.SortType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
@@ -45,7 +47,7 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                 .join(qCard.shop.region).fetchJoin()
                 .where(
                         qCard.deletedAt.isNull(),
-                        cursorCondition(request.cursor()),                   // 커서 페이지네이션
+                        cursorCondition(request.cursor(), request.sort()),                   // 커서 페이지네이션
                         artTypeCondition(request.artType()),
                         priceCondition(request),
                         regionCondition(request.regionIds()),
@@ -57,9 +59,98 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
     }
 
 
-    // 커서 페이지네이션(첫 페이지는 커서 없음)
-    private BooleanExpression cursorCondition(Long cursor) {
-        return cursor == null ? null : qCard.id.lt(cursor);
+    // 커서 페이지네이션(정렬 기준 값과 id를 함께 비교하는 복합 커서 방식)
+    private BooleanExpression cursorCondition(
+            String cursor,
+            SortType sort
+    ) {
+
+        // 첫 페이지 조회 시 커서 조건 적용하지 않음
+        if (cursor == null) {
+            return null;
+        }
+
+        // 커서 분리
+        CardCursor cardCursor = CardCursor.from(cursor);
+
+        // 정렬 종류 확인(정렬 값이 없으면 기본 추천순)
+        SortType sortType = sort == null
+                ? SortType.RECOMMENDED
+                : sort;
+
+        return switch (sortType) {
+
+            // 가격 낮은 순
+            // 최소 가격이 높은 카드 조회
+            // 최소 가격이 같으면 최대 가격이 더 높은 카드 조회
+            // 가격 범위가 같으면 id가 높은 카드 조회
+            case PRICE_ASC -> {
+
+                Integer minPrice = Integer.parseInt(cardCursor.value());
+                Integer maxPrice = Integer.parseInt(cardCursor.secondValue());
+
+                yield qCard.minPrice.gt(minPrice)
+                        .or(
+                                qCard.minPrice.eq(minPrice)
+                                        .and(qCard.maxPrice.gt(maxPrice))
+                        )
+                        .or(
+                                qCard.minPrice.eq(minPrice)
+                                        .and(qCard.maxPrice.eq(maxPrice))
+                                        .and(qCard.id.gt(cardCursor.cardId()))
+                        );
+            }
+
+            // 가격 높은 순
+            // 최소 가격이 낮은 카드 조회
+            // 최소 가격이 같으면 최대 가격이 더 낮은 카드 조회
+            // 가격 범위가 같으면 id가 높은 카드 조회
+            case PRICE_DESC -> {
+
+                Integer minPrice = Integer.parseInt(cardCursor.value());
+                Integer maxPrice = Integer.parseInt(cardCursor.secondValue());
+
+                yield qCard.minPrice.lt(minPrice)
+                        .or(
+                                qCard.minPrice.eq(minPrice)
+                                        .and(qCard.maxPrice.lt(maxPrice))
+                        )
+                        .or(
+                                qCard.minPrice.eq(minPrice)
+                                        .and(qCard.maxPrice.eq(maxPrice))
+                                        .and(qCard.id.gt(cardCursor.cardId()))
+                        );
+            }
+
+            // 인기순 / 추천순
+            // 찜 개수가 낮은 카드 조회
+            // 찜 개수가 같으면 id가 높은 카드 조회
+            case POPULAR, RECOMMENDED -> {
+                Integer likeCount =
+                        Integer.parseInt(cardCursor.value());
+
+                yield qCard.likeCard.lt(likeCount)
+                        .or(
+                                qCard.likeCard.eq(likeCount)
+                                        .and(qCard.id.gt(cardCursor.cardId()))
+                        );
+            }
+
+            // 최신순
+            // 생성일이 이전인 카드 조회
+            // 생성일이 같으면 id가 높은 카드 조회
+            case LATEST -> {
+
+                LocalDateTime createdAt =
+                        LocalDateTime.parse(cardCursor.value());
+
+                yield qCard.createdAt.lt(createdAt)
+                        .or(
+                                qCard.createdAt.eq(createdAt)
+                                        .and(qCard.id.gt(cardCursor.cardId()))
+                        );
+            }
+        };
     }
 
     // 아트 타입 필터
@@ -97,8 +188,8 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
     private OrderSpecifier<?>[] getOrder(SortType sort) {
         if (sort == null) {
             return new OrderSpecifier[]{
-                    qCard.createdAt.desc(),
-                    qCard.id.desc()
+                    qCard.likeCard.desc(),
+                    qCard.id.asc()
             };
         }
 
@@ -107,25 +198,27 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
             // 추천/인기: 찜많은순, 추천순은 추후 구현 예정
             case RECOMMENDED, POPULAR -> new OrderSpecifier[]{
                     qCard.likeCard.desc(),
-                    qCard.id.desc()
+                    qCard.id.asc()
             };
 
             // 최신 순
             case LATEST -> new OrderSpecifier[]{
                     qCard.createdAt.desc(),
-                    qCard.id.desc()
+                    qCard.id.asc()
             };
 
             // 가격 낮은 순
             case PRICE_ASC -> new OrderSpecifier[]{
                     qCard.minPrice.asc(),
-                    qCard.id.desc()
+                    qCard.maxPrice.asc(),
+                    qCard.id.asc()
             };
 
             // 가격 높은 순
             case PRICE_DESC -> new OrderSpecifier[]{
+                    qCard.minPrice.desc(),
                     qCard.maxPrice.desc(),
-                    qCard.id.desc()
+                    qCard.id.asc()
             };
         };
     }
