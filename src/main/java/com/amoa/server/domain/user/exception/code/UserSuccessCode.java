@@ -47,7 +47,7 @@ public enum UserSuccessCode implements BaseSuccessCode {
 
     USER_PROFILE_UPDATE_OK(
             HttpStatus.OK,
-            "USER200_6",
+            "USER200_7",
             "내 정보가 수정되었습니다."
     ),
 
