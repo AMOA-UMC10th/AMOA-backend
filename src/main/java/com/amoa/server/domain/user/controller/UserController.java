@@ -3,6 +3,7 @@ package com.amoa.server.domain.user.controller;
 import com.amoa.server.domain.auth.exception.AuthException;
 import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
@@ -112,6 +113,15 @@ public class UserController implements UserControllerDocs {
         return ApiResponse.onSuccess(
                 UserSuccessCode.USER_PROFILE_GET_OK,
                 userQueryService.getMyProfile(userDetails.user().getId())
+        );
+    }
+
+    @Override
+    @GetMapping("/design-moods")
+    public ApiResponse<ShopResDTO.DesignTagListResponse> getDesignMoods() {
+        return ApiResponse.onSuccess(
+                UserSuccessCode.DESIGN_MOOD_LIST_FOUND,
+                userQueryService.getDesignMoods()
         );
     }
 
