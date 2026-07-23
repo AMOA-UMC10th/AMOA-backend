@@ -4,6 +4,8 @@ import com.amoa.server.domain.card.dto.request.CardReqDTO.CardSearchRequest;
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.entity.QCard;
 import com.amoa.server.domain.card.entity.mapping.QCardDesignTag;
+import com.amoa.server.domain.card.exception.CardException;
+import com.amoa.server.domain.card.exception.code.CardErrorCode;
 import com.amoa.server.domain.card.util.CardCursor;
 import com.amoa.server.domain.common.enums.ArtType;
 import com.amoa.server.domain.common.enums.SortType;
@@ -11,6 +13,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
@@ -86,8 +89,20 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
             // 가격 범위가 같으면 id가 높은 카드 조회
             case PRICE_ASC -> {
 
-                Integer minPrice = Integer.parseInt(cardCursor.value());
-                Integer maxPrice = Integer.parseInt(cardCursor.secondValue());
+                Integer minPrice;
+                Integer maxPrice;
+
+                try {
+                    if (cardCursor.secondValue() == null) {
+                        throw new NumberFormatException();
+                    }
+
+                    minPrice = Integer.parseInt(cardCursor.value());
+                    maxPrice = Integer.parseInt(cardCursor.secondValue());
+
+                } catch (NumberFormatException | NullPointerException e) {
+                    throw new CardException(CardErrorCode.CARD_INVALID_CURSOR);
+                }
 
                 yield qCard.minPrice.gt(minPrice)
                         .or(
@@ -107,8 +122,20 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
             // 가격 범위가 같으면 id가 높은 카드 조회
             case PRICE_DESC -> {
 
-                Integer minPrice = Integer.parseInt(cardCursor.value());
-                Integer maxPrice = Integer.parseInt(cardCursor.secondValue());
+                Integer minPrice;
+                Integer maxPrice;
+
+                try {
+                    if (cardCursor.secondValue() == null) {
+                        throw new NumberFormatException();
+                    }
+
+                    minPrice = Integer.parseInt(cardCursor.value());
+                    maxPrice = Integer.parseInt(cardCursor.secondValue());
+
+                } catch (NumberFormatException | NullPointerException e) {
+                    throw new CardException(CardErrorCode.CARD_INVALID_CURSOR);
+                }
 
                 yield qCard.minPrice.lt(minPrice)
                         .or(
@@ -126,8 +153,13 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
             // 찜 개수가 낮은 카드 조회
             // 찜 개수가 같으면 id가 높은 카드 조회
             case POPULAR, RECOMMENDED -> {
-                Integer likeCount =
-                        Integer.parseInt(cardCursor.value());
+                Integer likeCount;
+
+                try {
+                    likeCount = Integer.parseInt(cardCursor.value());
+                } catch (NumberFormatException e) {
+                    throw new CardException(CardErrorCode.CARD_INVALID_CURSOR);
+                }
 
                 yield qCard.likeCard.lt(likeCount)
                         .or(
@@ -141,8 +173,13 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
             // 생성일이 같으면 id가 높은 카드 조회
             case LATEST -> {
 
-                LocalDateTime createdAt =
-                        LocalDateTime.parse(cardCursor.value());
+                LocalDateTime createdAt;
+
+                try {
+                    createdAt = LocalDateTime.parse(cardCursor.value());
+                } catch (DateTimeParseException e) {
+                    throw new CardException(CardErrorCode.CARD_INVALID_CURSOR);
+                }
 
                 yield qCard.createdAt.lt(createdAt)
                         .or(
