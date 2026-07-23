@@ -91,7 +91,7 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "예약 취소",
+            summary = "예약 취소 API",
             description = "로그인한 사용자의 예약을 취소합니다."
     )
     ApiResponse<Void> cancelReservation(
