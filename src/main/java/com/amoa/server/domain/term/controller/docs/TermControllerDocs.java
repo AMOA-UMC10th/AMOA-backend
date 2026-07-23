@@ -1,10 +1,12 @@
 package com.amoa.server.domain.term.controller.docs;
 
 import com.amoa.server.domain.term.dto.response.TermDetailResDTO;
+import com.amoa.server.domain.term.dto.response.TermListItemResDTO;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "Term", description = "이용약관 관련 API")
@@ -22,4 +24,10 @@ public interface TermControllerDocs {
             )
             @PathVariable Long termId
     );
+
+    @Operation(
+            summary = "이용약관 목록 조회",
+            description = "이용약관 목록을 조회합니다."
+    )
+    ApiResponse<List<TermListItemResDTO>> getTermList();
 }

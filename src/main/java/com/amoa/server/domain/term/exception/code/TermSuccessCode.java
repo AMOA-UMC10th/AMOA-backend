@@ -13,6 +13,12 @@ public enum TermSuccessCode implements BaseSuccessCode {
             HttpStatus.OK,
             "TERM200_1",
             "이용약관 상세 조회에 성공했습니다."
+    ),
+
+    TERM_LIST_OK(
+            HttpStatus.OK,
+            "TERM200_2",
+            "이용약관 목록 조회에 성공했습니다."
     );
 
     private final HttpStatus httpStatus;

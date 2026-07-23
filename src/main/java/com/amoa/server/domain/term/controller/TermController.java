@@ -2,9 +2,11 @@ package com.amoa.server.domain.term.controller;
 
 import com.amoa.server.domain.term.controller.docs.TermControllerDocs;
 import com.amoa.server.domain.term.dto.response.TermDetailResDTO;
+import com.amoa.server.domain.term.dto.response.TermListItemResDTO;
 import com.amoa.server.domain.term.exception.code.TermSuccessCode;
 import com.amoa.server.domain.term.service.query.TermQueryService;
 import com.amoa.server.global.apiPayload.ApiResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +28,15 @@ public class TermController implements TermControllerDocs {
         return ApiResponse.onSuccess(
                 TermSuccessCode.TERM_DETAIL_OK,
                 termQueryService.getTermDetail(termId)
+        );
+    }
+
+    @Override
+    @GetMapping
+    public ApiResponse<List<TermListItemResDTO>> getTermList() {
+        return ApiResponse.onSuccess(
+                TermSuccessCode.TERM_LIST_OK,
+                termQueryService.getTermList()
         );
     }
 }
