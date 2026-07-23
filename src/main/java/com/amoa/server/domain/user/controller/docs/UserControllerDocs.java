@@ -1,6 +1,7 @@
 package com.amoa.server.domain.user.controller.docs;
 
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
@@ -61,6 +62,12 @@ public interface UserControllerDocs {
     ApiResponse<UserProfileResDTO> getMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails
     );
+
+    @Operation(
+            summary = "디자인 무드 목록 조회 API",
+            description = "온보딩/설정 화면에서 선택 가능한 디자인 무드(태그) 목록을 조회합니다."
+    )
+    ApiResponse<ShopResDTO.DesignTagListResponse> getDesignMoods();
 
     @Operation(
             summary = "내 정보 통합 수정 API",
