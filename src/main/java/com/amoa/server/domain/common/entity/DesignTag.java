@@ -20,9 +20,6 @@ public class DesignTag {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "image_url", length = 500)
-    private String imageUrl; // 온보딩에서 쓰이는 이미지
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 }

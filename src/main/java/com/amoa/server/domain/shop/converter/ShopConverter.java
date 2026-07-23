@@ -21,8 +21,7 @@ public class ShopConverter {
     public static ShopResDTO.DesignTagResponse toDesignTagResponse(DesignTag designTag) {
         return new ShopResDTO.DesignTagResponse(
                 designTag.getId(),
-                designTag.getName(),
-                designTag.getImageUrl()
+                designTag.getName()
         );
     }
 

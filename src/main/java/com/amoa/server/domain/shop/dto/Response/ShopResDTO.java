@@ -12,8 +12,7 @@ public class ShopResDTO {
     // GET /api/admin/shops/designtag (디자인태그 목록 조회)
     public record DesignTagResponse(
             Long designtagId,
-            String name,
-            String imageUrl
+            String name
     ) {}
 
     // 디자인태그 목록
