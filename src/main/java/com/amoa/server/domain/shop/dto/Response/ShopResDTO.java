@@ -12,7 +12,8 @@ public class ShopResDTO {
     // GET /api/admin/shops/designtag (디자인태그 목록 조회)
     public record DesignTagResponse(
             Long designtagId,
-            String name
+            String name,
+            String imageUrl
     ) {}
 
     // 디자인태그 목록
@@ -71,4 +72,5 @@ public class ShopResDTO {
             int shopLikeCount,
             boolean isLiked
     ) {}
+
 }
