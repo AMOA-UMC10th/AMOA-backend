@@ -46,4 +46,14 @@ public class UserDesignTag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "design_tag_id", nullable = false)
     private DesignTag designTag;
+
+    public static UserDesignTag create(
+            User user,
+            DesignTag designTag
+    ) {
+        return UserDesignTag.builder()
+                .user(user)
+                .designTag(designTag)
+                .build();
+    }
 }

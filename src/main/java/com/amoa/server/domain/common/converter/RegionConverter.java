@@ -27,7 +27,7 @@ public class RegionConverter {
         Region region = userRegion.getRegion();
 
         return InterestedRegionDto.builder()
-                .legalCode(region.getLegalCode())
+                .regionId(region.getId())
                 .region1DepthName(region.getFirstDepth())
                 .region2DepthName(region.getSecondDepth())
                 .region3DepthName(region.getThirdDepth())

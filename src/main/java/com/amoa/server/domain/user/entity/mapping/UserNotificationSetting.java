@@ -55,4 +55,16 @@ public class UserNotificationSetting {
     public void updateEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    public static UserNotificationSetting create(
+            User user,
+            NotificationType notificationType,
+            boolean enabled
+    ) {
+        return UserNotificationSetting.builder()
+                .user(user)
+                .notificationType(notificationType)
+                .enabled(enabled)
+                .build();
+    }
 }

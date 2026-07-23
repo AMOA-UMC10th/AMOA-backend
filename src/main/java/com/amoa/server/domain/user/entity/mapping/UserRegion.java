@@ -46,4 +46,14 @@ public class UserRegion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id", nullable = false)
     private Region region;
+
+    public static UserRegion create(
+            User user,
+            Region region
+    ) {
+        return UserRegion.builder()
+                .user(user)
+                .region(region)
+                .build();
+    }
 }
