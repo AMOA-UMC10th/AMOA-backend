@@ -8,6 +8,7 @@ import com.amoa.server.domain.card.exception.CardException;
 import com.amoa.server.domain.card.exception.code.CardErrorCode;
 import com.amoa.server.domain.card.repository.CardRepository;
 import com.amoa.server.domain.card.repository.UserCardRepository;
+import com.amoa.server.domain.common.enums.SortType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -69,10 +70,26 @@ public class CardQueryService {
                 .map(card -> cardConverter.toCardInfo(card, likedCardIds))
                 .toList();
 
-        // 다음 커서 생성
-        Long nextCursor = hasNext
-                ? cards.get(cards.size() - 1).getId()
-                : null;
+        // 다음 커서 생성(복합 커서)
+        String nextCursor = null;
+
+        if (hasNext) {
+            Card lastCard = cards.get(cards.size() - 1);
+
+            SortType sort = request.sort() == null
+                    ? SortType.RECOMMENDED
+                    : request.sort();
+
+            nextCursor = switch (sort) {
+                case PRICE_ASC -> lastCard.getMinPrice() + "_" + lastCard.getMaxPrice() + "_" + lastCard.getId();
+
+                case PRICE_DESC -> lastCard.getMinPrice() + "_" + lastCard.getMaxPrice() + "_" + lastCard.getId();
+
+                case POPULAR, RECOMMENDED -> lastCard.getLikeCard() + "_" + lastCard.getId();
+
+                case LATEST -> lastCard.getCreatedAt() + "_" + lastCard.getId();
+            };
+        }
 
         // 응답 DTO 생성
         return new CardResDTO.CardList(

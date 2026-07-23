@@ -30,7 +30,7 @@ public class CardReqDTO {
             ArtType artType,
             Long designTagId,
             SortType sort,
-            Long cursor,
+            String cursor, // 복합 커서
             Integer size
     ) {
     }
