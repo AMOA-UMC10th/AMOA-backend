@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ReservationControllerDocs {
 
     @Operation(
-            summary = "1번-손 상태·아트·추가 예약 옵션 선택(최초생성)",
+            summary = "1번-손 상태·아트·추가 예약 옵션 선택(최초생성) API",
             description = "사용자가 아트 카드와 추가 옵션을 선택하여 예약을 생성합니다."
     )
     ApiResponse<ReservationResDTO.CreateReservationResponse>
@@ -30,7 +30,7 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "2번-예약 가능한 날짜·시간 조회",
+            summary = "2번-예약 가능한 날짜·시간 조회 API",
             description = "예약 날짜를 기준으로 선택 가능한 예약 시간을 조회합니다."
     )
     ApiResponse<ReservationResDTO.AvailableTimesResponse>
@@ -45,7 +45,7 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "3번-예약 최종 확정",
+            summary = "3번-예약 최종 확정 API",
             description = "예약 생성 후 선택한 날짜와 시작 시간을 기준으로 예약 일정을 확정합니다."
     )
     ApiResponse<ReservationResDTO.ConfirmScheduleResponse>
@@ -57,7 +57,7 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "예약 상세 조회",
+            summary = "예약 상세 조회 API",
             description = "로그인한 사용자의 예약 상세 정보를 조회합니다."
     )
     ApiResponse<ReservationResDTO.ReservationInfoResponse>
@@ -66,7 +66,7 @@ public interface ReservationControllerDocs {
             @AuthenticationPrincipal CustomUserDetails principal,
 
             @Parameter(
-                    description = "조회할 예약 ID",
+                    description = "예약 ID",
                     required = true,
                     example = "1"
             )
@@ -74,7 +74,7 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "예약 목록 조회",
+            summary = "예약 목록 조회 API",
             description = "로그인한 사용자의 예약 목록을 최신순으로 조회합니다."
     )
     ApiResponse<ReservationResDTO.ReservationListResponse>
@@ -91,7 +91,7 @@ public interface ReservationControllerDocs {
     );
 
     @Operation(
-            summary = "예약 취소",
+            summary = "예약 취소 API",
             description = "로그인한 사용자의 예약을 취소합니다."
     )
     ApiResponse<Void> cancelReservation(

@@ -2,8 +2,6 @@ package com.amoa.server.domain.reservation.dto.response;
 
 import com.amoa.server.domain.reservation.enums.GelRemovalType;
 import com.amoa.server.domain.reservation.enums.HandState;
-import com.amoa.server.domain.reservation.enums.PaymentMethod;
-import com.amoa.server.domain.reservation.enums.PaymentStatus;
 import com.amoa.server.domain.reservation.enums.ReservationStatus;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,38 +24,6 @@ public class ReservationResDTO {
             Integer totalDurationMinutes,
             ReservationStatus reservationStatus
 
-    ) {}
-
-    public record ReservationDetailResponse(
-            Long reservationId,
-            String reservationNumber,
-
-            Long cardId,
-            Long shopId,
-            String shopName,
-
-            LocalDate reservationDate,
-            LocalTime reservationStartTime,
-            LocalTime reservationEndTime,
-
-            String customerName,
-            String customerPhoneNumber,
-            String requestMessage,
-
-            Set<HandState> handStates,
-            GelRemovalType gelRemovalType,
-            Integer extensionRemovalCount,
-
-            List<SelectedOptionResponse> selectedOptions,
-
-            Integer totalPrice,
-            Integer depositAmount,
-            Integer totalDurationMinutes,
-
-            ReservationStatus reservationStatus,
-            PaymentStatus paymentStatus,
-            PaymentMethod paymentMethod,
-            Boolean refundPolicyAgreed
     ) {}
 
     public record SelectedOptionResponse(
@@ -120,11 +86,5 @@ public class ReservationResDTO {
             LocalDate reservationDate,
             LocalTime reservationStartTime,
             int totalPrice
-    ) {}
-
-    public record ReservationCursorResponse(
-            LocalDate reservationDate,
-            LocalTime reservationStartTime,
-            Long reservationId
     ) {}
 }
