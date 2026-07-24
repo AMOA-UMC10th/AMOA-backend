@@ -11,7 +11,7 @@ public enum UserErrorCode implements BaseErrorCode{
 
     NICKNAME_INVALID_FORMAT(
             HttpStatus.BAD_REQUEST,
-            "USER400_1",
+            "ONBOARDING400_1",
             "닉네임은 한글/영문/숫자 2~10자만 사용할 수 있습니다."
     ),
 
@@ -41,19 +41,19 @@ public enum UserErrorCode implements BaseErrorCode{
 
     DESIGN_TAG_NOT_FOUND(
             HttpStatus.NOT_FOUND,
-            "USER404_2",
+            "ONBOARDING404_2",
             "존재하지 않는 디자인 태그가 포함되어 있습니다."
     ),
 
     REGION_NOT_FOUND(
             HttpStatus.NOT_FOUND,
-            "USER404_3",
+            "ONBOARDING404_3",
             "존재하지 않는 관심 지역이 포함되어 있습니다."
     ),
 
     NICKNAME_DUPLICATED(
             HttpStatus.CONFLICT,
-            "USER409_1",
+            "ONBOARDING409_1",
             "이미 사용 중인 닉네임입니다."
     );
 

@@ -132,8 +132,7 @@ public class ShopQueryService {
         int cardLikeCount = cardRepository.countCardLikesByShopId(shopId);
 
         // 5) 현재 유저의 샵 찜 여부
-        User user = userRepository.findById(userId).orElseThrow(() -> new ShopException(ShopErrorCode.USER_NOT_FOUND));
-        // User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
+        User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
 
         boolean isLiked = savedShopRepository.existsByUserAndShop(user, shop);
 

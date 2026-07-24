@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/shops")
+@RequestMapping("/api/v1/admin/shops")
 public class ShopOptionController implements ShopOptionControllerDocs {
 
     private final ShopOptionCommandService shopOptionCommandService;
