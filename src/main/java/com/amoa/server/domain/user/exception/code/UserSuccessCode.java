@@ -23,7 +23,7 @@ public enum UserSuccessCode implements BaseSuccessCode {
 
     NICKNAME_CHECK_SUCCESS(
             HttpStatus.OK,
-            "USER200_3",
+            "ONBOARDING200_3",
             "닉네임 사용 가능 여부 조회에 성공했습니다."
     ),
 
@@ -41,7 +41,7 @@ public enum UserSuccessCode implements BaseSuccessCode {
 
     DESIGN_MOOD_LIST_FOUND(
             HttpStatus.OK,
-            "USER200_6",
+            "ONBOARDING200_6",
             "디자인 무드 목록 조회에 성공했습니다."
     ),
 
