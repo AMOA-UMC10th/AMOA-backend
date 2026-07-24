@@ -26,14 +26,14 @@ public class ShopController implements ShopControllerDocs {
     private final ShopQueryService shopQueryService;
 
     // GET /api/admin/shops/designtag - 디자인태그 목록 조회
-    @GetMapping("/api/admin/shops/designtag")
+    @GetMapping("/api/v1/admin/shops/designtag")
     public ApiResponse<ShopResDTO.DesignTagListResponse> getDesignTags() {
         ShopResDTO.DesignTagListResponse result = shopQueryService.getDesignTags();
         return ApiResponse.onSuccess(ShopSuccessCode.DESIGN_TAG_LIST_FOUND, result);
     }
 
     // GET /api/admin/shops/search - 샵 이름으로 카카오 로컬 API 검색
-    @GetMapping("/api/admin/shops/search")
+    @GetMapping("/api/v1/admin/shops/search")
     public ApiResponse<ShopResDTO.KakaoSearchResponse> searchShopByKeyword(
             @RequestParam String keyword) {
         ShopResDTO.KakaoSearchResponse result = shopQueryService.searchByKeyword(keyword);
@@ -41,7 +41,7 @@ public class ShopController implements ShopControllerDocs {
     }
 
     // POST /api/admin/shops - 샵 등록
-    @PostMapping("/api/admin/shops")
+    @PostMapping("/api/v1/admin/shops")
     public ResponseEntity<ApiResponse<ShopResDTO.CreateShopResponse>> createShop(
             @RequestBody @Valid ShopReqDTO.CreateShopRequest request) {
         ShopResDTO.CreateShopResponse result = shopCommandService.createShop(request);
@@ -51,7 +51,7 @@ public class ShopController implements ShopControllerDocs {
     }
 
     // GET /api/shops/{shopId}/cards - 샵 상세 카드 목록 조회
-    @GetMapping("/api/shops/{shopId}/cards")
+    @GetMapping("/api/v1/shops/{shopId}/cards")
     public ApiResponse<ShopResDTO.CardListResponse> getShopCards(
             @PathVariable Long shopId,
             @RequestParam(required = false) ArtType artType,
@@ -66,7 +66,7 @@ public class ShopController implements ShopControllerDocs {
     }
 
     // GET /api/shops/{shopId} - 샵 상세 조회 (유저)
-    @GetMapping("/api/shops/{shopId}")
+    @GetMapping("/api/v1/shops/{shopId}")
     public ApiResponse<ShopResDTO.ShopDetailResponse> getShopDetail(
             @PathVariable Long shopId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
