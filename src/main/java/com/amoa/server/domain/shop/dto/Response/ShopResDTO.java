@@ -71,4 +71,5 @@ public class ShopResDTO {
             int shopLikeCount,
             boolean isLiked
     ) {}
+
 }

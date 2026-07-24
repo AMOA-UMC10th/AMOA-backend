@@ -1,5 +1,9 @@
 package com.amoa.server.domain.user.service.query;
 
+import com.amoa.server.domain.common.entity.DesignTag;
+import com.amoa.server.domain.common.repository.DesignTagRepository;
+import com.amoa.server.domain.shop.converter.ShopConverter;
+import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.user.converter.UserConverter;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
@@ -30,6 +34,7 @@ public class UserQueryService {
     private final UserInterestedRegionRepository userInterestedRegionRepository;
     private final UserDesignTagRepository userDesignTagRepository;
     private final UserNotificationSettingRepository userNotificationSettingRepository;
+    private final DesignTagRepository designTagRepository;
 
     public NicknameCheckResDTO checkNickname(String nickname) {
         if (nickname == null || !NICKNAME_PATTERN.matcher(nickname).matches()) {
@@ -64,5 +69,10 @@ public class UserQueryService {
                 userRegions,
                 notificationSettings
         );
+    }
+
+    public ShopResDTO.DesignTagListResponse getDesignMoods() {
+        List<DesignTag> designTags = designTagRepository.findAllByOrderByIdAsc();
+        return ShopConverter.toDesignTagListResponse(designTags);
     }
 }
