@@ -28,7 +28,7 @@ public class CardReqDTO {
             Integer minPrice,
             Integer maxPrice,
             ArtType artType,
-            Long designTagId,
+            List<Long> designTagIds,
             SortType sort,
             String cursor, // 복합 커서
             Integer size

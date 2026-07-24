@@ -15,6 +15,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         artTypeCondition(request.artType()),
                         priceCondition(request),
                         regionCondition(request.regionIds()),
-                        designTagCondition(request.designTagId())
+                        designTagCondition(request.designTagIds())
                 )
                 .fetchOne();
     }
@@ -54,11 +55,27 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         artTypeCondition(request.artType()),
                         priceCondition(request),
                         regionCondition(request.regionIds()),
-                        designTagCondition(request.designTagId())
+                        designTagCondition(request.designTagIds())
                 )
                 .orderBy(getOrder(request.sort()))                           // 정렬
                 .limit(size + 1)
                 .fetch();
+    }
+
+    // 특정 카드 ID를 제외하고 개수 조회
+    public Long countCardsExcludingIds(CardSearchRequest request, Set<Long> excludeIds) {
+
+        return queryFactory
+                .select(qCard.count())
+                .from(qCard)
+                .where(qCard.deletedAt.isNull(),
+                        qCard.id.notIn(excludeIds),  // 제외할 ID들
+                        artTypeCondition(request.artType()),
+                        priceCondition(request),
+                        regionCondition(request.regionIds()),
+                        designTagCondition(request.designTagIds())
+                )
+                .fetchOne();
     }
 
 
@@ -216,9 +233,11 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
         return regionIds == null || regionIds.isEmpty() ? null : qCard.shop.region.id.in(regionIds);
     }
 
-    // 디자인 태그 조건
-    private BooleanExpression designTagCondition(Long designTagId) {
-        return designTagId == null ? null : qCard.cardDesignTags.any().designTag.id.eq(designTagId);
+    // 디자인 태그 조건 (리스트 지원)
+    private BooleanExpression designTagCondition(List<Long> designTagIds) {
+        return designTagIds == null || designTagIds.isEmpty()
+                ? null
+                : qCard.cardDesignTags.any().designTag.id.in(designTagIds);
     }
 
     // 정렬
