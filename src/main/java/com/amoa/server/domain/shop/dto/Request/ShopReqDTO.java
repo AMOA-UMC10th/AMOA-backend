@@ -1,5 +1,6 @@
 package com.amoa.server.domain.shop.dto.Request;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -21,6 +22,9 @@ public class ShopReqDTO {
             String legalCode,
             String shopPhoneNumber,
             String businessHours,
+
+            @Min(value = 0, message = "예약금은 0원 이상이어야 합니다.")
+            Integer depositAmount,
 
             List<Long> designtagIds
     ) {}
