@@ -7,11 +7,8 @@ import com.amoa.server.domain.shop.dto.Response.ShopOptionResDTO.OptionResult;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "Shop", description = "샵 관련 API")
 public interface ShopOptionControllerDocs {
