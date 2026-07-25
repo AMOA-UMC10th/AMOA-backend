@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findBySocialUid(String socialUid);
-
     @Query(
             value = """
                     SELECT *
