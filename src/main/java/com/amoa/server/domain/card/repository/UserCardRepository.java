@@ -4,6 +4,8 @@ import com.amoa.server.domain.card.entity.UserCard;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.card.entity.Card;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
@@ -16,4 +18,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
 
     // 아트 목록 조회 시 사용자가 찜한 카드 조회
     List<UserCard> findByUserIdAndCardIdIn(Long userId, List<Long> cardIds);
+
+    // 찜한 아트 목록 조회
+    Page<UserCard> findAllByUser(User user, Pageable pageable);
 }

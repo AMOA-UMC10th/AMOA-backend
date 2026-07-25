@@ -5,9 +5,11 @@ import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import org.springframework.data.domain.Pageable;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
+
+@Tag(name = "Shop")
 public interface SavedShopControllerDocs {
 
     @SecurityRequirement(name = "JWT TOKEN")

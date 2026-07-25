@@ -1,6 +1,6 @@
 package com.amoa.server.domain.user.controller.docs;
 
-import com.amoa.server.domain.shop.converter.SavedShopConverter;
+import com.amoa.server.domain.card.dto.response.UserCardResDTO;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
@@ -9,6 +9,7 @@ import com.amoa.server.global.auth.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -33,7 +34,10 @@ public interface UserControllerDocs {
     )
     ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
+
+            @ParameterObject
             @PageableDefault(
+                    size = 6,
                     sort = "createdAt",
                     direction = Sort.Direction.DESC
             )
@@ -54,5 +58,21 @@ public interface UserControllerDocs {
     )
     ApiResponse<UserProfileResDTO> getMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails
+    );
+
+    @Operation(
+            summary = "찜한 아트 목록 조회 API",
+            description = "로그인한 사용자가 찜한 아트 목록을 조회합니다."
+    )
+    ApiResponse<UserCardResDTO.LikedCardListResponse> getLikedCards(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+
+            @ParameterObject
+            @PageableDefault(
+                    size = 20,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
     );
 }

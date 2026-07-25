@@ -2,6 +2,8 @@ package com.amoa.server.domain.user.controller;
 
 import com.amoa.server.domain.auth.exception.AuthException;
 import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
+import com.amoa.server.domain.card.dto.response.UserCardResDTO;
+import com.amoa.server.domain.card.service.query.UserCardQueryService;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
@@ -14,6 +16,7 @@ import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -31,6 +34,7 @@ public class UserController implements UserControllerDocs {
 
     private final UserCommandService userCommandService;
     private final SavedShopQueryService savedShopQueryService;
+    private final UserCardQueryService userCardQueryService;
     private final UserQueryService userQueryService;
 
     @Override
@@ -53,6 +57,7 @@ public class UserController implements UserControllerDocs {
     public ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PageableDefault(
+                    size = 6,
                     sort = "createdAt",
                     direction = Sort.Direction.DESC
             )
@@ -66,6 +71,29 @@ public class UserController implements UserControllerDocs {
                 )
         );
     }
+
+    @Override
+    @GetMapping("/me/liked-cards")
+    public ApiResponse<UserCardResDTO.LikedCardListResponse> getLikedCards(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+
+            @ParameterObject
+            @PageableDefault(
+                    size = 20,
+                    sort = "createdAt",
+                    direction =  Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+        return ApiResponse.onSuccess(
+                UserSuccessCode.USER_LIKED_CARDS_SUCCESS,
+                userCardQueryService.getLikedCards(
+                        customUserDetails.user(),
+                        pageable
+                )
+        );
+    }
+
 
     private String resolveAccessToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");

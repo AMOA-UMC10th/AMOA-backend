@@ -1,21 +1,30 @@
 package com.amoa.server.domain.card.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserCardResDTO {
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class LikeResultDTO {
-        private Long userCardId;
-        private Long cardId;
-        private LocalDateTime createdAt;
-    }
+    public record LikeResultDTO(
+            Long userCardId,
+            Long cardId,
+            LocalDateTime createdAt
+    ) {}
+
+    public record LikedCardResponse(
+            Long cardId,
+            String instagramUrl,
+            String artType,
+            String shopName,
+            String district,
+            Integer minPrice,
+            Integer maxPrice,
+            LocalDateTime likedAt
+    ) {}
+
+    public record LikedCardListResponse(
+            List<LikedCardResponse> cards,
+            long totalCount,
+            boolean hasNext
+    ){}
 }
