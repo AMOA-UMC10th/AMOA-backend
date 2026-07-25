@@ -232,7 +232,7 @@ public class CardQueryService {
             );
         }
 
-        List<Card> stage2Cards = cardRepository.findCards(stage2Request, remainingSize + size);
+        List<Card> stage2Cards = cardRepository.findCards(stage2Request, remainingSize + 1);
 
         // 1단계에서 조회한 카드 ID 추출
         Set<Long> stage1CardIds = stage1Cards.stream()
@@ -245,8 +245,17 @@ public class CardQueryService {
         // 2단계에서 1단계 카드 제외
         List<Card> filteredStage2Cards = stage2Cards.stream()
                 .filter(card -> !stage1CardIds.contains(card.getId()))
-                .limit(remainingSize)
+                .limit(remainingSize + 1)
                 .collect(Collectors.toList());
+
+        boolean stage2HasMore = filteredStage2Cards.size() > remainingSize;
+
+        Card stage2LastCard = null;
+
+        if (stage2HasMore) {
+            stage2LastCard = filteredStage2Cards.get(remainingSize - 1);
+            filteredStage2Cards = filteredStage2Cards.subList(0, remainingSize);
+        }
 
         // 1단계 + 2단계 합치기
         List<Card> allCards = new ArrayList<>(stage1Cards);
@@ -260,10 +269,12 @@ public class CardQueryService {
         String nextCursor = null;
         boolean hasNext = false;
 
-        if (filteredStage2Cards.size() >= remainingSize) {
-            // 2단계에서 더 있거나 정확히 남은 개수만큼 찼을 때
+        if (stage2HasMore) {
             hasNext = true;
-            nextCursor = createCursor(filteredStage2Cards.get(remainingSize - 1), SortType.RECOMMENDED);
+            nextCursor = createCursor(
+                    stage2LastCard,
+                    SortType.RECOMMENDED
+            );
         }
 
         // totalCount: 1단계 + 2단계 (필터링 후)
