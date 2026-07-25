@@ -31,31 +31,31 @@ AMOA는 이러한 문제를 해결하기 위해
 
 # 🚀 Features
 
-### 👤 User
+## 👤 User
 
 - 카카오 로그인
 - JWT 인증
 - 온보딩
 - 마이페이지
 
-### 💅 Nail
+## 💅 Nail
 
 - 디자인 탐색
 - 디자인 태그 검색
 - 샵 상세 조회
 - 관심 샵
 
-### 📅 Reservation
+## 📅 Reservation
 
 - 예약 가능 시간 조회
 - 예약 생성
 - 예약 조회
 - 예약 취소
 
-### 🔔 Others
+## 🔔 Others
 
 - 공지사항
-- 이용약관
+- 이용 약관
 
 ---
 
@@ -92,22 +92,28 @@ AMOA는 이러한 문제를 해결하기 위해
 
 ```text
 src
- ├── domain
- │    ├── auth
- │    ├── user
- │    ├── shop
- │    ├── card
- │    ├── reservation
- │    └── ...
- │
- └── global
-      ├── apiPayload
-      ├── config
-      ├── exception
-      ├── security
-      └── util
- 
-
+└── main
+    └── java
+        └── com
+            └── amoa
+                └── server
+                    ├── domain
+                    │   ├── auth
+                    │   ├── user
+                    │   ├── onboarding
+                    │   ├── shop
+                    │   ├── card
+                    │   ├── reservation
+                    │   └── ...
+                    │
+                    ├── global
+                    │   ├── apiPayload
+                    │   ├── config
+                    │   ├── exception
+                    │   ├── security
+                    │   └── util
+                    │
+                    └── infra
 ```
 
 ---
@@ -116,7 +122,7 @@ src
 
 Swagger
 
-```
+```text
 /swagger-ui/index.html
 ```
 
@@ -138,7 +144,7 @@ Swagger
 
 # 💬 Commit Convention
 
-```
+```text
 feat: 기능 추가
 fix: 버그 수정
 refactor: 리팩토링
@@ -161,10 +167,10 @@ chore: 기타 작업
 
 | Name | Role |
 |------|------|
-| 케이디/김동희 | Backend Lead |
-| 단/김다은 | Backend |
-| 허브/조성하 | Backend |
-| 루프/전경민 | Backend |
+| 케이디 / 김동희 | Backend Lead |
+| 단 / 김다은 | Backend |
+| 허브 / 조성하 | Backend |
+| 루프 / 전경민 | Backend |
 
 ---
 
