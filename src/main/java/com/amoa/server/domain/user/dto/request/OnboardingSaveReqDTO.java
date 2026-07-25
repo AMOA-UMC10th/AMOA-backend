@@ -11,7 +11,15 @@ import java.util.List;
 public record OnboardingSaveReqDTO(
 
         @NotBlank(message = "닉네임은 필수입니다.")
-        @Size(max = 20, message = "닉네임은 20자 이하여야 합니다.")
+        @Size(
+                min = 2,
+                max = 10,
+                message = "닉네임은 2자 이상 10자 이하여야 합니다."
+        )
+        @Pattern(
+                regexp = "^[가-힣a-zA-Z0-9]+$",
+                message = "닉네임은 한글, 영문, 숫자만 사용할 수 있습니다."
+        )
         String nickname,
 
         @NotBlank(message = "전화번호는 필수입니다.")
@@ -30,7 +38,10 @@ public record OnboardingSaveReqDTO(
         List<@NotNull Long> regionIds,
 
         @NotEmpty(message = "약관 동의 정보는 필수입니다.")
-        List<@Valid AgreementRequest> agreements
+        List<
+                @NotNull(message = "약관 동의 정보는 null일 수 없습니다.")
+                @Valid AgreementRequest
+                > agreements
 ) {
 
     public record AgreementRequest(

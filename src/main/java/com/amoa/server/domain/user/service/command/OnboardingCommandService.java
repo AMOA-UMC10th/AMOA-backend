@@ -80,7 +80,7 @@ public class OnboardingCommandService {
     private User findUser(
             Long userId
     ) {
-        return userRepository.findById(userId)
+        return userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() ->
                         new UserException(
                                 UserErrorCode.USER_NOT_FOUND

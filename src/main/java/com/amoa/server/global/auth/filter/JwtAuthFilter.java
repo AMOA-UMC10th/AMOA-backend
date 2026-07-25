@@ -53,7 +53,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             String category = claims.get("category", String.class);
             String role = claims.get("role", String.class);
-            String requestUri = request.getRequestURI();
+            String requestUri =
+                    request.getRequestURI()
+                            .substring(request.getContextPath().length());
 
             logger.info(
                     "JWT 인증 확인 - subject: " + claims.getSubject()
@@ -74,7 +76,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                 + ", uri: " + requestUri
                 );
 
-                throw new AuthException(AuthErrorCode.TOKEN_INVALID);
+                throw new AuthException(
+                        AuthErrorCode.TOKEN_INVALID
+                );
             }
 
             // 로그아웃 처리된 Access Token인지 확인 -> Redis에서만 조회 가능
