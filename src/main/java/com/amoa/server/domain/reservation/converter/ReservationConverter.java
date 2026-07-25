@@ -4,7 +4,6 @@ import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO;
 import com.amoa.server.domain.reservation.dto.response.ReservationResDTO;
 import com.amoa.server.domain.reservation.dto.response.ReservationResDTO.ReservationSummaryResponse;
-import com.amoa.server.domain.reservation.dto.response.ReservationResDTO.SelectedOptionResponse;
 import com.amoa.server.domain.reservation.entity.Reservation;
 import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOption;
 import com.amoa.server.domain.reservation.enums.ReservationStatus;
@@ -49,8 +48,6 @@ public final class ReservationConverter {
             ShopOption shopOption,
             int quantity
     ) {
-        int optionPrice = shopOption.getOptionPrice();
-
         return ReservationSelectedOption.builder()
                 .reservation(reservation)
                 .shopOption(shopOption)
@@ -77,60 +74,6 @@ public final class ReservationConverter {
                 reservation.getDepositAmount(),
                 reservation.getTotalDurationMinutes(),
                 reservation.getReservationStatus()
-        );
-    }
-
-    // Reservation + 선택 옵션 엔티티 → 예약 상세 응답 DTO
-    public static ReservationResDTO.ReservationDetailResponse
-    toReservationDetailResponse(
-            Reservation reservation,
-            List<ReservationSelectedOption> selectedOptions
-    ) {
-        List<SelectedOptionResponse> optionResponses =
-                selectedOptions.stream()
-                        .map(ReservationConverter::toSelectedOptionResponse)
-                        .toList();
-
-        return new ReservationResDTO.ReservationDetailResponse(
-                reservation.getId(),
-                reservation.getReservationNumber(),
-                reservation.getCard().getId(),
-                reservation.getShop().getId(),
-                reservation.getShop().getShopName(),
-                reservation.getReservationDate(),
-                reservation.getReservationStartTime(),
-                reservation.getReservationEndTime(),
-                reservation.getCustomerName(),
-                reservation.getCustomerPhoneNumber(),
-                reservation.getRequestMessage(),
-                reservation.getHandStates(),
-                reservation.getGelRemovalType(),
-                reservation.getExtensionRemovalCount(),
-                optionResponses,
-                reservation.getTotalPrice(),
-                reservation.getDepositAmount(),
-                reservation.getTotalDurationMinutes(),
-                reservation.getReservationStatus(),
-                reservation.getPaymentStatus(),
-                reservation.getPaymentMethod(),
-                reservation.isRefundPolicyAgreed()
-        );
-    }
-
-    // ReservationSelectedOption 엔티티 → 선택 옵션 응답 DTO
-    private static ReservationResDTO.SelectedOptionResponse
-    toSelectedOptionResponse(
-            ReservationSelectedOption selectedOption
-    ) {
-        ShopOption shopOption = selectedOption.getShopOption();
-
-        return new ReservationResDTO.SelectedOptionResponse(
-                shopOption.getId(),
-                shopOption.getOptionName(),
-                selectedOption.getQuantity(),
-                selectedOption.getOptionPrice(),
-                selectedOption.getOptionTotalPrice(),
-                shopOption.getDurationMinutes()
         );
     }
 

@@ -49,6 +49,7 @@ public class ShopConverter {
                 .legalCode(request.legalCode())
                 .shopPhoneNumber(request.shopPhoneNumber())
                 .businessHours(request.businessHours())
+                .depositAmount(request.depositAmount())
                 .shopStatus(ShopStatus.DRAFT)
                 .region(region)
                 .createdAt(LocalDateTime.now())
