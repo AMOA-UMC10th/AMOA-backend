@@ -12,9 +12,11 @@ import com.amoa.server.domain.common.enums.SortType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.JPAExpressions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         artTypeCondition(request.artType()),
                         priceCondition(request),
                         regionCondition(request.regionIds()),
-                        designTagCondition(request.designTagId())
+                        designTagCondition(request.designTagIds())
                 )
                 .fetchOne();
     }
@@ -54,11 +56,38 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         artTypeCondition(request.artType()),
                         priceCondition(request),
                         regionCondition(request.regionIds()),
-                        designTagCondition(request.designTagId())
+                        designTagCondition(request.designTagIds())
                 )
                 .orderBy(getOrder(request.sort()))                           // 정렬
                 .limit(size + 1)
                 .fetch();
+    }
+
+    // 더 넓은 조건(stage2)에 맞으면서, 더 좁은 조건(stage1)에는 맞지 않는 카드 수 조회
+    // ID 집합이 아니라 stage1의 필터 조건 자체를 배제 조건으로 사용하므로
+    // 페이지네이션 상태와 무관하게 항상 정확한 카운트를 반환한다.
+    @Override
+    public Long countCardsExcludingConditions(CardSearchRequest broaderRequest, CardSearchRequest narrowerRequest) {
+
+        // BooleanExpression.and(null)은 안전하게 무시되므로 null 조건들도 그대로 체이닝 가능
+        BooleanExpression narrowerMatch = qCard.deletedAt.isNull()
+                .and(artTypeCondition(narrowerRequest.artType()))
+                .and(priceCondition(narrowerRequest))
+                .and(regionCondition(narrowerRequest.regionIds()))
+                .and(designTagCondition(narrowerRequest.designTagIds()));
+
+        return queryFactory
+                .select(qCard.count())
+                .from(qCard)
+                .where(
+                        qCard.deletedAt.isNull(),
+                        artTypeCondition(broaderRequest.artType()),
+                        priceCondition(broaderRequest),
+                        regionCondition(broaderRequest.regionIds()),
+                        designTagCondition(broaderRequest.designTagIds()),
+                        narrowerMatch.not()
+                )
+                .fetchOne();
     }
 
 
@@ -216,9 +245,22 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
         return regionIds == null || regionIds.isEmpty() ? null : qCard.shop.region.id.in(regionIds);
     }
 
-    // 디자인 태그 조건
-    private BooleanExpression designTagCondition(Long designTagId) {
-        return designTagId == null ? null : qCard.cardDesignTags.any().designTag.id.eq(designTagId);
+    // 디자인 태그 조건 (EXISTS 서브쿼리로 변경 — 컬렉션 조인으로 인한 행 중복/카운트 부풀림 방지)
+    private BooleanExpression designTagCondition(List<Long> designTagIds) {
+        if (designTagIds == null || designTagIds.isEmpty()) {
+            return null;
+        }
+
+        QCardDesignTag sub = new QCardDesignTag("cardDesignTagSub");
+
+        return JPAExpressions
+                .selectOne()
+                .from(sub)
+                .where(
+                        sub.card.eq(qCard),
+                        sub.designTag.id.in(designTagIds)
+                )
+                .exists();
     }
 
     // 정렬
