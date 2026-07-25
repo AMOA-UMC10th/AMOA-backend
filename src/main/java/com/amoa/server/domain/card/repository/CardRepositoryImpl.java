@@ -12,6 +12,7 @@ import com.amoa.server.domain.common.enums.SortType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.JPAExpressions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -237,11 +238,22 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
         return regionIds == null || regionIds.isEmpty() ? null : qCard.shop.region.id.in(regionIds);
     }
 
-    // 디자인 태그 조건 (리스트 지원)
+    // 디자인 태그 조건 (EXISTS 서브쿼리로 변경 — 컬렉션 조인으로 인한 행 중복/카운트 부풀림 방지)
     private BooleanExpression designTagCondition(List<Long> designTagIds) {
-        return designTagIds == null || designTagIds.isEmpty()
-                ? null
-                : qCard.cardDesignTags.any().designTag.id.in(designTagIds);
+        if (designTagIds == null || designTagIds.isEmpty()) {
+            return null;
+        }
+
+        QCardDesignTag sub = new QCardDesignTag("cardDesignTagSub");
+
+        return JPAExpressions
+                .selectOne()
+                .from(sub)
+                .where(
+                        sub.card.eq(qCard),
+                        sub.designTag.id.in(designTagIds)
+                )
+                .exists();
     }
 
     // 정렬

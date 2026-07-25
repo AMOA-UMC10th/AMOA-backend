@@ -66,33 +66,30 @@ public class CardQueryService {
             CardSearchRequest request,
             Long userId
     ) {
-        // 온보딩 정보 조회
         List<Long> onboardingRegionIds = getOnboardingRegionIds(userId);
         List<Long> onboardingDesignTagIds = getOnboardingDesignTagIds(userId);
 
-        // 온보딩이 없으면 일반 조회
         boolean hasOnboardingRegion = !onboardingRegionIds.isEmpty();
         boolean hasOnboardingDesignTag = !onboardingDesignTagIds.isEmpty();
 
         if (!hasOnboardingRegion && !hasOnboardingDesignTag) {
-            // 온보딩 정보 없음 → 추천순 = 인기순
             return searchCardsDefault(request, userId);
         }
 
-        // 검색 조건 여부
         boolean hasRegionSearch = request.regionIds() != null && !request.regionIds().isEmpty();
         boolean hasDesignTagSearch = request.designTagIds() != null && !request.designTagIds().isEmpty();
 
         int size = request.size() == null ? 20 : Math.max(1, Math.min(request.size(), 100));
 
-        // Case 1: 검색 조건이 완전함 (지역O + 무드O)
+        // 커서 상태 디코딩: stage2로 넘어간 이후에는 stage1 커서를 절대 적용하지 않음
+        TwoStageCursor cursorState = TwoStageCursor.decode(request.cursor());
+        String stage1Cursor = cursorState.stage() == 1 ? cursorState.innerCursor() : null;
+
         if (hasRegionSearch && hasDesignTagSearch) {
             return searchCardsDefault(request, userId);
         }
 
-        // Case 2: 지역만 검색 (무드는 온보딩 적용)
         if (hasRegionSearch && !hasDesignTagSearch) {
-            // 온보딩 무드가 없으면 일반 조회
             if (!hasOnboardingDesignTag) {
                 return searchCardsDefault(request, userId);
             }
@@ -104,17 +101,15 @@ public class CardQueryService {
                     request.artType(),
                     onboardingDesignTagIds,
                     SortType.RECOMMENDED,
-                    request.cursor(),
+                    stage1Cursor,
                     request.size()
             );
 
             return handleTwoStageSearch(stage1Request, request, userId, size, true, false,
-                    onboardingRegionIds, onboardingDesignTagIds);
+                    onboardingRegionIds, onboardingDesignTagIds, cursorState);
         }
 
-        // Case 3: 무드만 검색 (지역은 온보딩 적용)
         if (!hasRegionSearch && hasDesignTagSearch) {
-            // 온보딩 지역이 없으면 일반 조회
             if (!hasOnboardingRegion) {
                 return searchCardsDefault(request, userId);
             }
@@ -126,15 +121,14 @@ public class CardQueryService {
                     request.artType(),
                     request.designTagIds(),
                     SortType.RECOMMENDED,
-                    request.cursor(),
+                    stage1Cursor,
                     request.size()
             );
 
             return handleTwoStageSearch(stage1Request, request, userId, size, false, true,
-                    onboardingRegionIds, onboardingDesignTagIds);
+                    onboardingRegionIds, onboardingDesignTagIds, cursorState);
         }
 
-        // Case 4: 검색 조건 없음 (둘 다 온보딩 적용)
         CardSearchRequest stage1Request = new CardSearchRequest(
                 onboardingRegionIds.isEmpty() ? null : onboardingRegionIds,
                 request.minPrice(),
@@ -142,12 +136,12 @@ public class CardQueryService {
                 request.artType(),
                 onboardingDesignTagIds.isEmpty() ? null : onboardingDesignTagIds,
                 SortType.RECOMMENDED,
-                request.cursor(),
+                stage1Cursor,
                 request.size()
         );
 
         return handleTwoStageSearch(stage1Request, request, userId, size, false, false,
-                onboardingRegionIds, onboardingDesignTagIds);
+                onboardingRegionIds, onboardingDesignTagIds, cursorState);
     }
 
     /**
@@ -161,24 +155,31 @@ public class CardQueryService {
             boolean isRegionSearchOnly,
             boolean isDesignTagSearchOnly,
             List<Long> onboardingRegionIds,
-            List<Long> onboardingDesignTagIds
+            List<Long> onboardingDesignTagIds,
+            TwoStageCursor cursorState
     ) {
-        // 1단계 조회
-        List<Card> stage1Cards = cardRepository.findCards(stage1Request, size);
+        // stage2로 이미 넘어간 상태면 stage1은 소진된 것으로 보고 재조회하지 않음
+        boolean resumingStage2 = cursorState.stage() == 2;
+
+        List<Card> stage1Cards = resumingStage2
+                ? Collections.emptyList()
+                : cardRepository.findCards(stage1Request, size);
         Long stage1TotalCount = cardRepository.countCards(stage1Request);
 
-        // 1단계에서 충분한 카드가 있으면 반환
-        if (stage1Cards.size() > size) {
+        if (!resumingStage2 && stage1Cards.size() > size) {
             List<Card> finalCards = stage1Cards.subList(0, size);
             Set<Long> likedCardIds = getLikedCardIds(userId, finalCards);
             List<CardResDTO.CardInfo> cardInfos = finalCards.stream()
                     .map(card -> cardConverter.toCardInfo(card, likedCardIds))
                     .toList();
 
-            String nextCursor = createCursor(finalCards.get(finalCards.size() - 1), SortType.RECOMMENDED);
+            String nextCursor = TwoStageCursor.encode(
+                    1,
+                    createCursor(finalCards.get(finalCards.size() - 1), SortType.RECOMMENDED)
+            );
 
             return new CardResDTO.CardList(
-                    stage1TotalCount,  // 1단계 조건의 전체 개수 (정확함)
+                    stage1TotalCount,
                     cardInfos.size(),
                     cardInfos,
                     nextCursor,
@@ -186,14 +187,12 @@ public class CardQueryService {
             );
         }
 
-        // 1단계 카드가 부족하면 2단계 조회
-        int remainingSize = size - stage1Cards.size();
+        int remainingSize = resumingStage2 ? size : size - stage1Cards.size();
 
         CardSearchRequest stage2Request;
+        String stage2Cursor = resumingStage2 ? cursorState.innerCursor() : null;
 
         if (isRegionSearchOnly) {
-            // 무드 검색 없이 (지역, 가격, 아트타입은 있을 수 있음)
-            // 2단계: 검색 지역 + 가격/아트타입 유지 (온보딩 무드 제외)
             stage2Request = new CardSearchRequest(
                     originalRequest.regionIds(),
                     originalRequest.minPrice(),
@@ -201,12 +200,10 @@ public class CardQueryService {
                     originalRequest.artType(),
                     null,
                     SortType.RECOMMENDED,
-                    null,
+                    stage2Cursor,
                     remainingSize + size
             );
         } else if (isDesignTagSearchOnly) {
-            // 지역 검색 없이 (무드, 가격, 아트타입은 있을 수 있음)
-            // 2단계: 검색 무드 + 가격/아트타입 유지 (온보딩 지역 제외)
             stage2Request = new CardSearchRequest(
                     null,
                     originalRequest.minPrice(),
@@ -214,12 +211,10 @@ public class CardQueryService {
                     originalRequest.artType(),
                     originalRequest.designTagIds(),
                     SortType.RECOMMENDED,
-                    null,
+                    stage2Cursor,
                     remainingSize + size
             );
         } else {
-            // 지역, 무드 모두 검색 없음 (가격, 아트타입은 있을 수 있음)
-            // 2단계: 전체 + 가격/아트타입 (온보딩 조건 제외)
             stage2Request = new CardSearchRequest(
                     null,
                     originalRequest.minPrice(),
@@ -227,22 +222,22 @@ public class CardQueryService {
                     originalRequest.artType(),
                     null,
                     SortType.RECOMMENDED,
-                    null,
+                    stage2Cursor,
                     remainingSize + size
             );
         }
 
-        List<Card> stage2Cards = cardRepository.findCards(stage2Request, remainingSize + 1);
+        // stage1과 겹치는 카드(최대 stage1Cards.size()개, size 이하)를 필터링하고도
+        // remainingSize + 1개를 확보할 수 있도록 여유 있게 fetch
+        int stage2FetchLimit = remainingSize + size;
+        List<Card> stage2Cards = cardRepository.findCards(stage2Request, stage2FetchLimit);
 
-        // 1단계에서 조회한 카드 ID 추출
         Set<Long> stage1CardIds = stage1Cards.stream()
                 .map(Card::getId)
                 .collect(Collectors.toSet());
 
-        // 2단계에서 정확한 개수 조회 (1단계 카드 제외)
         Long stage2TotalCount = cardRepository.countCardsExcludingIds(stage2Request, stage1CardIds);
 
-        // 2단계에서 1단계 카드 제외
         List<Card> filteredStage2Cards = stage2Cards.stream()
                 .filter(card -> !stage1CardIds.contains(card.getId()))
                 .limit(remainingSize + 1)
@@ -253,11 +248,13 @@ public class CardQueryService {
         Card stage2LastCard = null;
 
         if (stage2HasMore) {
-            stage2LastCard = filteredStage2Cards.get(remainingSize - 1);
+            // remainingSize == 0인 경우(stage1이 정확히 size개로 소진) get(-1) 방지
+            stage2LastCard = remainingSize > 0
+                    ? filteredStage2Cards.get(remainingSize - 1)
+                    : null;
             filteredStage2Cards = filteredStage2Cards.subList(0, remainingSize);
         }
 
-        // 1단계 + 2단계 합치기
         List<Card> allCards = new ArrayList<>(stage1Cards);
         allCards.addAll(filteredStage2Cards);
 
@@ -271,13 +268,13 @@ public class CardQueryService {
 
         if (stage2HasMore) {
             hasNext = true;
-            nextCursor = createCursor(
-                    stage2LastCard,
-                    SortType.RECOMMENDED
+            // stage2LastCard가 null이면(remainingSize==0) stage2를 처음부터 다시 조회하도록 innerCursor=null로 인코딩
+            nextCursor = TwoStageCursor.encode(
+                    2,
+                    stage2LastCard == null ? null : createCursor(stage2LastCard, SortType.RECOMMENDED)
             );
         }
 
-        // totalCount: 1단계 + 2단계 (필터링 후)
         Long totalCount = stage1TotalCount + stage2TotalCount;
 
         return new CardResDTO.CardList(
@@ -355,6 +352,37 @@ public class CardQueryService {
             case LATEST -> card.getCreatedAt() + "_" + card.getId();
         };
     }
+
+    /**
+     * 2단계 조회 커서 상태 인코딩 어느 단계(stage 1 / stage 2)에서 페이지네이션 중인지 커서에 함께 저장하여, stage-2 커서가 stage-1 쿼리에 잘못 적용되는 것을 방지한다.
+     */
+    private record TwoStageCursor(int stage, String innerCursor) {
+
+        private static final String STAGE1_PREFIX = "S1:";
+        private static final String STAGE2_PREFIX = "S2:";
+
+        static TwoStageCursor decode(String cursor) {
+            if (cursor == null) {
+                return new TwoStageCursor(1, null);
+            }
+            if (cursor.startsWith(STAGE2_PREFIX)) {
+                String inner = cursor.substring(STAGE2_PREFIX.length());
+                return new TwoStageCursor(2, inner.isEmpty() ? null : inner);
+            }
+            if (cursor.startsWith(STAGE1_PREFIX)) {
+                String inner = cursor.substring(STAGE1_PREFIX.length());
+                return new TwoStageCursor(1, inner.isEmpty() ? null : inner);
+            }
+            // prefix 없는 커서(단일 단계 흐름 등 하위호환)는 stage1로 취급
+            return new TwoStageCursor(1, cursor);
+        }
+
+        static String encode(int stage, String innerCursor) {
+            String inner = innerCursor == null ? "" : innerCursor;
+            return (stage == 2 ? STAGE2_PREFIX : STAGE1_PREFIX) + inner;
+        }
+    }
+
 
     /**
      * 사용자의 온보딩 관심 지역 ID 조회 (최대 3개)
