@@ -11,5 +11,6 @@ public interface CardRepositoryCustom {
 
     Long countCards(CardSearchRequest request);
 
-    Long countCardsExcludingIds(CardSearchRequest request, Set<Long> excludeIds);
+    Long countCardsExcludingConditions(CardSearchRequest broaderRequest, CardSearchRequest narrowerRequest);
+
 }

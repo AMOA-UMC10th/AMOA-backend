@@ -63,22 +63,29 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                 .fetch();
     }
 
-    // 특정 카드 ID를 제외하고 개수 조회
-    public Long countCardsExcludingIds(CardSearchRequest request, Set<Long> excludeIds) {
+    // 더 넓은 조건(stage2)에 맞으면서, 더 좁은 조건(stage1)에는 맞지 않는 카드 수 조회
+    // ID 집합이 아니라 stage1의 필터 조건 자체를 배제 조건으로 사용하므로
+    // 페이지네이션 상태와 무관하게 항상 정확한 카운트를 반환한다.
+    @Override
+    public Long countCardsExcludingConditions(CardSearchRequest broaderRequest, CardSearchRequest narrowerRequest) {
 
-        if (excludeIds == null || excludeIds.isEmpty()) {
-            return countCards(request);
-        }
+        // BooleanExpression.and(null)은 안전하게 무시되므로 null 조건들도 그대로 체이닝 가능
+        BooleanExpression narrowerMatch = qCard.deletedAt.isNull()
+                .and(artTypeCondition(narrowerRequest.artType()))
+                .and(priceCondition(narrowerRequest))
+                .and(regionCondition(narrowerRequest.regionIds()))
+                .and(designTagCondition(narrowerRequest.designTagIds()));
 
         return queryFactory
                 .select(qCard.count())
                 .from(qCard)
-                .where(qCard.deletedAt.isNull(),
-                        qCard.id.notIn(excludeIds),  // 제외할 ID들
-                        artTypeCondition(request.artType()),
-                        priceCondition(request),
-                        regionCondition(request.regionIds()),
-                        designTagCondition(request.designTagIds())
+                .where(
+                        qCard.deletedAt.isNull(),
+                        artTypeCondition(broaderRequest.artType()),
+                        priceCondition(broaderRequest),
+                        regionCondition(broaderRequest.regionIds()),
+                        designTagCondition(broaderRequest.designTagIds()),
+                        narrowerMatch.not()
                 )
                 .fetchOne();
     }

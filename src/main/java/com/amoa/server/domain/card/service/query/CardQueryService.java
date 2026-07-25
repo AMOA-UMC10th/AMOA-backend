@@ -236,7 +236,9 @@ public class CardQueryService {
                 .map(Card::getId)
                 .collect(Collectors.toSet());
 
-        Long stage2TotalCount = cardRepository.countCardsExcludingIds(stage2Request, stage1CardIds);
+        // ID 기반 제외 대신, stage1의 전체 필터 조건을 배제 조건으로 사용
+        // (현재 페이지의 stage1Cards 유무·resumingStage2 여부와 무관하게 항상 정확)
+        Long stage2TotalCount = cardRepository.countCardsExcludingConditions(stage2Request, stage1Request);
 
         List<Card> filteredStage2Cards = stage2Cards.stream()
                 .filter(card -> !stage1CardIds.contains(card.getId()))
