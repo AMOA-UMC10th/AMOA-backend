@@ -21,6 +21,18 @@ public enum UserErrorCode implements BaseErrorCode{
             "관심 지역은 최대 3개까지 선택할 수 있습니다."
     ),
 
+    ONBOARDING_ALREADY_COMPLETED(
+            HttpStatus.BAD_REQUEST,
+            "USER400_3",
+            "이미 온보딩을 완료한 사용자입니다."
+    ),
+
+    REQUIRED_TERM_NOT_AGREED(
+            HttpStatus.BAD_REQUEST,
+            "USER400_4",
+            "필수 약관에 모두 동의해야 합니다."
+    ),
+
     USER_NOT_ACTIVE(
             HttpStatus.UNAUTHORIZED,
             "USER401_1",
@@ -31,6 +43,24 @@ public enum UserErrorCode implements BaseErrorCode{
             HttpStatus.UNAUTHORIZED,
             "USER401_2",
             "권한이 없습니다."
+    ),
+
+    DUPLICATED_DESIGN_TAG(
+            HttpStatus.BAD_REQUEST,
+            "USER401_3",
+            "중복된 디자인 태그가 포함되어 있습니다."
+    ),
+
+    DUPLICATED_INTERESTED_REGION(
+            HttpStatus.BAD_REQUEST,
+            "USER401_4",
+            "중복된 관심 지역이 포함되어 있습니다."
+    ),
+
+    DUPLICATED_TERM_AGREEMENT(
+            HttpStatus.BAD_REQUEST,
+            "USER401_5",
+            "중복된 약관 동의 정보가 포함되어 있습니다."
     ),
 
     USER_NOT_FOUND(

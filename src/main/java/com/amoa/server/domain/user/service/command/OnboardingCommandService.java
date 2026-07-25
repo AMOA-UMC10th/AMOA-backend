@@ -5,6 +5,8 @@ import com.amoa.server.domain.common.repository.DesignTagRepository;
 import com.amoa.server.domain.common.entity.Region;
 import com.amoa.server.domain.common.repository.RegionRepository;
 import com.amoa.server.domain.term.entity.Term;
+import com.amoa.server.domain.term.exception.TermException;
+import com.amoa.server.domain.term.exception.code.TermErrorCode;
 import com.amoa.server.domain.term.repository.TermRepository;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO.AgreementRequest;
@@ -13,18 +15,16 @@ import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.entity.mapping.UserAgreement;
 import com.amoa.server.domain.user.entity.mapping.UserDesignTag;
 import com.amoa.server.domain.user.entity.mapping.UserRegion;
+import com.amoa.server.domain.user.enums.Role;
+import com.amoa.server.domain.user.exception.UserException;
 import com.amoa.server.domain.user.exception.code.UserErrorCode;
 import com.amoa.server.domain.user.repository.UserAgreementRepository;
 import com.amoa.server.domain.user.repository.UserDesignTagRepository;
 import com.amoa.server.domain.user.repository.UserInterestedRegionRepository;
 import com.amoa.server.domain.user.repository.UserRepository;
-import com.amoa.server.global.apiPayload.exception.GeneralException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -58,7 +58,7 @@ public class OnboardingCommandService {
                 findDesignTags(request.designTagIds());
 
         List<Region> regions =
-                findRegions(request.interestedRegionIds());
+                findRegions(request.regionIds());
 
         List<Term> terms =
                 findAndValidateTerms(request.agreements());
@@ -124,14 +124,14 @@ public class OnboardingCommandService {
             );
         }
 
-        if (hasDuplicate(request.interestedRegionIds())) {
+        if (hasDuplicate(request.regionIds())) {
             throw new UserException(
                     UserErrorCode.DUPLICATED_INTERESTED_REGION
             );
         }
 
         List<Long> termIds = request.agreements().stream()
-                .map(AgreementReqDTO::termId)
+                .map(AgreementRequest::termId)
                 .toList();
 
         if (hasDuplicate(termIds)) {
@@ -178,26 +178,26 @@ public class OnboardingCommandService {
     }
 
     private List<Term> findAndValidateTerms(
-            List<AgreementReqDTO> agreementRequests
+            List<AgreementRequest> agreementRequests
     ) {
         List<Long> termIds = agreementRequests.stream()
-                .map(AgreementReqDTO::termId)
+                .map(AgreementRequest::termId)
                 .toList();
 
         List<Term> requestedTerms =
                 termRepository.findAllById(termIds);
 
         if (requestedTerms.size() != termIds.size()) {
-            throw new UserException(
-                    UserErrorCode.TERM_NOT_FOUND
+            throw new TermException(
+                    TermErrorCode.TERM_NOT_FOUND
             );
         }
 
         Map<Long, Boolean> agreementMap =
                 agreementRequests.stream()
                         .collect(Collectors.toMap(
-                                AgreementReqDTO::termId,
-                                AgreementReqDTO::agreed
+                                AgreementRequest::termId,
+                                AgreementRequest::agreed
                         ));
 
         List<Term> requiredTerms =
@@ -267,13 +267,13 @@ public class OnboardingCommandService {
     private void saveUserAgreements(
             User user,
             List<Term> terms,
-            List<AgreementReqDTO> agreementRequests
+            List<AgreementRequest> agreementRequests
     ) {
         Map<Long, Boolean> agreementMap =
                 agreementRequests.stream()
                         .collect(Collectors.toMap(
-                                AgreementReqDTO::termId,
-                                AgreementReqDTO::agreed
+                                AgreementRequest::termId,
+                                AgreementRequest::agreed
                         ));
 
         List<UserAgreement> userAgreements =

@@ -109,6 +109,4 @@ public class User extends BaseEntity {
         this.nickname = nickname;
         this.userPhoneNumber = phoneNumber;
     }
-
-    public void completeOnboarding() {this.role = Role.USER;}
 }

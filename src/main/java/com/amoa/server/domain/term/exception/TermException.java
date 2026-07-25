@@ -1,7 +1,10 @@
 package com.amoa.server.domain.term.exception;
 
-public class TermException extends RuntimeException {
-    public TermException(String message) {
-        super(message);
+import com.amoa.server.global.apiPayload.code.BaseErrorCode;
+import com.amoa.server.global.apiPayload.exception.GeneralException;
+
+public class TermException extends GeneralException {
+    public TermException(BaseErrorCode errorCode) {
+        super(errorCode);
     }
 }

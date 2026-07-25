@@ -51,6 +51,12 @@ public enum UserSuccessCode implements BaseSuccessCode {
             "내 정보가 수정되었습니다."
     ),
 
+    ONBOARDING_COMPLETE_OK(
+            HttpStatus.OK,
+            "USER200_8",
+            "온보딩 설정을 저장했습니다."
+    ),
+
     SAVED_PLACE_CREATE_OK(
             HttpStatus.OK,
             "USER201_1",
