@@ -82,6 +82,8 @@ public interface UserControllerDocs {
                     direction = Sort.Direction.DESC
             )
             Pageable pageable
+        );
+    @Operation(
             summary = "디자인 무드 목록 조회 API",
             description = "온보딩/설정 화면에서 선택 가능한 디자인 무드(태그) 목록을 조회합니다."
     )
