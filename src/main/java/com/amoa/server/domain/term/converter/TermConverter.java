@@ -24,6 +24,7 @@ public class TermConverter {
         return TermListItemResDTO.builder()
                 .termId(term.getId())
                 .title(term.getTitle())
+                .required(term.isRequired())
                 .build();
     }
 
