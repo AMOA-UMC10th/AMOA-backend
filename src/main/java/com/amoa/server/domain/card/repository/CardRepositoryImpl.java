@@ -65,6 +65,10 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
     // 특정 카드 ID를 제외하고 개수 조회
     public Long countCardsExcludingIds(CardSearchRequest request, Set<Long> excludeIds) {
 
+        if (excludeIds == null || excludeIds.isEmpty()) {
+            return countCards(request);
+        }
+
         return queryFactory
                 .select(qCard.count())
                 .from(qCard)
