@@ -36,7 +36,7 @@ public interface ShopOptionControllerDocs {
             description = "샵에 등록된 추가 옵션 정보를 수정합니다."
     )
     ApiResponse<ShopOptionResDTO.OptionListResult> updateShopOption(
-            @Parameter(description = "샵 ID")
+            @Parameter(description = "샵 ID", example = "1")
             @PathVariable Long shopId,
 
             @Parameter(description = "수정할 옵션 ID")

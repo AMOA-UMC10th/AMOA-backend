@@ -4,7 +4,6 @@ import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO;
 import com.amoa.server.domain.reservation.dto.response.ReservationResDTO;
 import com.amoa.server.domain.reservation.dto.response.ReservationResDTO.ReservationSummaryResponse;
-import com.amoa.server.domain.reservation.dto.response.ReservationResDTO.SelectedOptionResponse;
 import com.amoa.server.domain.reservation.entity.Reservation;
 import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOption;
 import com.amoa.server.domain.reservation.enums.ReservationStatus;
@@ -49,8 +48,6 @@ public final class ReservationConverter {
             ShopOption shopOption,
             int quantity
     ) {
-        int optionPrice = shopOption.getOptionPrice();
-
         return ReservationSelectedOption.builder()
                 .reservation(reservation)
                 .shopOption(shopOption)
