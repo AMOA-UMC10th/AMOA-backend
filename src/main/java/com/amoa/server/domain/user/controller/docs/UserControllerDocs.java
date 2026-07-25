@@ -19,6 +19,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @Tag(name = "User", description = "유저 관련 API")
 public interface UserControllerDocs {
@@ -36,6 +37,7 @@ public interface UserControllerDocs {
             summary = "찜한 네일샵 목록 조회 API",
             description = "로그인한 사용자가 찜한 네일샵 목록을 조회합니다."
     )
+    @SecurityRequirement(name = "JWT TOKEN")
     ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
       
