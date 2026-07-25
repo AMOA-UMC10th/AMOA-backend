@@ -5,5 +5,6 @@ import lombok.Builder;
 @Builder
 public record TermListItemResDTO(
         Long termId,
-        String title
+        String title,
+        boolean required
 ) {}

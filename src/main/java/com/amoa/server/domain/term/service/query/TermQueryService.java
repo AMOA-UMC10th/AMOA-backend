@@ -33,7 +33,7 @@ public class TermQueryService {
     }
 
     public List<TermListItemResDTO> getTermList() {
-        List<Term> terms = termRepository.findAllByOrderByIdAsc();
+        List<Term> terms = termRepository.findAllByOrderByDisplayOrderAscIdAsc();
 
         return TermConverter.toTermListItemResDTOList(terms);
     }
