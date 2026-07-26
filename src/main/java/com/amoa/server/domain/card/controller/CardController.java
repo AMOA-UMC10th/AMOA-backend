@@ -54,7 +54,7 @@ public class CardController implements CardControllerDocs {
     // 아트 추천 목록 조회
     @GetMapping("/{cardId}/recommendations")
     @Override
-    public ApiResponse<CardResDTO.CardList> getRecommendedCards(
+    public ApiResponse<CardResDTO.RecommendedCardList> getRecommendedCards(
             @PathVariable Long cardId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {

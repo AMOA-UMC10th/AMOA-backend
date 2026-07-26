@@ -436,7 +436,7 @@ public class CardQueryService {
 
     // 아트 추천 목록 조회
     @Transactional(readOnly = true)
-    public CardResDTO.CardList getRecommendedCards(Long cardId, Long userId) {
+    public CardResDTO.RecommendedCardList getRecommendedCards(Long cardId, Long userId) {
 
         Card currentCard = cardRepository.findByIdWithShopRegionAndTags(cardId)
                 .orElseThrow(() -> new CardException(CardErrorCode.CARD_NOT_FOUND));
@@ -449,12 +449,6 @@ public class CardQueryService {
                 .map(card -> cardConverter.toCardInfo(card, likedCardIds))
                 .toList();
 
-        return new CardResDTO.CardList(
-                (long) cardInfos.size(),
-                cardInfos.size(),
-                cardInfos,
-                null,
-                false
-        );
+        return new CardResDTO.RecommendedCardList(cardInfos);
     }
 }

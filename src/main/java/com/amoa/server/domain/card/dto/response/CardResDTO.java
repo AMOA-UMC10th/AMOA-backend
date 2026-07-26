@@ -57,4 +57,10 @@ public class CardResDTO {
             boolean isLiked
     ) {
     }
+
+    // 아트 추천 목록 조회
+    public record RecommendedCardList(
+            List<CardInfo> cards
+    ) {
+    }
 }
