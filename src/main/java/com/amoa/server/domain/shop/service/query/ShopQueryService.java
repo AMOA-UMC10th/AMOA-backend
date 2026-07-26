@@ -113,18 +113,23 @@ public class ShopQueryService {
         return ShopConverter.toCardListResponse(shop, totalCount, cardResponses, nextCursor, hasNext);
     }
 
+    private static final String MOOD_CURSOR_PREFIX = "M:";
+    private static final String STANDARD_CURSOR_PREFIX = "S:";
+
     private String buildCursor(Card card, SortType sort, List<Long> preferredDesignTagIds) {
         if (sort == SortType.RECOMMENDED && !preferredDesignTagIds.isEmpty()) {
             boolean matches = cardDesignTagRepository
                     .existsByCard_IdAndDesignTag_IdIn(card.getId(), preferredDesignTagIds);
             int priority = matches ? 0 : 1;
-            return priority + "_" + card.getLikeCard() + "_" + card.getId();
+            return MOOD_CURSOR_PREFIX + priority + "_" + card.getLikeCard() + "_" + card.getId();
         }
-        return switch (sort) {
+
+        String body = switch (sort) {
             case PRICE_ASC, PRICE_DESC -> card.getMinPrice() + "_" + card.getMaxPrice() + "_" + card.getId();
             case POPULAR, RECOMMENDED -> card.getLikeCard() + "_" + card.getId();
             case LATEST -> card.getCreatedAt() + "_" + card.getId();
         };
+        return STANDARD_CURSOR_PREFIX + body;
     }
 
     // GET /api/shops/{shop_id} - 샵 상세 조회 (유저)

@@ -305,12 +305,34 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
         };
     }
 
+    private static final String MOOD_CURSOR_PREFIX = "M:";
+    private static final String STANDARD_CURSOR_PREFIX = "S:";
+
     // 샵 상세 페이지에서의 하단 카드 목록, 샵 상세 페이지를 처음 집입했을 때 정렬 기준으로는 RECOMMENDED가 디폴트
     @Override
     public List<Card> findShopCards(ShopCardSearchRequest request, int size) {
-        boolean useMoodPriority = request.sort() == SortType.RECOMMENDED
-                && request.preferredDesignTagIds() != null
+        String cursor = request.cursor();
+        boolean hasPreferredTags = request.preferredDesignTagIds() != null
                 && !request.preferredDesignTagIds().isEmpty();
+
+        boolean cursorIsMood = cursor != null && cursor.startsWith(MOOD_CURSOR_PREFIX);
+        boolean cursorIsStandard = cursor != null && cursor.startsWith(STANDARD_CURSOR_PREFIX);
+
+        if (cursor != null && !cursorIsMood && !cursorIsStandard) {
+            throw new CardException(CardErrorCode.CARD_INVALID_CURSOR);
+        }
+
+        // 첫 페이지(커서 없음)는 지금 요청 기준으로 모드 결정, 이후 페이지는 커서에 적힌 모드를 그대로 따름
+        boolean useMoodPriority = cursor == null
+                ? request.sort() == SortType.RECOMMENDED && hasPreferredTags
+                : cursorIsMood;
+
+        // 커서는 무드모드인데 지금은 무드 태그가 없음(온보딩 변경 등) -> 조용히 잘못 해석하지 말고 명확히 에러
+        if (useMoodPriority && !hasPreferredTags) {
+            throw new CardException(CardErrorCode.CARD_INVALID_CURSOR);
+        }
+
+        String cursorBody = cursor == null ? null : cursor.substring(2); // "M:" / "S:" 제거
 
         NumberExpression<Integer> moodPriority = useMoodPriority
                 ? moodPriorityExpression(request.preferredDesignTagIds())
@@ -325,8 +347,8 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         qCard.shop.id.eq(request.shopId()),
                         artTypeCondition(request.artType()),
                         useMoodPriority
-                                ? moodCursorCondition(request.cursor(), moodPriority)
-                                : cursorCondition(request.cursor(), request.sort())
+                                ? moodCursorCondition(cursorBody, moodPriority)
+                                : cursorCondition(cursorBody, request.sort())
                 )
                 .orderBy(useMoodPriority
                         ? moodPriorityOrder(moodPriority)
