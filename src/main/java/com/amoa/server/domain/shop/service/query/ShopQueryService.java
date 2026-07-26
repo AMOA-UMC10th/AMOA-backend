@@ -1,6 +1,8 @@
 package com.amoa.server.domain.shop.service.query;
 
+import com.amoa.server.domain.card.dto.request.CardReqDTO;
 import com.amoa.server.domain.card.entity.Card;
+import com.amoa.server.domain.card.repository.CardDesignTagRepository;
 import com.amoa.server.domain.card.repository.CardRepository;
 import com.amoa.server.domain.card.repository.UserCardRepository;
 import com.amoa.server.domain.common.entity.DesignTag;
@@ -17,6 +19,7 @@ import com.amoa.server.domain.shop.repository.SavedShopRepository;
 import com.amoa.server.domain.shop.repository.ShopDesignTagRepository;
 import com.amoa.server.domain.shop.repository.ShopRepository;
 import com.amoa.server.domain.user.entity.User;
+import com.amoa.server.domain.user.repository.UserDesignTagRepository;
 import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.kakao.KakaoLocalClient;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +45,8 @@ public class ShopQueryService {
     private final UserRepository userRepository;
     private final ShopDesignTagRepository shopDesignTagRepository;
     private final SavedShopRepository savedShopRepository;
+    private final CardDesignTagRepository cardDesignTagRepository;
+    private final UserDesignTagRepository userDesignTagRepository;
 
     // GET /api/admin/shops/designtag - 디자인태그 목록 조회
     public ShopResDTO.DesignTagListResponse getDesignTags() {
@@ -65,51 +70,65 @@ public class ShopQueryService {
         return result;
     }
 
-    // GET /api/shops/{shop_id}/cards - 샵 상세 카드 목록 조회
+    // GET /api/shops/{shop_id}/cards - 샵 상세 카드 목록 조회 (무한 스크롤)
     public ShopResDTO.CardListResponse getShopCards(
             Long shopId,
             ArtType artType,
             SortType sort,
-            int page,
+            String cursor,
             int size,
-            Long userId) {
-
-        // 1) 샵 조회
+            Long userId
+    ) {
         Shop shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new ShopException(ShopErrorCode.SHOP_NOT_FOUND));
 
-        // 2) 정렬 설정
-        SortType activeSort = sort != null ? sort : SortType.LATEST;
-        Sort sorting = switch (activeSort) {
-            case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
-            case POPULAR -> Sort.by(Sort.Direction.DESC, "likeCard");
-            case PRICE_ASC -> Sort.by(Sort.Direction.ASC, "minPrice");
-            case PRICE_DESC -> Sort.by(Sort.Direction.DESC, "maxPrice");
-            case RECOMMENDED -> Sort.by(Sort.Direction.DESC, "likeCard");
-            // 추천순은 임시로 찜 개수를 기준으로 만들어둠 -> 온보딩에서 유저의 관심 지역, 관심 디자인태그 먼저 구현된 후 추천순 로직 구현
-        };
+        SortType activeSort = sort != null ? sort : SortType.RECOMMENDED;
 
-        Pageable pageable = PageRequest.of(page, size, sorting);
+        List<Long> preferredDesignTagIds = (activeSort == SortType.RECOMMENDED && userId != null)
+                ? userDesignTagRepository.findAllByUser_Id(userId).stream()
+                .map(userDesignTag -> userDesignTag.getDesignTag().getId())
+                .toList()
+                : List.of();
 
-        // 3) 카드 목록 조회
-        Page<Card> cards;
-        if (artType == null) {
-            cards = cardRepository.findByShop_IdAndDeletedAtIsNull(shopId, pageable);
-        } else {
-            cards = cardRepository.findByShop_IdAndArtTypeAndDeletedAtIsNull(shopId, artType, pageable);
+        CardReqDTO.ShopCardSearchRequest request = new CardReqDTO.ShopCardSearchRequest(
+                shopId, artType, activeSort, cursor, preferredDesignTagIds
+        );
+
+        List<Card> cards = cardRepository.findShopCards(request, size);
+        Long totalCount = cardRepository.countShopCards(shopId, artType);
+
+        boolean hasNext = cards.size() > size;
+        if (hasNext) {
+            cards = cards.subList(0, size);
         }
 
-        // 4) 찜 여부
         User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
-        List<ShopResDTO.CardResponse> cardResponses = cards.getContent().stream()
+        List<ShopResDTO.CardResponse> cardResponses = cards.stream()
                 .map(card -> {
                     boolean isLiked = user != null && userCardRepository.existsByUserAndCard(user, card);
                     return ShopConverter.toCardResponse(card, isLiked);
                 })
                 .toList();
 
-        return ShopConverter.toCardListResponse(shop, cards, cardResponses);
+        String nextCursor = hasNext
+                ? buildCursor(cards.get(cards.size() - 1), activeSort, preferredDesignTagIds)
+                : null;
 
+        return ShopConverter.toCardListResponse(shop, totalCount, cardResponses, nextCursor, hasNext);
+    }
+
+    private String buildCursor(Card card, SortType sort, List<Long> preferredDesignTagIds) {
+        if (sort == SortType.RECOMMENDED && !preferredDesignTagIds.isEmpty()) {
+            boolean matches = cardDesignTagRepository
+                    .existsByCard_IdAndDesignTag_IdIn(card.getId(), preferredDesignTagIds);
+            int priority = matches ? 0 : 1;
+            return priority + "_" + card.getLikeCard() + "_" + card.getId();
+        }
+        return switch (sort) {
+            case PRICE_ASC, PRICE_DESC -> card.getMinPrice() + "_" + card.getMaxPrice() + "_" + card.getId();
+            case POPULAR, RECOMMENDED -> card.getLikeCard() + "_" + card.getId();
+            case LATEST -> card.getCreatedAt() + "_" + card.getId();
+        };
     }
 
     // GET /api/shops/{shop_id} - 샵 상세 조회 (유저)
