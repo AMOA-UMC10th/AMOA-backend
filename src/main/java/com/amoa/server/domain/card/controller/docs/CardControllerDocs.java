@@ -50,4 +50,17 @@ public interface CardControllerDocs {
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails userDetails
     );
+
+    @Operation(
+            summary = "아트 상세 조회",
+            description = "카드 ID를 기반으로 아트 상세 정보를 조회합니다."
+    )
+    ApiResponse<CardResDTO.CardDetailResponse> getCardDetail(
+            @Parameter(
+                    name = "cardId",
+                    description = "조회할 카드 ID",
+                    required = true
+            )
+            @PathVariable Long cardId
+    );
 }
