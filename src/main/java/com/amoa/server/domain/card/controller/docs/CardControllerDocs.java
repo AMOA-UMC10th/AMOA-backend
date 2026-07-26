@@ -50,4 +50,32 @@ public interface CardControllerDocs {
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails userDetails
     );
+
+    @Operation(
+            summary = "아트 추천 목록 조회",
+            description = """
+                    카드 상세 페이지 스크롤 시 노출되는 추천 아트 목록을 조회합니다.
+                    현재 보고 있는 카드와 지역·디자인 태그가 유사한 카드를 최대 6개 반환합니다.
+                    
+                    - 지역 우선순위: 1depth부터 순서대로 몇 단계까지 일치하는지로 결정
+                      (1+2+3depth 일치 > 1+2depth 일치 > 1depth만 일치)
+                      , 1depth조차 다르면 후보에서 제외됩니다.
+                    - 디자인 태그 우선순위: 겹치는 태그 개수가 많을수록 우선
+                      , 1개도 겹치지 않으면 후보에서 제외됩니다.
+                    - 두 조건을 모두 만족하는 카드 중 상위 6개를 반환하며,
+                      조건을 만족하는 카드가 6개 미만이면 있는 만큼만 반환합니다.
+                    - 페이지네이션을 사용하지 않는 단건 목록 조회입니다.
+                    """
+    )
+    ApiResponse<CardResDTO.CardList> getRecommendedCards(
+            @Parameter(
+                    name = "cardId",
+                    description = "기준이 되는 카드 ID (현재 보고 있는 카드 상세)",
+                    required = true
+            )
+            @PathVariable Long cardId,
+
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    );
 }

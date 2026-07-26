@@ -31,6 +31,22 @@ public interface CardRepository extends JpaRepository<Card, Long>, CardRepositor
             @Param("cardId") Long cardId
     );
 
+    // 아트 추천 목록 조회용: shop, region, 디자인 태그까지 함께 fetch
+    @Query("""
+            SELECT c
+            FROM Card c
+            JOIN FETCH c.shop s
+            JOIN FETCH s.region
+            LEFT JOIN FETCH c.cardDesignTags cdt
+            LEFT JOIN FETCH cdt.designTag
+            WHERE c.id = :cardId
+              AND c.deletedAt IS NULL
+            """)
+    Optional<Card> findByIdWithShopRegionAndTags(
+            @Param("cardId") Long cardId
+    );
+
+    
     List<Card> findTop5ByShopAndDeletedAtIsNullOrderByCreatedAtDesc(
             Shop shop
     );

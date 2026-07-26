@@ -13,6 +13,7 @@ import com.amoa.server.domain.common.enums.SortType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.JPAExpressions;
@@ -429,5 +430,74 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                                 .and(qCard.likeCard.eq(likeCount))
                                 .and(qCard.id.gt(cardCursor.cardId()))
                 );
+    }
+
+    @Override
+    public List<Card> findRecommendedCards(Card currentCard, int limit) {
+
+        QCard qCard = QCard.card;
+        QCardDesignTag existsSub = new QCardDesignTag("cardDesignTagExists");
+        QCardDesignTag countSub = new QCardDesignTag("cardDesignTagCount");
+
+        String firstDepth = currentCard.getShop().getRegion().getFirstDepth();
+        String secondDepth = currentCard.getShop().getRegion().getSecondDepth();
+        String thirdDepth = currentCard.getShop().getRegion().getThirdDepth();
+
+        List<Long> currentTagIds = currentCard.getCardDesignTags().stream()
+                .map(cardDesignTag -> cardDesignTag.getDesignTag().getId())
+                .toList();
+
+        // 현재 카드에 태그가 없으면 "1개 이상 겹침" 조건을 만족할 수 없음
+        if (currentTagIds.isEmpty()) {
+            return List.of();
+        }
+
+        // 지역 우선순위: 1depth부터 순서대로 몇 단계까지 일치하는지
+        NumberExpression<Integer> locationTier = new CaseBuilder()
+                .when(qCard.shop.region.firstDepth.eq(firstDepth)
+                        .and(qCard.shop.region.secondDepth.eq(secondDepth))
+                        .and(qCard.shop.region.thirdDepth.eq(thirdDepth)))
+                .then(1)
+                .when(qCard.shop.region.firstDepth.eq(firstDepth)
+                        .and(qCard.shop.region.secondDepth.eq(secondDepth)))
+                .then(2)
+                .otherwise(3); // firstDepth만 일치 (where절에서 firstDepth 불일치는 이미 제외됨)
+
+        // 디자인 태그 겹침 개수 (정렬용)
+        NumberExpression<Long> tagMatchCount = Expressions.asNumber(
+                JPAExpressions
+                        .select(countSub.count())
+                        .from(countSub)
+                        .where(
+                                countSub.card.eq(qCard),
+                                countSub.designTag.id.in(currentTagIds)
+                        )
+        );
+
+        return queryFactory
+                .selectFrom(qCard)
+                .join(qCard.shop).fetchJoin()
+                .join(qCard.shop.region).fetchJoin()
+                .where(
+                        qCard.deletedAt.isNull(),
+                        qCard.id.ne(currentCard.getId()),
+                        qCard.shop.region.firstDepth.eq(firstDepth),      // 지역 최소 조건
+                        JPAExpressions                                    // 태그 최소 조건
+                                .selectOne()
+                                .from(existsSub)
+                                .where(
+                                        existsSub.card.eq(qCard),
+                                        existsSub.designTag.id.in(currentTagIds)
+                                )
+                                .exists()
+                )
+                .orderBy(
+                        locationTier.asc(),
+                        tagMatchCount.desc(),
+                        qCard.likeCard.desc(),
+                        qCard.id.asc()
+                )
+                .limit(limit)
+                .fetch();
     }
 }

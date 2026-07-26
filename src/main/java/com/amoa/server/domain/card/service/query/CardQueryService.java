@@ -433,4 +433,28 @@ public class CardQueryService {
                 .map(userCard -> userCard.getCard().getId())
                 .collect(Collectors.toSet());
     }
+
+    // 아트 추천 목록 조회
+    @Transactional(readOnly = true)
+    public CardResDTO.CardList getRecommendedCards(Long cardId, Long userId) {
+
+        Card currentCard = cardRepository.findByIdWithShopRegionAndTags(cardId)
+                .orElseThrow(() -> new CardException(CardErrorCode.CARD_NOT_FOUND));
+
+        List<Card> recommended = cardRepository.findRecommendedCards(currentCard, 6);
+
+        Set<Long> likedCardIds = getLikedCardIds(userId, recommended);
+
+        List<CardResDTO.CardInfo> cardInfos = recommended.stream()
+                .map(card -> cardConverter.toCardInfo(card, likedCardIds))
+                .toList();
+
+        return new CardResDTO.CardList(
+                (long) cardInfos.size(),
+                cardInfos.size(),
+                cardInfos,
+                null,
+                false
+        );
+    }
 }

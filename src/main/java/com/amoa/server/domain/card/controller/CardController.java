@@ -50,4 +50,20 @@ public class CardController implements CardControllerDocs {
                 cardQueryService.searchCards(request, userId)
         );
     }
+
+    // 아트 추천 목록 조회
+    @GetMapping("/{cardId}/recommendations")
+    @Override
+    public ApiResponse<CardResDTO.CardList> getRecommendedCards(
+            @PathVariable Long cardId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+
+        Long userId = userDetails == null ? null : userDetails.user().getId();
+
+        return ApiResponse.onSuccess(
+                CardSuccessCode.CARD_FOUND,
+                cardQueryService.getRecommendedCards(cardId, userId)
+        );
+    }
 }
