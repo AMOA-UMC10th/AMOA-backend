@@ -312,6 +312,10 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                 && request.preferredDesignTagIds() != null
                 && !request.preferredDesignTagIds().isEmpty();
 
+        NumberExpression<Integer> moodPriority = useMoodPriority
+                ? moodPriorityExpression(request.preferredDesignTagIds())
+                : null;
+
         return queryFactory
                 .selectFrom(qCard)
                 .join(qCard.shop).fetchJoin()
@@ -321,11 +325,11 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         qCard.shop.id.eq(request.shopId()),
                         artTypeCondition(request.artType()),
                         useMoodPriority
-                                ? moodCursorCondition(request.cursor(), request.preferredDesignTagIds())
+                                ? moodCursorCondition(request.cursor(), moodPriority)
                                 : cursorCondition(request.cursor(), request.sort())
                 )
                 .orderBy(useMoodPriority
-                        ? moodPriorityOrder(request.preferredDesignTagIds())
+                        ? moodPriorityOrder(moodPriority)
                         : getOrder(request.sort()))
                 .limit(size + 1)
                 .fetch();
@@ -364,16 +368,16 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
     }
 
     // 무드 매칭 우선 → 찜 많은 순 → id
-    private OrderSpecifier<?>[] moodPriorityOrder(List<Long> preferredDesignTagIds) {
+    private OrderSpecifier<?>[] moodPriorityOrder(NumberExpression<Integer> moodPriority) {
         return new OrderSpecifier[]{
-                moodPriorityExpression(preferredDesignTagIds).asc(),  // 0(매칭)이 먼저, 1(안매칭)이 나중
+                moodPriority.asc(),  // 0(매칭)이 먼저, 1(안매칭)이 나중
                 qCard.likeCard.desc(), // 찜 많은 순
                 qCard.id.asc() // id
         };
     }
 
     // 무드 우선순위 기반 커서 조건 (priority_likeCard_id 3단 커서, PRICE_ASC 패턴과 동일한 방식)
-    private BooleanExpression moodCursorCondition(String cursor, List<Long> preferredDesignTagIds) {
+    private BooleanExpression moodCursorCondition(String cursor, NumberExpression<Integer> moodPriority) {
         if (cursor == null) {
             return null;
         }
@@ -392,8 +396,6 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
         } catch (NumberFormatException | NullPointerException e) {
             throw new CardException(CardErrorCode.CARD_INVALID_CURSOR);
         }
-
-        NumberExpression<Integer> moodPriority = moodPriorityExpression(preferredDesignTagIds);
 
         return moodPriority.gt(priority)
                 .or(

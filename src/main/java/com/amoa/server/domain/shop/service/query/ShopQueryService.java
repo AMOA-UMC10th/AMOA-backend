@@ -22,11 +22,10 @@ import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserDesignTagRepository;
 import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.kakao.KakaoLocalClient;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,12 +101,9 @@ public class ShopQueryService {
             cards = cards.subList(0, size);
         }
 
-        User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
+        Set<Long> likedCardIds = getLikedCardIds(userId, cards);
         List<ShopResDTO.CardResponse> cardResponses = cards.stream()
-                .map(card -> {
-                    boolean isLiked = user != null && userCardRepository.existsByUserAndCard(user, card);
-                    return ShopConverter.toCardResponse(card, isLiked);
-                })
+                .map(card -> ShopConverter.toCardResponse(card, likedCardIds.contains(card.getId())))
                 .toList();
 
         String nextCursor = hasNext
@@ -156,5 +152,16 @@ public class ShopQueryService {
         boolean isLiked = savedShopRepository.existsByUserAndShop(user, shop);
 
         return ShopConverter.toShopDetailResponse(shop, designTags, cardLikeCount, shopLikeCount, isLiked);
+    }
+
+    private Set<Long> getLikedCardIds(Long userId, List<Card> cards) {
+        if (userId == null || cards.isEmpty()) {
+            return Collections.emptySet();
+        }
+        List<Long> cardIds = cards.stream().map(Card::getId).toList();
+        return userCardRepository.findByUserIdAndCardIdIn(userId, cardIds)
+                .stream()
+                .map(userCard -> userCard.getCard().getId())
+                .collect(Collectors.toSet());
     }
 }
