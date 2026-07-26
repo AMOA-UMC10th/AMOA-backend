@@ -39,6 +39,7 @@ public interface CardRepository extends JpaRepository<Card, Long>, CardRepositor
                 left join fetch c.cardDesignTags cdt
                 left join fetch cdt.designTag
                 where c.id = :cardId
+                  and c.deletedAt IS NULL
             """)
     Optional<Card> findDetailById(@Param("cardId") Long cardId);
 
