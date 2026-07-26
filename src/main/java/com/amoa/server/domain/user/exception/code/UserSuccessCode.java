@@ -61,7 +61,14 @@ public enum UserSuccessCode implements BaseSuccessCode {
             HttpStatus.OK,
             "USER201_1",
             "장소가 성공적으로 저장되었습니다."
+    ),
+
+    USER_LIKED_CARDS_SUCCESS(
+            HttpStatus.OK,
+            "USER_200_6",
+            "찜한 네일 아트 목록 조회에 성공했습니다."
     );
+
 
     private final HttpStatus httpStatus;
     private final String code;

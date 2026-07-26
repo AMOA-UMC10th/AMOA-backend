@@ -2,6 +2,8 @@ package com.amoa.server.domain.user.controller;
 
 import com.amoa.server.domain.auth.exception.AuthException;
 import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
+import com.amoa.server.domain.card.dto.response.UserCardResDTO;
+import com.amoa.server.domain.card.service.query.UserCardQueryService;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.enums.ShopSort;
@@ -43,6 +45,7 @@ public class UserController implements UserControllerDocs {
     private final UserCommandService userCommandService;
     private final UserProfileCommandService userProfileCommandService;
     private final SavedShopQueryService savedShopQueryService;
+    private final UserCardQueryService userCardQueryService;
     private final UserQueryService userQueryService;
     private final OnboardingCommandService onboardingCommandService;
 
@@ -73,8 +76,9 @@ public class UserController implements UserControllerDocs {
 
             @ParameterObject
             @PageableDefault(
-                    page = 0,
-                    size = 6
+                    size = 6,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
             )
             Pageable pageable
     ){
@@ -87,6 +91,29 @@ public class UserController implements UserControllerDocs {
                 )
         );
     }
+
+    @Override
+    @GetMapping("/me/liked-cards")
+    public ApiResponse<UserCardResDTO.LikedCardListResponse> getLikedCards(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+
+            @ParameterObject
+            @PageableDefault(
+                    size = 20,
+                    sort = "createdAt",
+                    direction =  Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+        return ApiResponse.onSuccess(
+                UserSuccessCode.USER_LIKED_CARDS_SUCCESS,
+                userCardQueryService.getLikedCards(
+                        customUserDetails.user(),
+                        pageable
+                )
+        );
+    }
+
 
     private String resolveAccessToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
