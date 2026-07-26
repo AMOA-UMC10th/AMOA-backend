@@ -38,4 +38,8 @@ public class Term extends BaseEntity {
 
     @Column(name = "effective_date", nullable = false)
     private LocalDate effectiveDate;
+
+    //반드시 값이 있어야 하므로 int
+    @Column(name = "display_order", nullable = false)
+    private int displayOrder;
 }

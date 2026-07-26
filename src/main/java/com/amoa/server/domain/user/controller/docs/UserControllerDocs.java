@@ -1,13 +1,17 @@
 package com.amoa.server.domain.user.controller.docs;
 
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.enums.ShopSort;
+import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
 import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
+import com.amoa.server.domain.user.dto.response.OnboardingSaveResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -63,6 +67,12 @@ public interface UserControllerDocs {
     );
 
     @Operation(
+            summary = "디자인 무드 목록 조회 API",
+            description = "온보딩/설정 화면에서 선택 가능한 디자인 무드(태그) 목록을 조회합니다."
+    )
+    ApiResponse<ShopResDTO.DesignTagListResponse> getDesignMoods();
+
+    @Operation(
             summary = "내 정보 통합 수정 API",
             description = """
                 로그인한 사용자의 프로필 정보를 부분 수정합니다.
@@ -73,5 +83,17 @@ public interface UserControllerDocs {
     ApiResponse<UserProfileResDTO> updateMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody UserProfileUpdateReqDTO request
+    );
+
+    @Operation(
+            summary = "온보딩 정보 저장",
+            description = "신규 사용자의 온보딩 정보를 한 번에 저장합니다."
+    )
+    ApiResponse<OnboardingSaveResDTO> saveOnboarding(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+
+            @Valid
+            @RequestBody OnboardingSaveReqDTO request
     );
 }

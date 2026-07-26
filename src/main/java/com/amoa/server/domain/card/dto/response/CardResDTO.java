@@ -39,7 +39,7 @@ public class CardResDTO {
             Long totalCount,
             Integer size,
             List<CardInfo> cards,
-            Long nextCursor,
+            String nextCursor,  // 복합 커서
             boolean hasNext
     ) {
     }

@@ -1,7 +1,10 @@
 package com.amoa.server.domain.notice.exception;
 
-public class NoticeException extends RuntimeException {
-    public NoticeException(String message) {
-        super(message);
+import com.amoa.server.global.apiPayload.code.BaseErrorCode;
+import com.amoa.server.global.apiPayload.exception.GeneralException;
+
+public class NoticeException extends GeneralException {
+    public NoticeException(BaseErrorCode errorCode) {
+        super(errorCode);
     }
 }

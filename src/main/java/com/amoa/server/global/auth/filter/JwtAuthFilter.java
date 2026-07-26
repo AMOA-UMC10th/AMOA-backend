@@ -24,6 +24,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
+
+    private static final String ONBOARDING_URI = "/api/v1/users/onboarding";
+
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
     private final RedisUtil redisUtil;
@@ -50,27 +53,49 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             String category = claims.get("category", String.class);
             String role = claims.get("role", String.class);
+            String requestUri =
+                    request.getRequestURI()
+                            .substring(request.getContextPath().length());
 
             logger.info(
                     "JWT 인증 확인 - subject: " + claims.getSubject()
                             + ", category: " + category
                             + ", role: " + role
+                            + ", uri: " + requestUri
             );
 
-            //AccessToken 여부 확인
-            if (!"access".equals(category)) {
-                logger.warn("access token이 아닌 토큰으로 인증을 시도하셨습니다.");
-                throw new AuthException(AuthErrorCode.TOKEN_INVALID);
+            boolean validCategory =
+                    ONBOARDING_URI.equals(requestUri)
+                            ? "temp".equals(category)
+                            : "access".equals(category);
+
+            if (!validCategory) {
+                logger.warn(
+                        "허용되지 않은 토큰으로 인증을 시도했습니다. "
+                                + "category: " + category
+                                + ", uri: " + requestUri
+                );
+
+                throw new AuthException(
+                        AuthErrorCode.TOKEN_INVALID
+                );
             }
 
             // 로그아웃 처리된 Access Token인지 확인 -> Redis에서만 조회 가능
-            if (redisUtil.isBlackListed(token)) {
-                logger.warn("블랙리스트에 포함된 토큰으로 인증을 시도했습니다.");
-                throw new AuthException(AuthErrorCode.TOKEN_BLACKLIST);
+            if ("access".equals(category)
+                    && redisUtil.isBlackListed(token)) {
+
+                logger.warn(
+                        "블랙리스트에 포함된 토큰으로 인증을 시도했습니다."
+                );
+
+                throw new AuthException(
+                        AuthErrorCode.TOKEN_BLACKLIST
+                );
             }
 
-            userId = Long.parseLong(claims.getSubject());
-            
+            userId =
+                    Long.parseLong(claims.getSubject());
         }
 
         // 토큰이 유효하고, SecurityContext에 인증 정보가 없는 경우에 인증 처리

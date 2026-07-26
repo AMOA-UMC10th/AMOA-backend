@@ -3,13 +3,17 @@ package com.amoa.server.domain.user.controller;
 import com.amoa.server.domain.auth.exception.AuthException;
 import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
+import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
 import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
+import com.amoa.server.domain.user.dto.response.OnboardingSaveResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.domain.user.exception.code.UserSuccessCode;
+import com.amoa.server.domain.user.service.command.OnboardingCommandService;
 import com.amoa.server.domain.user.service.command.UserCommandService;
 import com.amoa.server.domain.user.service.command.UserProfileCommandService;
 import com.amoa.server.domain.user.service.query.UserQueryService;
@@ -20,12 +24,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,6 +44,7 @@ public class UserController implements UserControllerDocs {
     private final UserProfileCommandService userProfileCommandService;
     private final SavedShopQueryService savedShopQueryService;
     private final UserQueryService userQueryService;
+    private final OnboardingCommandService onboardingCommandService;
 
     @Override
     @DeleteMapping("/me")
@@ -122,6 +127,15 @@ public class UserController implements UserControllerDocs {
     }
 
     @Override
+    @GetMapping("/design-moods")
+    public ApiResponse<ShopResDTO.DesignTagListResponse> getDesignMoods() {
+        return ApiResponse.onSuccess(
+                UserSuccessCode.DESIGN_MOOD_LIST_FOUND,
+                userQueryService.getDesignMoods()
+        );
+    }
+
+    @Override
     @PatchMapping("/me/profile")
     public ApiResponse<UserProfileResDTO> updateMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -137,6 +151,23 @@ public class UserController implements UserControllerDocs {
         return ApiResponse.onSuccess(
                 UserSuccessCode.USER_PROFILE_UPDATE_OK,
                 response
+        );
+    }
+
+    @Override
+    @PostMapping("/onboarding")
+    public ApiResponse<OnboardingSaveResDTO> saveOnboarding(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody OnboardingSaveReqDTO request
+    ) {
+        Long userId = userDetails.user().getId();
+
+        return ApiResponse.onSuccess(
+                UserSuccessCode.ONBOARDING_COMPLETE_OK,
+                onboardingCommandService.saveOnboarding(
+                        userId,
+                        request
+                )
         );
     }
 }

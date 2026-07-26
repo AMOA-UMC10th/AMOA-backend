@@ -28,10 +28,20 @@ public class CardReqDTO {
             Integer minPrice,
             Integer maxPrice,
             ArtType artType,
-            Long designTagId,
+            List<Long> designTagIds,
             SortType sort,
-            Long cursor,
+            String cursor, // 복합 커서
             Integer size
+    ) {
+    }
+
+    // 샵 상세 카드 목록 조회 (커서 기반)
+    public record ShopCardSearchRequest(
+            Long shopId,
+            ArtType artType,
+            SortType sort,
+            String cursor,
+            List<Long> preferredDesignTagIds // 온보딩 관심 디자인무드, RECOMMENDED일 때만 사용
     ) {
     }
 }

@@ -101,4 +101,12 @@ public class User extends BaseEntity {
     public void updatePhoneNumber(String phoneNumber) {
         this.userPhoneNumber = phoneNumber;
     }
+
+    public void updateOnboardingProfile(
+            String nickname,
+            String phoneNumber
+    ) {
+        this.nickname = nickname;
+        this.userPhoneNumber = phoneNumber;
+    }
 }

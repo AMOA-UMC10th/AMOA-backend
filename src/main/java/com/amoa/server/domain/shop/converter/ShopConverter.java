@@ -49,6 +49,7 @@ public class ShopConverter {
                 .legalCode(request.legalCode())
                 .shopPhoneNumber(request.shopPhoneNumber())
                 .businessHours(request.businessHours())
+                .depositAmount(request.depositAmount())
                 .shopStatus(ShopStatus.DRAFT)
                 .region(region)
                 .createdAt(LocalDateTime.now())
@@ -102,15 +103,18 @@ public class ShopConverter {
     // Card 목록 → CardListResponse DTO 변환
     public static ShopResDTO.CardListResponse toCardListResponse(
             Shop shop,
-            Page<Card> cards,
-            List<ShopResDTO.CardResponse> cardResponses) {
+            Long totalCount,
+            List<ShopResDTO.CardResponse> cardResponses,
+            String nextCursor,
+            boolean hasNext
+    ) {
         return new ShopResDTO.CardListResponse(
                 shop.getId(),
                 shop.getShopName(),
-                cards.getTotalElements(),
-                cards.getNumber(),
-                cards.getSize(),
-                cardResponses
+                totalCount,
+                cardResponses,
+                nextCursor,
+                hasNext
         );
     }
 

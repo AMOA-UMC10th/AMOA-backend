@@ -1,6 +1,5 @@
 package com.amoa.server.domain.reservation.service.command;
 
-
 import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.BUSINESS_CLOSE_TIME;
 import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.BUSINESS_OPEN_TIME;
 import static com.amoa.server.domain.reservation.constant.ReservationOptionPolicy.EXTENSION_REMOVAL_MAX_QUANTITY;
@@ -11,7 +10,6 @@ import com.amoa.server.domain.reservation.converter.ReservationConverter;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO;
 import com.amoa.server.domain.reservation.dto.request.ReservationReqDTO.SelectedOptionRequest;
 import com.amoa.server.domain.reservation.dto.response.ReservationResDTO;
-import com.amoa.server.domain.reservation.dto.response.ReservationResDTO.ConfirmScheduleResponse;
 import com.amoa.server.domain.reservation.entity.Reservation;
 import com.amoa.server.domain.reservation.entity.mapping.ReservationSelectedOption;
 import com.amoa.server.domain.reservation.enums.GelRemovalType;
@@ -28,7 +26,6 @@ import com.amoa.server.domain.shop.repository.ShopOptionRepository;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashSet;
