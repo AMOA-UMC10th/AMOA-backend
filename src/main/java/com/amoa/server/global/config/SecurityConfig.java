@@ -70,6 +70,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:3000",
+                "http://localhost:5177",
                 "https://amoa-frontend-git-dev-hunbee776s-projects.vercel.app",
                 "https://amoa-frontend.vercel.app"
         ));
