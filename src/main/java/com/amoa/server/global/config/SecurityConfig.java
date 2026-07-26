@@ -35,7 +35,6 @@ public class SecurityConfig {
             "/error",
             "/api/v1/auth/kakao",
             "/api/v1/auth/reissue",
-            "/api/cards",
 
             // 인증 관련해서는 jwt 토큰 인증 없이도 요청을 보낼 수 있어야 함
             "/health"
@@ -53,10 +52,9 @@ public class SecurityConfig {
                                 SessionCreationPolicy.STATELESS)) // jwt 기반 인증을 사용하므로, 세션을 생성하지 않게끔(stateless 방식으로 설정)
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(authenticationEntryPointImpl)) // 인증 실패 시 처리(예외 처리 설정)
-                .authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.OPTIONS, "/**")
-                        .permitAll()// CORS preflight 요청은 인증 없이 허용
+                .authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()// CORS preflight 요청은 인증 없이 허용
                         .requestMatchers(allowUris).permitAll() // 허용된 uri는 접근 가능
-                        .anyRequest().authenticated()) // 그 외 요청은 반드시 인증 필요 명시
+                                .anyRequest().authenticated()) // 그 외 요청은 반드시 인증 필요 명시
                 .addFilterBefore(jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class) // UsernamePasswordAuthenticationFilter 이전에 JwtAuthFilter를 먼저 실행
                 .addFilterBefore(jwtExceptionFilter,
@@ -72,6 +70,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:3000",
+                "http://localhost:5177",
                 "https://amoa-frontend-git-dev-hunbee776s-projects.vercel.app",
                 "https://amoa-frontend.vercel.app"
         ));
