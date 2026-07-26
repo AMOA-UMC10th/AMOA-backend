@@ -24,12 +24,12 @@ public class ShopController implements ShopControllerDocs {
     public ApiResponse<ShopResDTO.CardListResponse> getShopCards(
             @PathVariable Long shopId,
             @RequestParam(required = false) ArtType artType,
-            @RequestParam(defaultValue = "LATEST") SortType sort,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "RECOMMENDED") SortType sort,
+            @RequestParam(required = false) String cursor,
             @RequestParam(defaultValue = "6") int size,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails != null ? customUserDetails.user().getId() : null;
-        ShopResDTO.CardListResponse result = shopQueryService.getShopCards(shopId, artType, sort, page, size, userId);
+        ShopResDTO.CardListResponse result = shopQueryService.getShopCards(shopId, artType, sort, cursor, size, userId);
         return ApiResponse.onSuccess(ShopSuccessCode.CARD_LIST_FOUND, result);
     }
 

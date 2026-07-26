@@ -44,9 +44,9 @@ public class ShopResDTO {
             Long shopId,
             String shopName,
             long totalCount,
-            int page,
-            int size,
-            List<CardResponse> cards
+            List<CardResponse> cards,
+            String nextCursor, // 커서 구조로 변경
+            boolean hasNext
     ) {}
 
     // 카드 단건 응답
