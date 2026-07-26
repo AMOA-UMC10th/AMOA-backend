@@ -1,6 +1,7 @@
 package com.amoa.server.domain.card.repository;
 
 import com.amoa.server.domain.card.dto.request.CardReqDTO.CardSearchRequest;
+import com.amoa.server.domain.card.dto.request.CardReqDTO.ShopCardSearchRequest;
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.entity.QCard;
 import com.amoa.server.domain.card.entity.mapping.QCardDesignTag;
@@ -11,6 +12,8 @@ import com.amoa.server.domain.common.enums.ArtType;
 import com.amoa.server.domain.common.enums.SortType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.JPAExpressions;
 import java.time.LocalDateTime;
@@ -300,5 +303,107 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                     qCard.id.asc()
             };
         };
+    }
+
+    // 샵 상세 페이지에서의 하단 카드 목록, 샵 상세 페이지를 처음 집입했을 때 정렬 기준으로는 RECOMMENDED가 디폴트
+    @Override
+    public List<Card> findShopCards(ShopCardSearchRequest request, int size) {
+        boolean useMoodPriority = request.sort() == SortType.RECOMMENDED
+                && request.preferredDesignTagIds() != null
+                && !request.preferredDesignTagIds().isEmpty();
+
+        return queryFactory
+                .selectFrom(qCard)
+                .join(qCard.shop).fetchJoin()
+                .join(qCard.shop.region).fetchJoin()
+                .where(
+                        qCard.deletedAt.isNull(),
+                        qCard.shop.id.eq(request.shopId()),
+                        artTypeCondition(request.artType()),
+                        useMoodPriority
+                                ? moodCursorCondition(request.cursor(), request.preferredDesignTagIds())
+                                : cursorCondition(request.cursor(), request.sort())
+                )
+                .orderBy(useMoodPriority
+                        ? moodPriorityOrder(request.preferredDesignTagIds())
+                        : getOrder(request.sort()))
+                .limit(size + 1)
+                .fetch();
+    }
+
+    // 샵 상세 조회 페이지에서 보여지는 카드의 개수
+    @Override
+    public Long countShopCards(Long shopId, ArtType artType) {
+        return queryFactory
+                .select(qCard.count())
+                .from(qCard)
+                .where(
+                        qCard.deletedAt.isNull(),
+                        qCard.shop.id.eq(shopId),
+                        artTypeCondition(artType)
+                )
+                .fetchOne();
+    }
+
+    // 온보딩 관심 디자인무드 매칭 여부를 0/1 우선순위로 변환 (0 -> 매칭, 1 -> 매칭X)
+    private NumberExpression<Integer> moodPriorityExpression(List<Long> preferredDesignTagIds) {
+        QCardDesignTag sub = new QCardDesignTag("cardDesignTagMoodSub");
+
+        BooleanExpression matchesPreferredMood = JPAExpressions
+                .selectOne()
+                .from(sub)
+                .where(
+                        sub.card.eq(qCard),
+                        sub.designTag.id.in(preferredDesignTagIds)
+                )
+                .exists();
+
+        return new CaseBuilder()
+                .when(matchesPreferredMood).then(0)
+                .otherwise(1);
+    }
+
+    // 무드 매칭 우선 → 찜 많은 순 → id
+    private OrderSpecifier<?>[] moodPriorityOrder(List<Long> preferredDesignTagIds) {
+        return new OrderSpecifier[]{
+                moodPriorityExpression(preferredDesignTagIds).asc(),  // 0(매칭)이 먼저, 1(안매칭)이 나중
+                qCard.likeCard.desc(), // 찜 많은 순
+                qCard.id.asc() // id
+        };
+    }
+
+    // 무드 우선순위 기반 커서 조건 (priority_likeCard_id 3단 커서, PRICE_ASC 패턴과 동일한 방식)
+    private BooleanExpression moodCursorCondition(String cursor, List<Long> preferredDesignTagIds) {
+        if (cursor == null) {
+            return null;
+        }
+
+        CardCursor cardCursor = CardCursor.from(cursor);
+
+        Integer priority;
+        Integer likeCount;
+
+        try {
+            if (cardCursor.secondValue() == null) {
+                throw new NumberFormatException();
+            }
+            priority = Integer.parseInt(cardCursor.value());
+            likeCount = Integer.parseInt(cardCursor.secondValue());
+        } catch (NumberFormatException | NullPointerException e) {
+            throw new CardException(CardErrorCode.CARD_INVALID_CURSOR);
+        }
+
+        NumberExpression<Integer> moodPriority = moodPriorityExpression(preferredDesignTagIds);
+
+        return moodPriority.gt(priority)
+                .or(
+                        moodPriority.eq(priority)
+                                .and(qCard.likeCard.lt(likeCount))
+                )
+                .or(
+                        moodPriority.eq(priority)
+                                .and(qCard.likeCard.eq(likeCount))
+                                .and(qCard.id.gt(cardCursor.cardId()))
+                );
     }
 }
