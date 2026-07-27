@@ -129,25 +129,36 @@ public class UserCommandService {
     }
 
     // 휴대폰 인증번호 발송
-    public PhoneSendResDTO sendPhoneVerificationCode(PhoneSendReqDTO request) {
+    public PhoneSendResDTO sendPhoneVerificationCode(Long userId, PhoneSendReqDTO request) {
         String phoneNumber = request.phoneNumber().replaceAll("[^0-9]", "");
 
         if (!PHONE_PATTERN.matcher(phoneNumber).matches()) {
             throw new UserException(UserErrorCode.PHONE_INVALID_FORMAT);
         }
 
-        if (redisUtil.hasPhoneSendCooldown(phoneNumber)) {
+        boolean phoneAcquired = redisUtil.tryAcquirePhoneSendCooldown("phone:" + phoneNumber, RESEND_COOLDOWN);
+        if (!phoneAcquired) {
+            throw new UserException(UserErrorCode.PHONE_SEND_TOO_FREQUENT);
+        }
+
+        boolean userAcquired = redisUtil.tryAcquirePhoneSendCooldown("user:" + userId, RESEND_COOLDOWN);
+        if (!userAcquired) {
+            redisUtil.releasePhoneSendCooldown("phone:" + phoneNumber); // 전화번호 쪽 예약도 같이 풀어줌
             throw new UserException(UserErrorCode.PHONE_SEND_TOO_FREQUENT);
         }
 
         String code = String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
 
-        redisUtil.savePhoneVerificationCode(phoneNumber, code, CODE_TTL);
-        redisUtil.savePhoneSendCooldown(phoneNumber, RESEND_COOLDOWN);
+        try {
+            smsSender.send(phoneNumber, "[AMOA] 인증번호는 [" + code + "]입니다.");
+        } catch (RuntimeException e) {
+            redisUtil.releasePhoneSendCooldown("phone:" + phoneNumber);
+            redisUtil.releasePhoneSendCooldown("user:" + userId);
+            throw e;
+        }
 
-        smsSender.send(phoneNumber, "[AMOA] 인증번호는 [" + code + "]입니다.");
+        redisUtil.savePhoneVerificationCode(phoneNumber, code, CODE_TTL);
 
         return new PhoneSendResDTO((int) CODE_TTL.toSeconds());
     }
-
 }

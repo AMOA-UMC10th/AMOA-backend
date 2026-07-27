@@ -201,14 +201,16 @@ public class UserController implements UserControllerDocs {
         );
     }
 
+    // UserController.java
     @Override
     @PostMapping("/phone/send")
     public ApiResponse<PhoneSendResDTO> sendPhoneVerificationCode(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PhoneSendReqDTO request
     ) {
         return ApiResponse.onSuccess(
                 UserSuccessCode.PHONE_SEND_SUCCESS,
-                userCommandService.sendPhoneVerificationCode(request)
+                userCommandService.sendPhoneVerificationCode(userDetails.user().getId(), request)
         );
     }
 }

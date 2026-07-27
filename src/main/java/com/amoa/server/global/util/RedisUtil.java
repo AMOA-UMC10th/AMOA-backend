@@ -142,11 +142,14 @@ public class RedisUtil {
         set(PHONE_CODE_PREFIX + phoneNumber, code, duration);
     }
 
-    public void savePhoneSendCooldown(String phoneNumber, Duration duration) {
-        set(PHONE_SEND_COOLDOWN_PREFIX + phoneNumber, "1", duration);
+    // check+set 대신 원자적 연산으로 교체
+    public boolean tryAcquirePhoneSendCooldown(String key, Duration duration) {
+        Boolean acquired = redisTemplate.opsForValue()
+                .setIfAbsent(PHONE_SEND_COOLDOWN_PREFIX + key, "1", duration);
+        return Boolean.TRUE.equals(acquired);
     }
 
-    public boolean hasPhoneSendCooldown(String phoneNumber) {
-        return hasKey(PHONE_SEND_COOLDOWN_PREFIX + phoneNumber);
+    public void releasePhoneSendCooldown(String key) {
+        delete(PHONE_SEND_COOLDOWN_PREFIX + key);
     }
 }
