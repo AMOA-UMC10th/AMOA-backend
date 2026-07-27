@@ -9,6 +9,7 @@ import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.util.JwtUtil;
 import com.amoa.server.global.util.RedisUtil;
 import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import com.amoa.server.global.sms.SmsSender;
 import java.security.SecureRandom;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -63,6 +65,12 @@ public class UserCommandService {
                 .map(user -> {
 
                     if (!Boolean.TRUE.equals(user.getIsActive())) {
+                        log.info(
+                                "탈퇴 회원 재활성화 - userId={}, socialUid={}",
+                                user.getId(),
+                                socialUid
+                        );
+
                         user.reactivate();
                     }
 
@@ -102,6 +110,12 @@ public class UserCommandService {
                 .orElseThrow(() ->
                         new UserException(UserErrorCode.USER_NOT_FOUND)
                 );
+
+        log.info(
+                "회원 탈퇴 요청 - userId={}, isActive={}",
+                user.getId(),
+                user.getIsActive()
+        );
 
         // Access Token 블랙리스트 등록
         Long remainingTime =
