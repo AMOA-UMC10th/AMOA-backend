@@ -1,10 +1,6 @@
 package com.amoa.server.domain.shop.dto.Response;
 
 import com.amoa.server.domain.common.enums.ArtType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;

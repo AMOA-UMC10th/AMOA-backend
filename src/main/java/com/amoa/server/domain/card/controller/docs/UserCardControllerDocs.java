@@ -6,7 +6,10 @@ import com.amoa.server.global.auth.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+
+@Tag(name = "Card(user)")
 public interface UserCardControllerDocs {
 
     @SecurityRequirement(name = "JWT TOKEN")
