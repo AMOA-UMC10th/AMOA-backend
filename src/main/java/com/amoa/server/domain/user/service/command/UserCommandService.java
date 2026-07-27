@@ -15,12 +15,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import com.amoa.server.domain.user.dto.request.PhoneSendReqDTO;
+import com.amoa.server.domain.user.dto.response.PhoneSendResDTO;
+import com.amoa.server.global.sms.SmsSender;
+import java.security.SecureRandom;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserCommandService {
 
+    private final SmsSender smsSender;
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^01[0-9]{8,9}$");
+    private static final Duration CODE_TTL = Duration.ofMinutes(3);
+    private static final Duration RESEND_COOLDOWN = Duration.ofSeconds(30);
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private final UserRepository userRepository;
     private final RedisUtil redisUtil;
     private final UserCreateCommandService userCreateCommandService;
@@ -117,4 +127,27 @@ public class UserCommandService {
                 }
         );
     }
+
+    // 휴대폰 인증번호 발송
+    public PhoneSendResDTO sendPhoneVerificationCode(PhoneSendReqDTO request) {
+        String phoneNumber = request.phoneNumber().replaceAll("[^0-9]", "");
+
+        if (!PHONE_PATTERN.matcher(phoneNumber).matches()) {
+            throw new UserException(UserErrorCode.PHONE_INVALID_FORMAT);
+        }
+
+        if (redisUtil.hasPhoneSendCooldown(phoneNumber)) {
+            throw new UserException(UserErrorCode.PHONE_SEND_TOO_FREQUENT);
+        }
+
+        String code = String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
+
+        redisUtil.savePhoneVerificationCode(phoneNumber, code, CODE_TTL);
+        redisUtil.savePhoneSendCooldown(phoneNumber, RESEND_COOLDOWN);
+
+        smsSender.send(phoneNumber, "[AMOA] 인증번호는 [" + code + "]입니다.");
+
+        return new PhoneSendResDTO((int) CODE_TTL.toSeconds());
+    }
+
 }
