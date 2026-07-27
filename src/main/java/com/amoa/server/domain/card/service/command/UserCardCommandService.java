@@ -35,11 +35,11 @@ public class UserCardCommandService {
 
         cardRepository.increaseLikeCount(cardId);
 
-        return UserCardResDTO.LikeResultDTO.builder()
-                .userCardId(userCard.getId())
-                .cardId(card.getId())
-                .createdAt(userCard.getCreatedAt())
-                .build();
+        return new UserCardResDTO.LikeResultDTO(
+                userCard.getId(),
+                card.getId(),
+                userCard.getCreatedAt()
+                );
     }
 
 

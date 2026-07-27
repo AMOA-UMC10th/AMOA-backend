@@ -52,6 +52,7 @@ public class OnboardingCommandService {
 
         validateOnboardingUser(user);
         validateNickname(request.nickname(), userId);
+        validateRegionLimit(request.regionIds());
         validateDuplicateIds(request);
 
         List<DesignTag> designTags =
@@ -137,6 +138,16 @@ public class OnboardingCommandService {
         if (hasDuplicate(termIds)) {
             throw new UserException(
                     UserErrorCode.DUPLICATED_TERM_AGREEMENT
+            );
+        }
+    }
+
+    private void validateRegionLimit(
+            List<Long> regionIds
+    ) {
+        if (regionIds.size() > 3) {
+            throw new UserException(
+                    UserErrorCode.INTERESTED_REGION_LIMIT_EXCEEDED
             );
         }
     }
