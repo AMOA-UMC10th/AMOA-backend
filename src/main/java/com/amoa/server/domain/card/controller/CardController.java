@@ -51,6 +51,22 @@ public class CardController implements CardControllerDocs {
         );
     }
 
+    // 아트 추천 목록 조회
+    @GetMapping("/{cardId}/recommendations")
+    @Override
+    public ApiResponse<CardResDTO.RecommendedCardList> getRecommendedCards(
+            @PathVariable Long cardId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+
+        Long userId = userDetails == null ? null : userDetails.user().getId();
+
+        return ApiResponse.onSuccess(
+                CardSuccessCode.CARD_FOUND,
+                cardQueryService.getRecommendedCards(cardId, userId)
+        );
+    }
+
     // 아트 상세 조회
     @GetMapping("/{cardId}")
     public ApiResponse<CardResDTO.CardDetailResponse> getCardDetail(

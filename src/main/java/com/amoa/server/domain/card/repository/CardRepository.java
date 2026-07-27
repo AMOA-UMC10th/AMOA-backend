@@ -31,6 +31,22 @@ public interface CardRepository extends JpaRepository<Card, Long>, CardRepositor
             @Param("cardId") Long cardId
     );
 
+    // 아트 추천 목록 조회용: shop, region, 디자인 태그까지 함께 fetch
+    @Query("""
+            SELECT c
+            FROM Card c
+            JOIN FETCH c.shop s
+            JOIN FETCH s.region
+            LEFT JOIN FETCH c.cardDesignTags cdt
+            LEFT JOIN FETCH cdt.designTag
+            WHERE c.id = :cardId
+              AND c.deletedAt IS NULL
+            """)
+    Optional<Card> findByIdWithShopRegionAndTags(
+            @Param("cardId") Long cardId
+    );
+
+    
     // 아트 상세 조회
     @Query("""
                 select distinct c
@@ -64,7 +80,4 @@ public interface CardRepository extends JpaRepository<Card, Long>, CardRepositor
     // 샵의 전체 카드 찜 수
     @Query("SELECT COUNT(uc) FROM UserCard uc WHERE uc.card.shop.id = :shopId")
     int countCardLikesByShopId(@Param("shopId") Long shopId);
-
-    // 아트 상세 조회
-
 }

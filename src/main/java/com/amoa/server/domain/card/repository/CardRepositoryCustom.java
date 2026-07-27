@@ -18,4 +18,6 @@ public interface CardRepositoryCustom {
     List<Card> findShopCards(ShopCardSearchRequest request, int size);
 
     Long countShopCards(Long shopId, ArtType artType);
+
+    List<Card> findRecommendedCards(Card currentCard, int limit);
 }

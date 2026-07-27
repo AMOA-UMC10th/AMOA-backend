@@ -58,6 +58,12 @@ public class CardResDTO {
     ) {
     }
 
+    // 아트 추천 목록 조회
+    public record RecommendedCardList(
+            List<CardInfo> cards
+    ) {
+    }
+
     // 아트 상세 조회
     public record CardDetailResponse(
             CardDetail card
