@@ -134,4 +134,19 @@ public class RedisUtil {
             );
         }
     }
+
+    private static final String PHONE_CODE_PREFIX = "phone-verification:code:";
+    private static final String PHONE_SEND_COOLDOWN_PREFIX = "phone-verification:cooldown:";
+
+    public void savePhoneVerificationCode(String phoneNumber, String code, Duration duration) {
+        set(PHONE_CODE_PREFIX + phoneNumber, code, duration);
+    }
+
+    public void savePhoneSendCooldown(String phoneNumber, Duration duration) {
+        set(PHONE_SEND_COOLDOWN_PREFIX + phoneNumber, "1", duration);
+    }
+
+    public boolean hasPhoneSendCooldown(String phoneNumber) {
+        return hasKey(PHONE_SEND_COOLDOWN_PREFIX + phoneNumber);
+    }
 }
