@@ -65,7 +65,7 @@ public enum UserSuccessCode implements BaseSuccessCode {
 
     USER_LIKED_CARDS_SUCCESS(
             HttpStatus.OK,
-            "USER_200_6",
+            "USER200_6",
             "찜한 네일 아트 목록 조회에 성공했습니다."
     );
 
