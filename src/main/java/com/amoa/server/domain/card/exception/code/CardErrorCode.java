@@ -21,6 +21,12 @@ public enum CardErrorCode implements BaseErrorCode {
             "카드 가격 범위 설정이 잘못되었습니다."
     ),
 
+    CARD_INVALID_CURSOR(
+            HttpStatus.BAD_REQUEST,
+            "CARD400_3",
+            "잘못된 커서 형식입니다."
+    ),
+
     CARD_NOT_FOUND(
             HttpStatus.NOT_FOUND,
             "CARD404_1",
@@ -37,12 +43,6 @@ public enum CardErrorCode implements BaseErrorCode {
             HttpStatus.CONFLICT,
             "CARD409_1",
             "이미 찜한 카드입니다."
-    ),
-
-    CARD_INVALID_CURSOR(
-            HttpStatus.BAD_REQUEST,
-            "CARD400_3",
-            "잘못된 커서 형식입니다."
     );
 
     private final HttpStatus httpStatus;

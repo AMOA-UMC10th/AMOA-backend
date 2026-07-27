@@ -5,7 +5,6 @@ import com.amoa.server.domain.card.dto.request.CardReqDTO.ShopCardSearchRequest;
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.common.enums.ArtType;
 import java.util.List;
-import java.util.Set;
 
 public interface CardRepositoryCustom {
 
