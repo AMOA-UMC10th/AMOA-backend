@@ -66,4 +66,15 @@ public class CardController implements CardControllerDocs {
                 cardQueryService.getRecommendedCards(cardId, userId)
         );
     }
+
+    // 아트 상세 조회
+    @GetMapping("/{cardId}")
+    public ApiResponse<CardResDTO.CardDetailResponse> getCardDetail(
+            @PathVariable Long cardId
+    ) {
+        return ApiResponse.onSuccess(
+                CardSuccessCode.CARD_FOUND,
+                cardQueryService.getCardDetail(cardId)
+        );
+    }
 }

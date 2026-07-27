@@ -63,4 +63,30 @@ public class CardResDTO {
             List<CardInfo> cards
     ) {
     }
+
+    // 아트 상세 조회
+    public record CardDetailResponse(
+            CardDetail card
+    ) {
+    }
+
+    public record CardDetail(
+            Long cardId,
+            Long shopId,
+            String shopName,
+            String instagramUrl,
+            ArtType artType,
+            List<DesignTagInfo> designTags,
+            Integer minPrice,
+            Integer maxPrice,
+            String address,
+            String createdMonth
+    ) {
+    }
+
+    public record DesignTagInfo(
+            Long designTagId,
+            String name
+    ) {
+    }
 }

@@ -451,4 +451,16 @@ public class CardQueryService {
 
         return new CardResDTO.RecommendedCardList(cardInfos);
     }
+
+    // 아트 상세 조회
+    @Transactional(readOnly = true)
+    public CardResDTO.CardDetailResponse getCardDetail(Long cardId) {
+
+        Card card = cardRepository.findDetailById(cardId)
+                .orElseThrow(() ->
+                        new CardException(CardErrorCode.CARD_NOT_FOUND)
+                );
+
+        return cardConverter.toCardDetail(card);
+    }
 }

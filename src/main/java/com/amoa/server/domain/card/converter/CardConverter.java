@@ -8,6 +8,7 @@ import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.entity.mapping.CardDesignTag;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.shop.entity.Shop;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 
@@ -87,6 +88,33 @@ public class CardConverter {
                                 .toString()
                                 .substring(0, 7),
                 likedCardIds.contains(card.getId())
+        );
+    }
+
+    // 아트 상세 조회
+    public CardResDTO.CardDetailResponse toCardDetail(Card card) {
+
+        return new CardResDTO.CardDetailResponse(
+                new CardResDTO.CardDetail(
+                        card.getId(),
+                        card.getShop().getId(),
+                        card.getShop().getShopName(),
+                        card.getInstagramUrl(),
+                        card.getArtType(),
+                        card.getCardDesignTags().stream()
+                                .map(cardDesignTag ->
+                                        new CardResDTO.DesignTagInfo(
+                                                cardDesignTag.getDesignTag().getId(),
+                                                cardDesignTag.getDesignTag().getName()
+                                        ))
+                                .toList(),
+                        card.getMinPrice(),
+                        card.getMaxPrice(),
+                        card.getShop().getAddress(),
+                        card.getCreatedMonth() == null
+                                ? null
+                                : card.getCreatedMonth().format(DateTimeFormatter.ofPattern("yyyy-MM"))
+                )
         );
     }
 }
