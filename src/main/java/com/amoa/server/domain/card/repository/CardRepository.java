@@ -31,6 +31,18 @@ public interface CardRepository extends JpaRepository<Card, Long>, CardRepositor
             @Param("cardId") Long cardId
     );
 
+    // 아트 상세 조회
+    @Query("""
+                select distinct c
+                from Card c
+                join fetch c.shop
+                left join fetch c.cardDesignTags cdt
+                left join fetch cdt.designTag
+                where c.id = :cardId
+                  and c.deletedAt IS NULL
+            """)
+    Optional<Card> findDetailById(@Param("cardId") Long cardId);
+
     List<Card> findTop5ByShopAndDeletedAtIsNullOrderByCreatedAtDesc(
             Shop shop
     );
@@ -52,4 +64,7 @@ public interface CardRepository extends JpaRepository<Card, Long>, CardRepositor
     // 샵의 전체 카드 찜 수
     @Query("SELECT COUNT(uc) FROM UserCard uc WHERE uc.card.shop.id = :shopId")
     int countCardLikesByShopId(@Param("shopId") Long shopId);
+
+    // 아트 상세 조회
+
 }
