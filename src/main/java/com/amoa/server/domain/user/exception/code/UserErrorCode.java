@@ -51,6 +51,12 @@ public enum UserErrorCode implements BaseErrorCode{
             "중복된 약관 동의 정보가 포함되어 있습니다."
     ),
 
+    PHONE_INVALID_FORMAT(
+            HttpStatus.BAD_REQUEST,
+            "USER400_8",
+            "올바른 전화번호 형식이 아닙니다."
+    ),
+
     USER_NOT_ACTIVE(
             HttpStatus.UNAUTHORIZED,
             "USER401_1",
@@ -61,6 +67,12 @@ public enum UserErrorCode implements BaseErrorCode{
             HttpStatus.UNAUTHORIZED,
             "USER401_2",
             "권한이 없습니다."
+    ),
+
+    PHONE_SEND_TOO_FREQUENT(
+            HttpStatus.TOO_MANY_REQUESTS,
+            "USER429_1",
+            "잠시 후 다시 시도해주세요."
     ),
 
     USER_NOT_FOUND(
@@ -85,6 +97,12 @@ public enum UserErrorCode implements BaseErrorCode{
             HttpStatus.CONFLICT,
             "ONBOARDING409_1",
             "이미 사용 중인 닉네임입니다."
+    ),
+
+    SMS_SEND_FAILED(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+        "USER500_1",
+                "인증번호 발송에 실패했습니다."
     );
 
     private final HttpStatus httpStatus;
