@@ -51,7 +51,7 @@ public class UserController implements UserControllerDocs {
     private final OnboardingCommandService onboardingCommandService;
 
     @Override
-    @DeleteMapping("/me")
+    @DeleteMapping("/me/withdraw")
     public ApiResponse<String> withdraw(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             HttpServletRequest request
