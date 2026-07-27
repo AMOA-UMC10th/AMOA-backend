@@ -5,9 +5,11 @@ import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
+import com.amoa.server.domain.user.dto.request.PhoneSendReqDTO;
 import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.domain.user.dto.response.OnboardingSaveResDTO;
+import com.amoa.server.domain.user.dto.response.PhoneSendResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
@@ -118,5 +120,13 @@ public interface UserControllerDocs {
 
             @Valid
             @RequestBody OnboardingSaveReqDTO request
+    );
+
+    @Operation(
+            summary = "휴대폰 인증번호 발송 API",
+            description = "입력한 전화번호로 6자리 인증번호를 SMS로 발송합니다. 인증번호는 3분간 유효하며, 같은 번호로는 30초 이내 재요청이 제한됩니다."
+    )
+    ApiResponse<PhoneSendResDTO> sendPhoneVerificationCode(
+            @Valid @RequestBody PhoneSendReqDTO request
     );
 }
