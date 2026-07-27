@@ -65,11 +65,7 @@ public class UserCommandService {
                 .map(user -> {
 
                     if (!Boolean.TRUE.equals(user.getIsActive())) {
-                        log.info(
-                                "탈퇴 회원 재활성화 - userId={}, socialUid={}",
-                                user.getId(),
-                                socialUid
-                        );
+                        log.debug("탈퇴 회원 재활성화 처리");
 
                         user.reactivate();
                     }
@@ -111,11 +107,7 @@ public class UserCommandService {
                         new UserException(UserErrorCode.USER_NOT_FOUND)
                 );
 
-        log.info(
-                "회원 탈퇴 요청 - userId={}, isActive={}",
-                user.getId(),
-                user.getIsActive()
-        );
+        log.debug("회원 탈퇴 요청 처리, isActive={}", user.getIsActive());
 
         // Access Token 블랙리스트 등록
         Long remainingTime =
