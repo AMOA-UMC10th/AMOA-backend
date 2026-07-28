@@ -31,9 +31,11 @@ public record OnboardingSaveReqDTO(
 
         @NotNull(message = "선호 디자인 목록은 필수입니다.")
         @Size(max = 7, message = "선호 디자인은 최대 7개까지 선택할 수 있습니다.")
+        List<@NotNull Long> designTagIds,
 
         @NotNull(message = "관심 지역 목록은 필수입니다.")
         @Size(max = 3, message = "관심 지역은 최대 3개까지 선택할 수 있습니다.")
+        List<@NotNull Long> regionIds,
 
         @NotEmpty(message = "약관 동의 정보는 필수입니다.")
         List<
