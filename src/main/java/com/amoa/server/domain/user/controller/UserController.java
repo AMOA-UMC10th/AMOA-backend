@@ -4,9 +4,9 @@ import com.amoa.server.domain.auth.exception.AuthException;
 import com.amoa.server.domain.auth.exception.code.AuthErrorCode;
 import com.amoa.server.domain.card.dto.response.UserCardResDTO;
 import com.amoa.server.domain.card.service.query.UserCardQueryService;
+import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
-import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
@@ -25,12 +25,13 @@ import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -74,22 +76,30 @@ public class UserController implements UserControllerDocs {
 
             @RequestParam(
                 name = "sortType",
-                defaultValue = "LATEST")
-            ShopSort sort,
+                defaultValue = "RECOMMENDED")
+            SortType sortType,
 
-            @ParameterObject
-            @PageableDefault(
-                    size = 6,
-                    sort = "createdAt",
-                    direction = Sort.Direction.DESC
+            @RequestParam(
+                    defaultValue = "0"
             )
-            Pageable pageable
+            @Min(0)
+            int page,
+
+            @RequestParam(
+                    defaultValue = "6"
+            )
+            @Min(1)
+            @Max(50)
+            int size
     ){
+
+        Pageable pageable = PageRequest.of(page, size);
+
         return ApiResponse.onSuccess(
                 UserSuccessCode.USER_LIKED_SHOPS_SUCCESS,
                 savedShopQueryService.getLikedShops(
                         customUserDetails.user(),
-                        sort,
+                        sortType,
                         pageable
                 )
         );
@@ -100,18 +110,33 @@ public class UserController implements UserControllerDocs {
     public ApiResponse<UserCardResDTO.LikedCardListResponse> getLikedCards(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
 
-            @ParameterObject
-            @PageableDefault(
-                    size = 20,
-                    sort = "createdAt",
-                    direction =  Sort.Direction.DESC
+            @RequestParam(
+                    name = "sortType",
+                    defaultValue = "RECOMMENDED"
             )
-            Pageable pageable
+            SortType sortType,
+
+            @RequestParam(
+                    defaultValue = "0"
+            )
+            @Min(0)
+            int page,
+
+            @RequestParam(
+                    defaultValue = "20"
+            )
+            @Min(1)
+            @Max(100)
+            int size
     ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
         return ApiResponse.onSuccess(
                 UserSuccessCode.USER_LIKED_CARDS_SUCCESS,
                 userCardQueryService.getLikedCards(
                         customUserDetails.user(),
+                        sortType,
                         pageable
                 )
         );
