@@ -6,10 +6,12 @@ import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
 import com.amoa.server.domain.user.dto.request.PhoneSendReqDTO;
+import com.amoa.server.domain.user.dto.request.PhoneVerifyReqDTO;
 import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.domain.user.dto.response.OnboardingSaveResDTO;
 import com.amoa.server.domain.user.dto.response.PhoneSendResDTO;
+import com.amoa.server.domain.user.dto.response.PhoneVerifyResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
@@ -129,5 +131,14 @@ public interface UserControllerDocs {
     ApiResponse<PhoneSendResDTO> sendPhoneVerificationCode(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PhoneSendReqDTO request
+    );
+
+    @Operation(
+            summary = "휴대폰 인증번호 확인 API",
+            description = "발송된 인증번호와 일치 여부를 확인합니다. 5회 이상 틀리면 인증번호가 폐기되어 재발송이 필요합니다."
+    )
+    ApiResponse<PhoneVerifyResDTO> verifyPhoneCode(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody PhoneVerifyReqDTO request
     );
 }

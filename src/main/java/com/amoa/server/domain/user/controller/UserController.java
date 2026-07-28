@@ -11,10 +11,12 @@ import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
 import com.amoa.server.domain.user.dto.request.PhoneSendReqDTO;
+import com.amoa.server.domain.user.dto.request.PhoneVerifyReqDTO;
 import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.domain.user.dto.response.OnboardingSaveResDTO;
 import com.amoa.server.domain.user.dto.response.PhoneSendResDTO;
+import com.amoa.server.domain.user.dto.response.PhoneVerifyResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.domain.user.exception.code.UserSuccessCode;
 import com.amoa.server.domain.user.service.command.OnboardingCommandService;
@@ -190,8 +192,8 @@ public class UserController implements UserControllerDocs {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody OnboardingSaveReqDTO request
     ) {
-        Long userId = userDetails.user().getId();
-
+        // Long userId = userDetails.user().getId();
+        Long userId = userDetails != null ? userDetails.user().getId() : null;
         return ApiResponse.onSuccess(
                 UserSuccessCode.ONBOARDING_COMPLETE_OK,
                 onboardingCommandService.saveOnboarding(
@@ -208,9 +210,23 @@ public class UserController implements UserControllerDocs {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PhoneSendReqDTO request
     ) {
+        // Long userId = userDetails.user().getId();
+        Long userId = userDetails != null ? userDetails.user().getId() : null;
         return ApiResponse.onSuccess(
                 UserSuccessCode.PHONE_SEND_SUCCESS,
-                userCommandService.sendPhoneVerificationCode(userDetails.user().getId(), request)
+                userCommandService.sendPhoneVerificationCode(userId, request)
+        );
+    }
+
+    @Override
+    @PostMapping("/phone/verify")
+    public ApiResponse<PhoneVerifyResDTO> verifyPhoneCode(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody PhoneVerifyReqDTO request
+    ) {
+        return ApiResponse.onSuccess(
+                UserSuccessCode.PHONE_VERIFY_SUCCESS,
+                userCommandService.verifyPhoneCode(userDetails.user().getId(), request)
         );
     }
 }
