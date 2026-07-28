@@ -63,6 +63,12 @@ public enum UserSuccessCode implements BaseSuccessCode {
             "인증번호가 발송되었습니다."
     ),
 
+    PHONE_VERIFY_SUCCESS(
+            HttpStatus.OK,
+            "USER200_10",
+            "휴대폰 인증이 완료되었습니다."
+    ),
+
     SAVED_PLACE_CREATE_OK(
             HttpStatus.OK,
             "USER201_1",
