@@ -1,9 +1,9 @@
 package com.amoa.server.domain.user.controller.docs;
 
 import com.amoa.server.domain.card.dto.response.UserCardResDTO;
+import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
-import com.amoa.server.domain.shop.enums.ShopSort;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
 import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
@@ -15,11 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springdoc.core.annotations.ParameterObject;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,17 +41,24 @@ public interface UserControllerDocs {
     ApiResponse<SavedShopResDTO.LikedShopListResponse> getLikedShops(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
       
-            @RequestParam(defaultValue = "LATEST")
-            ShopSort sortType,
-
-            @ParameterObject
-            @PageableDefault(
-                    size = 6,
-                    sort = "createdAt",
-                    direction = Sort.Direction.DESC
+            @Parameter(
+                    description = "정렬 기준",
+                    example = "RECOMMENDED"
             )
+            @RequestParam(
+                    defaultValue = "RECOMMENDED"
+            )
+            SortType sortType,
 
-            Pageable pageable
+            @RequestParam(
+                    defaultValue = "0"
+            )
+            int page,
+
+            @RequestParam(
+                    defaultValue = "6"
+            )
+            int size
     );
 
     @Operation(
@@ -78,17 +81,37 @@ public interface UserControllerDocs {
             summary = "찜한 아트 목록 조회 API",
             description = "로그인한 사용자가 찜한 아트 목록을 조회합니다."
     )
+    @SecurityRequirement(name = "JWT TOKEN")
     ApiResponse<UserCardResDTO.LikedCardListResponse> getLikedCards(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
 
-            @ParameterObject
-            @PageableDefault(
-                    size = 20,
-                    sort = "createdAt",
-                    direction = Sort.Direction.DESC
+            @Parameter(
+                    description = """
+                            정렬 기준
+                            - RECOMMENDED : 추천순 (추후 구현 예정)
+                            - POPULAR : 찜 많은 순
+                            - PRICE_ASC : 최저 가격 낮은 순
+                            - PRICE_DESC : 최고 가격 높은 순
+                            - LATEST : 최근 찜한 순
+                            """,
+                    example = "RECOMMENDED"
             )
-            Pageable pageable
-        );
+            @RequestParam(
+                    name = "sortType",
+                    defaultValue = "RECOMMENDED"
+            )
+            SortType sortType,
+
+            @RequestParam(
+                    defaultValue = "0"
+            )
+            int page,
+
+            @RequestParam(
+                    defaultValue = "20"
+            )
+            int size
+    );
     @Operation(
             summary = "디자인 무드 목록 조회 API",
             description = "온보딩/설정 화면에서 선택 가능한 디자인 무드(태그) 목록을 조회합니다."
