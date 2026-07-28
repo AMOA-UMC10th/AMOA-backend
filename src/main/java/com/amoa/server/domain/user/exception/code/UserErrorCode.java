@@ -57,6 +57,24 @@ public enum UserErrorCode implements BaseErrorCode{
             "올바른 전화번호 형식이 아닙니다."
     ),
 
+    PHONE_CODE_NOT_FOUND(
+            HttpStatus.BAD_REQUEST,
+            "USER400_9",
+            "인증번호가 만료되었거나 발송되지 않았습니다."
+    ),
+
+    PHONE_CODE_MISMATCH(
+            HttpStatus.BAD_REQUEST,
+            "USER400_10",
+            "인증번호가 일치하지 않습니다."
+    ),
+
+    PHONE_NOT_VERIFIED(
+            HttpStatus.BAD_REQUEST,
+            "USER400_11",
+            "휴대폰 인증이 완료되지 않았습니다."
+    ),
+
     USER_NOT_ACTIVE(
             HttpStatus.UNAUTHORIZED,
             "USER401_1",
@@ -73,6 +91,12 @@ public enum UserErrorCode implements BaseErrorCode{
             HttpStatus.TOO_MANY_REQUESTS,
             "USER429_1",
             "잠시 후 다시 시도해주세요."
+    ),
+
+    PHONE_VERIFY_ATTEMPTS_EXCEEDED(
+            HttpStatus.TOO_MANY_REQUESTS,
+            "USER429_2",
+            "인증 시도 횟수를 초과했습니다. 인증번호를 다시 요청해주세요."
     ),
 
     USER_NOT_FOUND(
