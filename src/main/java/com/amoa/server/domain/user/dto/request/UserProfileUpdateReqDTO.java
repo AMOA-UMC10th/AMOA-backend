@@ -12,7 +12,15 @@ public record UserProfileUpdateReqDTO(
 
         String profileImageUrl,
 
-        @Size(min = 2, max = 12, message = "닉네임은 2자 이상 12자 이하로 입력해야 합니다.")
+        @Size(
+                min = 2,
+                max = 10,
+                message = "닉네임은 2자 이상 10자 이하여야 합니다."
+        )
+        @Pattern(
+                regexp = "^[가-힣a-zA-Z0-9]+$",
+                message = "닉네임은 한글, 영문, 숫자만 사용할 수 있습니다."
+        )
         String nickname,
 
         @Pattern(
@@ -21,7 +29,7 @@ public record UserProfileUpdateReqDTO(
         )
         String phoneNumber,
 
-        @Size(max = 3, message = "관심 디자인은 최대 3개까지 선택할 수 있습니다.")
+        @Size(max = 7, message = "관심 디자인은 최대 7개까지 선택할 수 있습니다.")
         List<Long> selectedDesignTagIds,
 
         @Size(max = 3, message = "관심 지역은 최대 3개까지 선택할 수 있습니다.")
