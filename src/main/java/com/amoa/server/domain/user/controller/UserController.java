@@ -217,8 +217,8 @@ public class UserController implements UserControllerDocs {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody OnboardingSaveReqDTO request
     ) {
-        // Long userId = userDetails.user().getId();
-        Long userId = userDetails != null ? userDetails.user().getId() : null;
+        Long userId = userDetails.user().getId();
+        
         return ApiResponse.onSuccess(
                 UserSuccessCode.ONBOARDING_COMPLETE_OK,
                 onboardingCommandService.saveOnboarding(
@@ -234,8 +234,8 @@ public class UserController implements UserControllerDocs {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PhoneSendReqDTO request
     ) {
-        // Long userId = userDetails.user().getId();
-        Long userId = userDetails != null ? userDetails.user().getId() : null;
+        Long userId = userDetails.user().getId();
+
         return ApiResponse.onSuccess(
                 UserSuccessCode.PHONE_SEND_SUCCESS,
                 userCommandService.sendPhoneVerificationCode(userId, request)
@@ -248,9 +248,11 @@ public class UserController implements UserControllerDocs {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PhoneVerifyReqDTO request
     ) {
+        Long userId = userDetails.user().getId();
+        
         return ApiResponse.onSuccess(
                 UserSuccessCode.PHONE_VERIFY_SUCCESS,
-                userCommandService.verifyPhoneCode(userDetails.user().getId(), request)
+                userCommandService.verifyPhoneCode(userId, request)
         );
     }
 }
