@@ -228,7 +228,6 @@ public class UserController implements UserControllerDocs {
         );
     }
 
-    // UserController.java
     @Override
     @PostMapping("/phone/send")
     public ApiResponse<PhoneSendResDTO> sendPhoneVerificationCode(
