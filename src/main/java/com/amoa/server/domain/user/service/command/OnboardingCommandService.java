@@ -59,10 +59,14 @@ public class OnboardingCommandService {
         validateDuplicateIds(request);
 
         List<DesignTag> designTags =
-                findDesignTags(request.designTagIds());
+                request.designTagIds().isEmpty()
+                        ? List.of()
+                        : findDesignTags(request.designTagIds());
 
         List<Region> regions =
-                findRegions(request.regionIds());
+                request.regionIds().isEmpty()
+                        ? List.of()
+                        : findRegions(request.regionIds());
 
         List<Term> terms =
                 findAndValidateTerms(request.agreements());
@@ -150,16 +154,6 @@ public class OnboardingCommandService {
         if (hasDuplicate(termIds)) {
             throw new UserException(
                     UserErrorCode.DUPLICATED_TERM_AGREEMENT
-            );
-        }
-    }
-
-    private void validateRegionLimit(
-            List<Long> regionIds
-    ) {
-        if (regionIds.size() > 3) {
-            throw new UserException(
-                    UserErrorCode.INTERESTED_REGION_LIMIT_EXCEEDED
             );
         }
     }
