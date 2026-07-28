@@ -25,8 +25,6 @@ import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -82,14 +80,11 @@ public class UserController implements UserControllerDocs {
             @RequestParam(
                     defaultValue = "0"
             )
-            @Min(0)
             int page,
 
             @RequestParam(
                     defaultValue = "6"
             )
-            @Min(1)
-            @Max(50)
             int size
     ){
 
@@ -119,14 +114,11 @@ public class UserController implements UserControllerDocs {
             @RequestParam(
                     defaultValue = "0"
             )
-            @Min(0)
             int page,
 
             @RequestParam(
                     defaultValue = "20"
             )
-            @Min(1)
-            @Max(100)
             int size
     ) {
 
