@@ -55,7 +55,6 @@ public class OnboardingCommandService {
         validateOnboardingUser(user);
         validateNickname(request.nickname(), userId);
         validatePhoneVerified(userId, request.phoneNumber());
-        validateRegionLimit(request.regionIds());
         validateDuplicateIds(request);
 
         List<DesignTag> designTags =
