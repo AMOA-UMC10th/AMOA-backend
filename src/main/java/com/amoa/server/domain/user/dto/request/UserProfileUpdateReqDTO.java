@@ -2,7 +2,6 @@ package com.amoa.server.domain.user.dto.request;
 
 import com.amoa.server.domain.user.enums.NotificationType;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -30,17 +29,17 @@ public record UserProfileUpdateReqDTO(
         )
         String phoneNumber,
 
-        @NotEmpty(message = "선호 디자인을 한 개 이상 선택해야 합니다.")
-        @Size(min = 1, max = 3)
+        @NotNull(message = "선호 디자인 목록은 필수입니다.")
+        @Size(max = 7, message = "선호 디자인은 최대 7개까지 선택할 수 있습니다.")
         List<@NotNull Long> selectedDesignTagIds,
 
-        @NotEmpty(message = "관심 지역을 한 개 이상 선택해야 합니다.")
-        @Size(min = 1, max = 3)
+        @NotNull(message = "관심 지역 목록은 필수입니다.")
+        @Size(max = 3, message = "관심 지역은 최대 3개까지 선택할 수 있습니다.")
         List<@NotNull Long> interestedRegionIds,
 
         @Valid
         List<@NotNull NotificationSettingUpdateRequest> notificationSettings
-) {
+    ) {
 
     public record NotificationSettingUpdateRequest(
             NotificationType notificationType,

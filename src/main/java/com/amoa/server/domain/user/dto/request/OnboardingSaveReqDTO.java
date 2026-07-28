@@ -29,13 +29,11 @@ public record OnboardingSaveReqDTO(
         )
         String phoneNumber,
 
-        @NotEmpty(message = "선호 디자인을 한 개 이상 선택해야 합니다.")
-        @Size(min = 1, max = 3)
-        List<@NotNull Long> designTagIds,
+        @NotNull(message = "선호 디자인 목록은 필수입니다.")
+        @Size(max = 7, message = "선호 디자인은 최대 7개까지 선택할 수 있습니다.")
 
-        @NotEmpty(message = "관심 지역을 한 개 이상 선택해야 합니다.")
-        @Size(min = 1, max = 3)
-        List<@NotNull Long> regionIds,
+        @NotNull(message = "관심 지역 목록은 필수입니다.")
+        @Size(max = 3, message = "관심 지역은 최대 3개까지 선택할 수 있습니다.")
 
         @NotEmpty(message = "약관 동의 정보는 필수입니다.")
         List<
