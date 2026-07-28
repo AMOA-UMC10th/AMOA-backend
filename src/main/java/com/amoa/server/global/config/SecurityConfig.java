@@ -35,14 +35,17 @@ public class SecurityConfig {
             "/error",
             "/api/v1/auth/kakao",
             "/api/v1/auth/reissue",
+
+            // 인증 관련해서는 jwt 토큰 인증 없이도 요청을 보낼 수 있어야 함
+            "/health"
+    };
+
+    private final String[] getAllowUris = {
             "/api/v1/regions/present",
             "/api/v1/regions",
             "/api/v1/cards",
             "/api/v1/cards/*",
             "/api/v1/cards/*/recommendations",
-
-            // 인증 관련해서는 jwt 토큰 인증 없이도 요청을 보낼 수 있어야 함
-            "/health",
             "/api/v1/terms"
     };
 
@@ -61,6 +64,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.OPTIONS, "/**")
                         .permitAll()// CORS preflight 요청은 인증 없이 허용
                         .requestMatchers(allowUris).permitAll() // 허용된 uri는 접근 가능
+                        .requestMatchers(HttpMethod.GET, getAllowUris).permitAll()
                         .anyRequest().authenticated()) // 그 외 요청은 반드시 인증 필요 명시
                 .addFilterBefore(jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class) // UsernamePasswordAuthenticationFilter 이전에 JwtAuthFilter를 먼저 실행
