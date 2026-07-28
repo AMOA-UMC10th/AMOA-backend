@@ -37,7 +37,8 @@ public class ShopConverter {
     public static Shop toShop(ShopReqDTO.CreateShopRequest request,
                               Region region,
                               BigDecimal latitude,
-                              BigDecimal longitude) {
+                              BigDecimal longitude,
+                              String legalCode) {
         return Shop.builder()
                 .shopName(request.shopName())
                 .kakaoChannelUrl(request.kakaoChannelUrl())
@@ -46,11 +47,12 @@ public class ShopConverter {
                 .address(request.address())
                 .latitude(latitude)
                 .longitude(longitude)
-                .legalCode(request.legalCode())
+                .legalCode(legalCode)
                 .shopPhoneNumber(request.shopPhoneNumber())
                 .businessHours(request.businessHours())
                 .depositAmount(request.depositAmount())
-                .shopStatus(ShopStatus.DRAFT)
+                //관리자 검수 시에는 .shopStatus(ShopStatus.DRAFT) 사용
+                .shopStatus(ShopStatus.ACTIVE)
                 .region(region)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

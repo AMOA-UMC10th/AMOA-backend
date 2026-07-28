@@ -43,21 +43,18 @@ public class ShopCommandService {
         BigDecimal latitude = coordinates[0];
         BigDecimal longitude = coordinates[1];
 
-        // 2) 주소에서 행정구역 추출 후 Region 조회
-        String[] depths = extractRegionDepth(request.address());
+        // 2-1) 좌표 → 법정동 코드
+        String legalCode = kakaoLocalClient.getLegalCode(latitude, longitude);
 
+        // 2-2) 법정동 코드로 Region 조회
         Region region = regionRepository
-                .findByFirstDepthAndSecondDepthAndThirdDepth(
-                        depths[0],
-                        depths[1],
-                        depths[2]
-                )
+                .findByLegalCode(legalCode)
                 .orElseThrow(() ->
                         new ShopException(ShopErrorCode.REGION_NOT_FOUND)
                 );
 
         // 3) Shop Entity 생성 및 저장
-        Shop shop = ShopConverter.toShop(request, region, latitude, longitude);
+        Shop shop = ShopConverter.toShop(request, region, latitude, longitude, legalCode);
         shopRepository.save(shop);
 
         // 4) DesignTag 조회 및 ShopDesignTag 저장
