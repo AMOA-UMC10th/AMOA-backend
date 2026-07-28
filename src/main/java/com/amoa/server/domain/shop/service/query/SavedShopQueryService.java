@@ -5,7 +5,7 @@ import com.amoa.server.domain.card.repository.CardRepository;
 import com.amoa.server.domain.shop.converter.SavedShopConverter;
 import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
 import com.amoa.server.domain.shop.entity.SavedShop;
-import com.amoa.server.domain.shop.enums.ShopSort;
+import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.shop.repository.SavedShopRepository;
 import com.amoa.server.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -29,26 +29,33 @@ public class SavedShopQueryService {
     public SavedShopResDTO.LikedShopListResponse getLikedShops(
 
             User user,
-            ShopSort sort,
+            SortType sortType,
             Pageable pageable
     ) {
 
-        Pageable sortedPageable = switch (sort) {
-            case LATEST -> PageRequest.of(
-                    pageable.getPageNumber(),
-                    pageable.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "createdAt")
-            );
+        Pageable latestPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
 
-            case RECOMMEND -> PageRequest.of(
-                    pageable.getPageNumber(),
-                    pageable.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "createdAt") // TODO: 추천순 기준 확정 후 변경
-            );
+        Page<SavedShop> savedShops = switch(sortType) {
+
+            case LATEST ->
+                    savedShopRepository.findAllByUser(user, latestPageable);
+
+            case POPULAR ->
+                    savedShopRepository.findAllByUserOrderByPopular(user, pageable);
+
+            case PRICE_ASC ->
+                    savedShopRepository.findAllByUserOrderByPriceAsc(user, pageable);
+
+            case PRICE_DESC ->
+                    savedShopRepository.findAllByUserOrderByPriceDesc(user, pageable);
+
+            case RECOMMENDED ->
+                    savedShopRepository.findAllByUser(user, latestPageable);
         };
-
-        Page<SavedShop> savedShops =
-                savedShopRepository.findAllByUser(user, sortedPageable);
 
         List<SavedShopResDTO.LikedShopResponse> likedShops =
                 savedShops.getContent().stream()

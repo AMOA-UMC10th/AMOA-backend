@@ -4,10 +4,13 @@ import com.amoa.server.domain.card.converter.UserCardConverter;
 import com.amoa.server.domain.card.dto.response.UserCardResDTO;
 import com.amoa.server.domain.card.entity.UserCard;
 import com.amoa.server.domain.card.repository.UserCardRepository;
+import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +25,39 @@ public class UserCardQueryService {
 
     public UserCardResDTO.LikedCardListResponse getLikedCards(
             User user,
+            SortType sortType,
             Pageable pageable
     ) {
 
-        Page<UserCard> userCards =
-                userCardRepository.findAllByUser(user, pageable);
+        Pageable latestPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+
+        //TO-DO Recommended부분 계획 정해지면 수정할 예정
+        if(sortType == null){
+            sortType = SortType.RECOMMENDED;
+        }
+
+
+        Page<UserCard> userCards = switch(sortType) {
+
+            case LATEST ->
+                    userCardRepository.findAllByUser(user, latestPageable);
+
+            case POPULAR ->
+                    userCardRepository.findLikedCardsByUserOrderByPopular(user, pageable);
+
+            case PRICE_ASC ->
+                    userCardRepository.findLikedCardsByUserOrderByPriceAsc(user, pageable);
+
+            case PRICE_DESC ->
+                    userCardRepository.findLikedCardsByUserOrderByPriceDesc(user, pageable);
+
+            case RECOMMENDED ->
+                    userCardRepository.findAllByUser(user, latestPageable);
+        };
 
         List<UserCardResDTO.LikedCardResponse> likedCards =
                 userCards.getContent()
