@@ -6,6 +6,7 @@ import com.amoa.server.domain.card.entity.Card;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
@@ -20,5 +21,10 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     List<UserCard> findByUserIdAndCardIdIn(Long userId, List<Long> cardIds);
 
     // 찜한 아트 목록 조회
+    @EntityGraph(attributePaths = {
+            "card",
+            "card.shop",
+            "card.shop.region"
+    })
     Page<UserCard> findAllByUser(User user, Pageable pageable);
 }
