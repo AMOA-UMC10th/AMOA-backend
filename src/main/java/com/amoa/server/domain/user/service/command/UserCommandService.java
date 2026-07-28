@@ -9,18 +9,30 @@ import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.util.JwtUtil;
 import com.amoa.server.global.util.RedisUtil;
 import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import com.amoa.server.domain.user.dto.request.PhoneSendReqDTO;
+import com.amoa.server.domain.user.dto.response.PhoneSendResDTO;
+import com.amoa.server.global.sms.SmsSender;
+import java.security.SecureRandom;
+import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserCommandService {
 
+    private final SmsSender smsSender;
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^01[0-9]{8,9}$");
+    private static final Duration CODE_TTL = Duration.ofMinutes(3);
+    private static final Duration RESEND_COOLDOWN = Duration.ofSeconds(30);
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private final UserRepository userRepository;
     private final RedisUtil redisUtil;
     private final UserCreateCommandService userCreateCommandService;
@@ -53,6 +65,8 @@ public class UserCommandService {
                 .map(user -> {
 
                     if (!Boolean.TRUE.equals(user.getIsActive())) {
+                        log.debug("탈퇴 회원 재활성화 처리");
+
                         user.reactivate();
                     }
 
@@ -93,6 +107,8 @@ public class UserCommandService {
                         new UserException(UserErrorCode.USER_NOT_FOUND)
                 );
 
+        log.debug("회원 탈퇴 요청 처리, isActive={}", user.getIsActive());
+
         // Access Token 블랙리스트 등록
         Long remainingTime =
                 jwtUtil.getExpirationTime(accessToken);
@@ -116,5 +132,39 @@ public class UserCommandService {
                     }
                 }
         );
+    }
+
+    // 휴대폰 인증번호 발송
+    public PhoneSendResDTO sendPhoneVerificationCode(Long userId, PhoneSendReqDTO request) {
+        String phoneNumber = request.phoneNumber().replaceAll("[^0-9]", "");
+
+        if (!PHONE_PATTERN.matcher(phoneNumber).matches()) {
+            throw new UserException(UserErrorCode.PHONE_INVALID_FORMAT);
+        }
+
+        boolean phoneAcquired = redisUtil.tryAcquirePhoneSendCooldown("phone:" + phoneNumber, RESEND_COOLDOWN);
+        if (!phoneAcquired) {
+            throw new UserException(UserErrorCode.PHONE_SEND_TOO_FREQUENT);
+        }
+
+        boolean userAcquired = redisUtil.tryAcquirePhoneSendCooldown("user:" + userId, RESEND_COOLDOWN);
+        if (!userAcquired) {
+            redisUtil.releasePhoneSendCooldown("phone:" + phoneNumber); // 전화번호 쪽 예약도 같이 풀어줌
+            throw new UserException(UserErrorCode.PHONE_SEND_TOO_FREQUENT);
+        }
+
+        String code = String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
+
+        try {
+            smsSender.send(phoneNumber, "[AMOA] 인증번호는 [" + code + "]입니다.");
+        } catch (RuntimeException e) {
+            redisUtil.releasePhoneSendCooldown("phone:" + phoneNumber);
+            redisUtil.releasePhoneSendCooldown("user:" + userId);
+            throw e;
+        }
+
+        redisUtil.savePhoneVerificationCode(phoneNumber, code, CODE_TTL);
+
+        return new PhoneSendResDTO((int) CODE_TTL.toSeconds());
     }
 }

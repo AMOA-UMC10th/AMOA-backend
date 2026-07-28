@@ -6,7 +6,6 @@ import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard;
 import com.amoa.server.domain.card.dto.response.CardResDTO.CreateCard.DesignTagRes;
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.entity.mapping.CardDesignTag;
-import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.shop.entity.Shop;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;

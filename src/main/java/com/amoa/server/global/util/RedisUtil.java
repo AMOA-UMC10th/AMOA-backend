@@ -134,4 +134,22 @@ public class RedisUtil {
             );
         }
     }
+
+    private static final String PHONE_CODE_PREFIX = "phone-verification:code:";
+    private static final String PHONE_SEND_COOLDOWN_PREFIX = "phone-verification:cooldown:";
+
+    public void savePhoneVerificationCode(String phoneNumber, String code, Duration duration) {
+        set(PHONE_CODE_PREFIX + phoneNumber, code, duration);
+    }
+
+    // check+set 대신 원자적 연산으로 교체
+    public boolean tryAcquirePhoneSendCooldown(String key, Duration duration) {
+        Boolean acquired = redisTemplate.opsForValue()
+                .setIfAbsent(PHONE_SEND_COOLDOWN_PREFIX + key, "1", duration);
+        return Boolean.TRUE.equals(acquired);
+    }
+
+    public void releasePhoneSendCooldown(String key) {
+        delete(PHONE_SEND_COOLDOWN_PREFIX + key);
+    }
 }

@@ -58,6 +58,9 @@ dependencies {
 
     // 카카오 로컬 API 연동을 위한 WebClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // SMS 발송 (Solapi)
+    implementation 'com.solapi:sdk:1.1.0'
 }
 
 tasks.named('test') {

@@ -25,6 +25,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     List<UserCard> findByUserIdAndCardIdIn(Long userId, List<Long> cardIds);
 
     // 최신순
+    // 찜한 아트 목록 조회
     @EntityGraph(attributePaths = {
             "card",
             "card.shop",

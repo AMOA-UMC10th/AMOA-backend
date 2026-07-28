@@ -10,9 +10,11 @@ import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
 import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
+import com.amoa.server.domain.user.dto.request.PhoneSendReqDTO;
 import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.domain.user.dto.response.OnboardingSaveResDTO;
+import com.amoa.server.domain.user.dto.response.PhoneSendResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.domain.user.exception.code.UserSuccessCode;
 import com.amoa.server.domain.user.service.command.OnboardingCommandService;
@@ -221,6 +223,19 @@ public class UserController implements UserControllerDocs {
                         userId,
                         request
                 )
+        );
+    }
+
+    // UserController.java
+    @Override
+    @PostMapping("/phone/send")
+    public ApiResponse<PhoneSendResDTO> sendPhoneVerificationCode(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody PhoneSendReqDTO request
+    ) {
+        return ApiResponse.onSuccess(
+                UserSuccessCode.PHONE_SEND_SUCCESS,
+                userCommandService.sendPhoneVerificationCode(userDetails.user().getId(), request)
         );
     }
 }

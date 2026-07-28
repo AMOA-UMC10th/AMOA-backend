@@ -57,6 +57,12 @@ public enum UserSuccessCode implements BaseSuccessCode {
             "온보딩 설정을 저장했습니다."
     ),
 
+    PHONE_SEND_SUCCESS(
+            HttpStatus.OK,
+            "USER200_9",
+            "인증번호가 발송되었습니다."
+    ),
+
     SAVED_PLACE_CREATE_OK(
             HttpStatus.OK,
             "USER201_1",
