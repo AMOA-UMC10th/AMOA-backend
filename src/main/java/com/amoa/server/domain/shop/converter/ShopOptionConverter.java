@@ -1,8 +1,8 @@
 package com.amoa.server.domain.shop.converter;
 
-import com.amoa.server.domain.shop.dto.Request.ShopOptionReqDTO.ShopOptionCreateReqDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopOptionResDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopOptionResDTO.OptionResult;
+import com.amoa.server.domain.shop.dto.request.ShopOptionReqDTO.ShopOptionCreateReqDTO;
+import com.amoa.server.domain.shop.dto.response.ShopOptionResDTO;
+import com.amoa.server.domain.shop.dto.response.ShopOptionResDTO.OptionResult;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.entity.mapping.ShopOption;
 import java.util.List;

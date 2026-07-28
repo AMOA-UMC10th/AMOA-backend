@@ -1,8 +1,8 @@
 package com.amoa.server.domain.shop.controller;
 
 import com.amoa.server.domain.shop.controller.docs.ShopOptionControllerDocs;
-import com.amoa.server.domain.shop.dto.Request.ShopOptionReqDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopOptionResDTO;
+import com.amoa.server.domain.shop.dto.request.ShopOptionReqDTO;
+import com.amoa.server.domain.shop.dto.response.ShopOptionResDTO;
 import com.amoa.server.domain.shop.exception.code.ShopSuccessCode;
 import com.amoa.server.domain.shop.service.command.ShopOptionCommandService;
 import com.amoa.server.domain.shop.service.query.ShopOptionQueryService;

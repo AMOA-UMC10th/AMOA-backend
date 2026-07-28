@@ -3,7 +3,7 @@ package com.amoa.server.domain.shop.service.query;
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.card.repository.CardRepository;
 import com.amoa.server.domain.shop.converter.SavedShopConverter;
-import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.dto.response.SavedShopResDTO;
 import com.amoa.server.domain.shop.entity.SavedShop;
 import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.shop.repository.SavedShopRepository;

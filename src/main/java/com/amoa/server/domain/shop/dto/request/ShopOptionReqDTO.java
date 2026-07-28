@@ -1,4 +1,4 @@
-package com.amoa.server.domain.shop.dto.Request;
+package com.amoa.server.domain.shop.dto.request;
 
 import com.amoa.server.domain.shop.enums.ShopOptionType;
 import jakarta.validation.constraints.NotBlank;

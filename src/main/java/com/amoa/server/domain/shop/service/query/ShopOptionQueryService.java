@@ -1,7 +1,7 @@
 package com.amoa.server.domain.shop.service.query;
 
 import com.amoa.server.domain.shop.converter.ShopOptionConverter;
-import com.amoa.server.domain.shop.dto.Response.ShopOptionResDTO;
+import com.amoa.server.domain.shop.dto.response.ShopOptionResDTO;
 import com.amoa.server.domain.shop.entity.mapping.ShopOption;
 import com.amoa.server.domain.shop.exception.ShopException;
 import com.amoa.server.domain.shop.exception.code.ShopErrorCode;

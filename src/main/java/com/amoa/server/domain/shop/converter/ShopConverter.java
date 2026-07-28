@@ -3,17 +3,19 @@ package com.amoa.server.domain.shop.converter;
 import com.amoa.server.domain.card.entity.Card;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.common.entity.Region;
-import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
+import com.amoa.server.domain.shop.dto.request.ShopReqDTO;
+import com.amoa.server.domain.shop.dto.response.ShopResDTO;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.entity.mapping.ShopDesignTag;
 import com.amoa.server.domain.shop.enums.ShopStatus;
 
+import com.amoa.server.domain.shop.exception.ShopException;
+import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
+import com.amoa.server.global.kakao.dto.response.KakaoAddressResDTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.Page;
 
 public class ShopConverter {
 
@@ -88,6 +90,29 @@ public class ShopConverter {
                 address,
                 phone
         );
+    }
+
+    public static ShopResDTO.ShopAddressSearchResponse toAddressSearchResponse(
+            KakaoAddressResDTO.Document document
+    ) {
+        if (document.address() == null) {
+            throw new ShopException(ShopErrorCode.ADDRESS_NOT_FOUND);
+        }
+
+        String roadAddress = document.roadAddress() != null
+                ? document.roadAddress().addressName()
+                : null;
+
+        return ShopResDTO.ShopAddressSearchResponse.builder()
+                .roadAddress(roadAddress)
+                .jibunAddress(document.address().addressName())
+                .latitude(new BigDecimal(document.y()))
+                .longitude(new BigDecimal(document.x()))
+                .legalCode(document.address().legalCode())
+                .region1DepthName(document.address().region1DepthName())
+                .region2DepthName(document.address().region2DepthName())
+                .region3DepthName(document.address().region3DepthName())
+                .build();
     }
 
     // Card Entity → CardResponse DTO 변환

@@ -76,6 +76,12 @@ public enum ShopErrorCode implements BaseErrorCode {
             "샵 옵션을 찾을 수 없습니다."
     ),
 
+    ADDRESS_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "SHOP404_6",
+            "입력한 주소를 찾을 수 없습니다."
+    ),
+
     SHOP_ALREADY_LIKED(
             HttpStatus.CONFLICT,
             "SHOP409_1",

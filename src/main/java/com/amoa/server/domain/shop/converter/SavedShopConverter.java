@@ -1,7 +1,7 @@
 package com.amoa.server.domain.shop.converter;
 
 import com.amoa.server.domain.card.entity.Card;
-import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.dto.response.SavedShopResDTO;
 import com.amoa.server.domain.shop.entity.SavedShop;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.amoa.server.domain.shop.dto.Response;
+package com.amoa.server.domain.shop.dto.response;
 
 import com.amoa.server.domain.common.enums.ArtType;
 
