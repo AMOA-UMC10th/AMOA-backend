@@ -27,7 +27,7 @@ public interface SavedShopRepository extends JpaRepository<SavedShop, Long> {
         FROM SavedShop ss
         JOIN ss.shop s
         WHERE ss.user = :user
-        ORDER BY s.likeShop DESC
+        ORDER BY s.likeShop, ss.id DESC
     """)
     Page<SavedShop> findAllByUserOrderByPopular(
             @Param("user") User user,
@@ -43,7 +43,7 @@ public interface SavedShopRepository extends JpaRepository<SavedShop, Long> {
         WHERE ss.user = :user
           AND c.deletedAt IS NULL
         GROUP BY ss
-        ORDER BY MIN(c.minPrice) ASC
+        ORDER BY MIN(c.minPrice), ss.id ASC
     """)
     Page<SavedShop> findAllByUserOrderByPriceAsc(
             @Param("user") User user,
@@ -59,7 +59,7 @@ public interface SavedShopRepository extends JpaRepository<SavedShop, Long> {
         WHERE ss.user = :user
           AND c.deletedAt IS NULL
         GROUP BY ss
-        ORDER BY MAX(c.maxPrice) DESC
+        ORDER BY MAX(c.maxPrice), ss.id DESC
     """)
     Page<SavedShop> findAllByUserOrderByPriceDesc(
             @Param("user") User user,

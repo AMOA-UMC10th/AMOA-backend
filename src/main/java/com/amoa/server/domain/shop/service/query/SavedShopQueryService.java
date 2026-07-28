@@ -33,10 +33,16 @@ public class SavedShopQueryService {
             Pageable pageable
     ) {
 
+        Pageable latestPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+
         Page<SavedShop> savedShops = switch(sortType) {
 
             case LATEST ->
-                    savedShopRepository.findAllByUser(user, pageable);
+                    savedShopRepository.findAllByUser(user, latestPageable);
 
             case POPULAR ->
                     savedShopRepository.findAllByUserOrderByPopular(user, pageable);
@@ -48,7 +54,7 @@ public class SavedShopQueryService {
                     savedShopRepository.findAllByUserOrderByPriceDesc(user, pageable);
 
             case RECOMMENDED ->
-                    savedShopRepository.findAllByUser(user, pageable);
+                    savedShopRepository.findAllByUser(user, latestPageable);
         };
 
         List<SavedShopResDTO.LikedShopResponse> likedShops =

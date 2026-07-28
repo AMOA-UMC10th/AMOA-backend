@@ -43,7 +43,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
         FROM UserCard uc
         JOIN uc.card c
         WHERE uc.user = :user
-        ORDER BY c.likeCard DESC
+        ORDER BY c.likeCard, uc.id DESC
     """)
     Page<UserCard> findLikedCardsByUserOrderByPopular(
             @Param("user") User user,
@@ -61,7 +61,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
         FROM UserCard uc
         JOIN uc.card c
         WHERE uc.user = :user
-        ORDER BY c.minPrice ASC
+        ORDER BY c.minPrice, uc.id ASC
     """)
     Page<UserCard> findLikedCardsByUserOrderByPriceAsc(
             @Param("user") User user,
@@ -79,7 +79,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
         FROM UserCard uc
         JOIN uc.card c
         WHERE uc.user = :user
-        ORDER BY c.maxPrice DESC
+        ORDER BY c.maxPrice, uc.id DESC
     """)
     Page<UserCard> findLikedCardsByUserOrderByPriceDesc(
             @Param("user") User user,

@@ -8,7 +8,9 @@ import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,12 @@ public class UserCardQueryService {
             Pageable pageable
     ) {
 
+        Pageable latestPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+
         //TO-DO Recommended부분 계획 정해지면 수정할 예정
         if(sortType == null){
             sortType = SortType.RECOMMENDED;
@@ -36,7 +44,7 @@ public class UserCardQueryService {
         Page<UserCard> userCards = switch(sortType) {
 
             case LATEST ->
-                    userCardRepository.findAllByUser(user, pageable);
+                    userCardRepository.findAllByUser(user, latestPageable);
 
             case POPULAR ->
                     userCardRepository.findLikedCardsByUserOrderByPopular(user, pageable);
@@ -48,7 +56,7 @@ public class UserCardQueryService {
                     userCardRepository.findLikedCardsByUserOrderByPriceDesc(user, pageable);
 
             case RECOMMENDED ->
-                    userCardRepository.findAllByUser(user, pageable);
+                    userCardRepository.findAllByUser(user, latestPageable);
         };
 
         List<UserCardResDTO.LikedCardResponse> likedCards =
