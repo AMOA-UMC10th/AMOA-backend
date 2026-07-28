@@ -152,4 +152,40 @@ public class RedisUtil {
     public void releasePhoneSendCooldown(String key) {
         delete(PHONE_SEND_COOLDOWN_PREFIX + key);
     }
+
+    private static final String PHONE_VERIFIED_PREFIX = "phone-verification:verified:";
+    private static final String PHONE_ATTEMPT_PREFIX = "phone-verification:attempts:";
+
+    public String getPhoneVerificationCode(String phoneNumber) {
+        return get(PHONE_CODE_PREFIX + phoneNumber);
+    }
+
+    public void deletePhoneVerificationCode(String phoneNumber) {
+        delete(PHONE_CODE_PREFIX + phoneNumber);
+    }
+
+    public long incrementPhoneVerifyAttempts(String phoneNumber, Duration duration) {
+        Long count = redisTemplate.opsForValue().increment(PHONE_ATTEMPT_PREFIX + phoneNumber);
+        if (count != null && count == 1L) {
+            redisTemplate.expire(PHONE_ATTEMPT_PREFIX + phoneNumber, duration);
+        }
+        return count == null ? 0 : count;
+    }
+
+    public void deletePhoneVerifyAttempts(String phoneNumber) {
+        delete(PHONE_ATTEMPT_PREFIX + phoneNumber);
+    }
+
+    public void markPhoneVerified(String phoneNumber, Duration duration) {
+        set(PHONE_VERIFIED_PREFIX + phoneNumber, "1", duration);
+    }
+
+    public boolean isPhoneVerified(String phoneNumber) {
+        return hasKey(PHONE_VERIFIED_PREFIX + phoneNumber);
+    }
+
+    public void deletePhoneVerified(String phoneNumber) {
+        delete(PHONE_VERIFIED_PREFIX + phoneNumber);
+    }
+
 }

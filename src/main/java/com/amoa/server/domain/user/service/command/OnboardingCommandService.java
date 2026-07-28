@@ -22,6 +22,7 @@ import com.amoa.server.domain.user.repository.UserAgreementRepository;
 import com.amoa.server.domain.user.repository.UserDesignTagRepository;
 import com.amoa.server.domain.user.repository.UserInterestedRegionRepository;
 import com.amoa.server.domain.user.repository.UserRepository;
+import com.amoa.server.global.util.RedisUtil;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class OnboardingCommandService {
     private final DesignTagRepository designTagRepository;
     private final RegionRepository regionRepository;
     private final TermRepository termRepository;
+    private final RedisUtil redisUtil;
 
     private final UserDesignTagRepository userDesignTagRepository;
     private final UserInterestedRegionRepository userInterestedRegionRepository;
@@ -52,14 +54,18 @@ public class OnboardingCommandService {
 
         validateOnboardingUser(user);
         validateNickname(request.nickname(), userId);
-        validateRegionLimit(request.regionIds());
+        validatePhoneVerified(userId, request.phoneNumber());
         validateDuplicateIds(request);
 
         List<DesignTag> designTags =
-                findDesignTags(request.designTagIds());
+                request.designTagIds().isEmpty()
+                        ? List.of()
+                        : findDesignTags(request.designTagIds());
 
         List<Region> regions =
-                findRegions(request.regionIds());
+                request.regionIds().isEmpty()
+                        ? List.of()
+                        : findRegions(request.regionIds());
 
         List<Term> terms =
                 findAndValidateTerms(request.agreements());
@@ -72,10 +78,19 @@ public class OnboardingCommandService {
 
         user.completeOnboarding();
 
+        redisUtil.deletePhoneVerified(userId + ":" + request.phoneNumber().replaceAll("[^0-9]", ""));
+
         return OnboardingSaveResDTO.builder()
                 .userId(user.getId())
                 .onboardingCompleted(true)
                 .build();
+    }
+
+    private void validatePhoneVerified(Long userId, String phoneNumber) {
+        String normalized = phoneNumber.replaceAll("[^0-9]", "");
+        if (!redisUtil.isPhoneVerified(userId + ":" + normalized)) {
+            throw new UserException(UserErrorCode.PHONE_NOT_VERIFIED);
+        }
     }
 
     private User findUser(
@@ -138,16 +153,6 @@ public class OnboardingCommandService {
         if (hasDuplicate(termIds)) {
             throw new UserException(
                     UserErrorCode.DUPLICATED_TERM_AGREEMENT
-            );
-        }
-    }
-
-    private void validateRegionLimit(
-            List<Long> regionIds
-    ) {
-        if (regionIds.size() > 3) {
-            throw new UserException(
-                    UserErrorCode.INTERESTED_REGION_LIMIT_EXCEEDED
             );
         }
     }

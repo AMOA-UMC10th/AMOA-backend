@@ -1,6 +1,8 @@
 package com.amoa.server.domain.user.service.command;
 
+import com.amoa.server.domain.user.dto.request.PhoneVerifyReqDTO;
 import com.amoa.server.domain.user.dto.response.KakaoUserInfoResDTO;
+import com.amoa.server.domain.user.dto.response.PhoneVerifyResDTO;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.enums.Role;
 import com.amoa.server.domain.user.exception.UserException;
@@ -9,6 +11,7 @@ import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.util.JwtUtil;
 import com.amoa.server.global.util.RedisUtil;
 import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ import com.amoa.server.global.sms.SmsSender;
 import java.security.SecureRandom;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -35,6 +39,8 @@ public class UserCommandService {
     private final RedisUtil redisUtil;
     private final UserCreateCommandService userCreateCommandService;
     private final JwtUtil jwtUtil;
+    private static final int MAX_VERIFY_ATTEMPTS = 5;
+    private static final Duration VERIFIED_STATE_TTL = Duration.ofMinutes(30);
 
     // 기존 회원 조회 또는 신규 회원 생성
     @Transactional
@@ -63,6 +69,8 @@ public class UserCommandService {
                 .map(user -> {
 
                     if (!Boolean.TRUE.equals(user.getIsActive())) {
+                        log.debug("탈퇴 회원 재활성화 처리");
+
                         user.reactivate();
                     }
 
@@ -102,6 +110,8 @@ public class UserCommandService {
                 .orElseThrow(() ->
                         new UserException(UserErrorCode.USER_NOT_FOUND)
                 );
+
+        log.debug("회원 탈퇴 요청 처리, isActive={}", user.getIsActive());
 
         // Access Token 블랙리스트 등록
         Long remainingTime =
@@ -160,5 +170,32 @@ public class UserCommandService {
         redisUtil.savePhoneVerificationCode(phoneNumber, code, CODE_TTL);
 
         return new PhoneSendResDTO((int) CODE_TTL.toSeconds());
+    }
+
+    // 휴대폰 인증번호 확인
+    // UserCommandService.java
+    public PhoneVerifyResDTO verifyPhoneCode(Long userId, PhoneVerifyReqDTO request) {
+        String phoneNumber = request.phoneNumber().replaceAll("[^0-9]", "");
+
+        String savedCode = redisUtil.getPhoneVerificationCode(phoneNumber);
+        if (savedCode == null) {
+            throw new UserException(UserErrorCode.PHONE_CODE_NOT_FOUND);
+        }
+
+        if (!savedCode.equals(request.code())) {
+            long attempts = redisUtil.incrementPhoneVerifyAttempts(phoneNumber, CODE_TTL);
+            if (attempts >= MAX_VERIFY_ATTEMPTS) {
+                redisUtil.deletePhoneVerificationCode(phoneNumber);
+                redisUtil.deletePhoneVerifyAttempts(phoneNumber);
+                throw new UserException(UserErrorCode.PHONE_VERIFY_ATTEMPTS_EXCEEDED);
+            }
+            throw new UserException(UserErrorCode.PHONE_CODE_MISMATCH);
+        }
+
+        redisUtil.deletePhoneVerificationCode(phoneNumber);
+        redisUtil.deletePhoneVerifyAttempts(phoneNumber);
+        redisUtil.markPhoneVerified(userId + ":" + phoneNumber, VERIFIED_STATE_TTL);   // userId 같이 키에 포함
+
+        return new PhoneVerifyResDTO(true);
     }
 }
