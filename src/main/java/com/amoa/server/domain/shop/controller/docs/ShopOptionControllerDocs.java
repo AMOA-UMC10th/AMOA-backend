@@ -1,9 +1,9 @@
 package com.amoa.server.domain.shop.controller.docs;
 
-import com.amoa.server.domain.shop.dto.Request.ShopOptionReqDTO;
-import com.amoa.server.domain.shop.dto.Request.ShopOptionReqDTO.ShopOptionCreateReqDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopOptionResDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopOptionResDTO.OptionResult;
+import com.amoa.server.domain.shop.dto.request.ShopOptionReqDTO;
+import com.amoa.server.domain.shop.dto.request.ShopOptionReqDTO.ShopOptionCreateReqDTO;
+import com.amoa.server.domain.shop.dto.response.ShopOptionResDTO;
+import com.amoa.server.domain.shop.dto.response.ShopOptionResDTO.OptionResult;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

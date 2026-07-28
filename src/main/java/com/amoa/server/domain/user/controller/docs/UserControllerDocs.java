@@ -2,8 +2,8 @@ package com.amoa.server.domain.user.controller.docs;
 
 import com.amoa.server.domain.card.dto.response.UserCardResDTO;
 import com.amoa.server.domain.common.enums.SortType;
-import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
+import com.amoa.server.domain.shop.dto.response.SavedShopResDTO;
+import com.amoa.server.domain.shop.dto.response.ShopResDTO;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
 import com.amoa.server.domain.user.dto.request.PhoneSendReqDTO;
 import com.amoa.server.domain.user.dto.request.PhoneVerifyReqDTO;

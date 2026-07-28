@@ -10,7 +10,8 @@ import com.amoa.server.domain.common.enums.ArtType;
 import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.common.repository.DesignTagRepository;
 import com.amoa.server.domain.shop.converter.ShopConverter;
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
+import com.amoa.server.domain.shop.dto.response.ShopResDTO;
+import com.amoa.server.domain.shop.dto.response.ShopResDTO.ShopAddressSearchResponse;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.exception.ShopException;
 import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
@@ -22,6 +23,7 @@ import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserDesignTagRepository;
 import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.kakao.KakaoLocalClient;
+import com.amoa.server.global.kakao.dto.response.KakaoAddressResDTO;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -67,6 +69,22 @@ public class ShopQueryService {
         }
 
         return result;
+    }
+
+    // GET /api/admin/shops/address/search - 주소 검색
+    public ShopAddressSearchResponse searchAddress(String address) {
+
+        if (address == null || address.isBlank()) {
+            throw new ShopException(ShopErrorCode.SHOP_INVALID_ADDRESS);
+        }
+
+        KakaoAddressResDTO.AddressResponse response =
+                kakaoLocalClient.searchAddress(address);
+
+        KakaoAddressResDTO.Document document =
+                response.documents().get(0);
+
+        return ShopConverter.toAddressSearchResponse(document);
     }
 
     // GET /api/shops/{shop_id}/cards - 샵 상세 카드 목록 조회 (무한 스크롤)

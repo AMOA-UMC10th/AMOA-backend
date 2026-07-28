@@ -81,6 +81,12 @@ public enum ShopSuccessCode implements BaseSuccessCode {
             "카드 목록 조회에 성공했습니다."
     ),
 
+    SHOP_ADDRESS_SEARCH_OK(
+            HttpStatus.OK,
+            "SHOP200_13",
+            "주소 검색에 성공했습니다."
+    ),
+
     SHOP_CREATED(
             HttpStatus.CREATED,
             "SHOP201_1",

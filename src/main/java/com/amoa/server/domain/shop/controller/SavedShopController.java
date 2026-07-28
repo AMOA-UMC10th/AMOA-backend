@@ -1,7 +1,7 @@
 package com.amoa.server.domain.shop.controller;
 
 import com.amoa.server.domain.shop.controller.docs.SavedShopControllerDocs;
-import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.dto.response.SavedShopResDTO;
 import com.amoa.server.domain.shop.exception.code.ShopSuccessCode;
 import com.amoa.server.domain.shop.service.command.SavedShopCommandService;
 import com.amoa.server.domain.user.entity.User;

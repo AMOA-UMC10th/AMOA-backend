@@ -1,6 +1,6 @@
 package com.amoa.server.domain.shop.service.command;
 
-import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.dto.response.SavedShopResDTO;
 import com.amoa.server.domain.shop.entity.SavedShop;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.exception.code.ShopErrorCode;

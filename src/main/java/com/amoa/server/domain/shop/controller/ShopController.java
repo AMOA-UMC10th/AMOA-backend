@@ -3,7 +3,7 @@ package com.amoa.server.domain.shop.controller;
 import com.amoa.server.domain.common.enums.ArtType;
 import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.shop.controller.docs.ShopControllerDocs;
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
+import com.amoa.server.domain.shop.dto.response.ShopResDTO;
 import com.amoa.server.domain.shop.exception.code.ShopSuccessCode;
 import com.amoa.server.domain.shop.service.query.ShopQueryService;
 import com.amoa.server.global.apiPayload.ApiResponse;

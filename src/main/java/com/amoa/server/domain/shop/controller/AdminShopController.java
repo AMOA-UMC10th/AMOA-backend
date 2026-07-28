@@ -1,8 +1,9 @@
 package com.amoa.server.domain.shop.controller;
 
 import com.amoa.server.domain.shop.controller.docs.AdminShopControllerDocs;
-import com.amoa.server.domain.shop.dto.Request.ShopReqDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
+import com.amoa.server.domain.shop.dto.request.ShopReqDTO;
+import com.amoa.server.domain.shop.dto.response.ShopResDTO;
+import com.amoa.server.domain.shop.dto.response.ShopResDTO.ShopAddressSearchResponse;
 import com.amoa.server.domain.shop.exception.code.ShopSuccessCode;
 import com.amoa.server.domain.shop.service.command.ShopCommandService;
 import com.amoa.server.domain.shop.service.query.ShopQueryService;
@@ -39,6 +40,20 @@ public class AdminShopController implements AdminShopControllerDocs {
             @RequestParam String keyword) {
         ShopResDTO.KakaoSearchResponse result = shopQueryService.searchByKeyword(keyword);
         return ApiResponse.onSuccess(ShopSuccessCode.KAKAO_SEARCH_FOUND, result);
+    }
+
+    // GET /api/v1/admin/shops/address/search - 주소검색으로 카카오 로컬 API 검색
+    @Override
+    @GetMapping("/address/search")
+
+    public ApiResponse<ShopAddressSearchResponse> searchAddress(
+            @RequestParam String address
+    ) {
+        return ApiResponse.onSuccess(
+                ShopSuccessCode.SHOP_ADDRESS_SEARCH_OK,
+                shopQueryService.searchAddress(address)
+        );
+
     }
 
     // POST /api/admin/shops - 샵 등록

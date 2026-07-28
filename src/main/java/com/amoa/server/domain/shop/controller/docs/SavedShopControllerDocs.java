@@ -1,6 +1,6 @@
 package com.amoa.server.domain.shop.controller.docs;
 
-import com.amoa.server.domain.shop.dto.Response.SavedShopResDTO;
+import com.amoa.server.domain.shop.dto.response.SavedShopResDTO;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;

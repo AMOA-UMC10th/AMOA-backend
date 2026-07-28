@@ -1,9 +1,9 @@
 package com.amoa.server.domain.shop.service.command;
 
 import com.amoa.server.domain.shop.converter.ShopOptionConverter;
-import com.amoa.server.domain.shop.dto.Request.ShopOptionReqDTO;
-import com.amoa.server.domain.shop.dto.Request.ShopOptionReqDTO.ShopOptionCreateReqDTO;
-import com.amoa.server.domain.shop.dto.Response.ShopOptionResDTO;
+import com.amoa.server.domain.shop.dto.request.ShopOptionReqDTO;
+import com.amoa.server.domain.shop.dto.request.ShopOptionReqDTO.ShopOptionCreateReqDTO;
+import com.amoa.server.domain.shop.dto.response.ShopOptionResDTO;
 import com.amoa.server.domain.shop.entity.Shop;
 import com.amoa.server.domain.shop.entity.mapping.ShopOption;
 import com.amoa.server.domain.shop.exception.ShopException;
