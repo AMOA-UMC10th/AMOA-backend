@@ -18,6 +18,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,18 +50,18 @@ public interface UserControllerDocs {
                     example = "RECOMMENDED"
             )
             @RequestParam(
+                    name = "sortType",
                     defaultValue = "RECOMMENDED"
             )
             SortType sortType,
 
-            @RequestParam(
-                    defaultValue = "0"
-            )
+            @RequestParam(defaultValue = "0")
+            @Min(0)
             int page,
 
-            @RequestParam(
-                    defaultValue = "6"
-            )
+            @RequestParam(defaultValue = "6")
+            @Min(1)
+            @Max(50)
             int size
     );
 
@@ -104,14 +106,13 @@ public interface UserControllerDocs {
             )
             SortType sortType,
 
-            @RequestParam(
-                    defaultValue = "0"
-            )
+            @RequestParam(defaultValue = "0")
+            @Min(0)
             int page,
 
-            @RequestParam(
-                    defaultValue = "20"
-            )
+            @RequestParam(defaultValue = "20")
+            @Min(1)
+            @Max(100)
             int size
     );
     @Operation(
