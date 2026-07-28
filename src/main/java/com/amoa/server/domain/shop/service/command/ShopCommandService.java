@@ -14,7 +14,6 @@ import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
 import com.amoa.server.domain.shop.repository.ShopDesignTagRepository;
 import com.amoa.server.domain.shop.repository.ShopRepository;
 import com.amoa.server.global.kakao.KakaoLocalClient;
-import com.amoa.server.global.kakao.dto.response.KakaoAddressResDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
