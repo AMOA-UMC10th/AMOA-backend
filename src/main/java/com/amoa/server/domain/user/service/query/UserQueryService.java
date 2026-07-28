@@ -3,7 +3,7 @@ package com.amoa.server.domain.user.service.query;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.common.repository.DesignTagRepository;
 import com.amoa.server.domain.shop.converter.ShopConverter;
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
+import com.amoa.server.domain.shop.dto.response.ShopResDTO;
 import com.amoa.server.domain.user.converter.UserConverter;
 import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;

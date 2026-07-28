@@ -1,6 +1,7 @@
-package com.amoa.server.domain.shop.dto.Response;
+package com.amoa.server.domain.shop.dto.response;
 
 import com.amoa.server.domain.shop.enums.ShopStatus;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,19 @@ public class ShopResDTO {
         private String address;
         private String phone;
     }
+
+    // GET /api/v1/admin/shops/address/search
+    @Builder
+    public record ShopAddressSearchResponse(
+            String roadAddress,
+            String jibunAddress,
+            BigDecimal latitude,
+            BigDecimal longitude,
+            String legalCode,
+            String region1DepthName,
+            String region2DepthName,
+            String region3DepthName
+    ) { }
 
     // POST /api/admin/shops (샵 등록)
     public record CreateShopResponse(

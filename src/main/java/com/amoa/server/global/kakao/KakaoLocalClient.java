@@ -2,9 +2,10 @@ package com.amoa.server.global.kakao;
 
 import com.amoa.server.domain.common.exception.RegionException;
 import com.amoa.server.domain.common.exception.code.RegionErrorCode;
-import com.amoa.server.domain.shop.dto.Response.ShopResDTO;
+import com.amoa.server.domain.shop.dto.response.ShopResDTO;
 import com.amoa.server.domain.shop.exception.ShopException;
 import com.amoa.server.domain.shop.exception.code.ShopErrorCode;
+import com.amoa.server.global.kakao.dto.response.KakaoAddressResDTO;
 import com.amoa.server.global.kakao.dto.response.KakaoRegionResDTO;
 import io.netty.channel.ChannelOption;
 import java.time.Duration;
@@ -71,6 +72,36 @@ public class KakaoLocalClient {
 
         } catch (Exception e) {
             log.error("카카오 키워드 검색 중 오류 발생: {}", e.getMessage(), e);
+            throw new ShopException(ShopErrorCode.KAKAO_API_ERROR);
+        }
+    }
+
+    // 도로명 또는 지번 주소 검색
+    public KakaoAddressResDTO.AddressResponse  searchAddress(String address) {
+        try {
+            KakaoAddressResDTO.AddressResponse  response = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/v2/local/search/address.json")
+                            .queryParam("query", address)
+                            .build())
+                    .header("Authorization", "KakaoAK " + kakaoApiKey)
+                    .retrieve()
+                    .bodyToMono(KakaoAddressResDTO.AddressResponse .class)
+                    .block();
+
+            if (response == null
+                    || response.documents() == null
+                    || response.documents().isEmpty()) {
+                throw new ShopException(ShopErrorCode.ADDRESS_NOT_FOUND);
+            }
+
+            return response;
+
+        } catch (ShopException e) {
+            throw e;
+
+        } catch (Exception e) {
+            log.error("카카오 주소 검색 중 오류 발생: address={}", address, e);
             throw new ShopException(ShopErrorCode.KAKAO_API_ERROR);
         }
     }
