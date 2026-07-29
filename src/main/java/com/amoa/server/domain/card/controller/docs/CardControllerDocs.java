@@ -16,6 +16,28 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface CardControllerDocs {
 
     @Operation(
+            summary = "홈 화면 카드 섹션 조회",
+            description = """
+                    홈 화면에 노출되는 '이달의 아트', '완벽한 연말을 위한 PICK' 두 섹션을 조회합니다.
+                    비로그인 사용자도 조회 가능합니다.
+                    
+                    - nickname: 로그인 시 유저 닉네임, 비로그인이면 null.
+                      프론트에서 이 값 유무로 "OO님을 위한 추천 이달의 아트" /
+                      "지금 가장 인기 있는 이달의 아트" 제목을 조합해 사용
+                    - 이달의 아트: artType=MONTHLY, 이번 달 이달의 아트 중 상위 6개
+                      비로그인/온보딩 없음 → 찜순 상위 6개
+                      로그인+온보딩 있음 → 온보딩 지역/무드와 정확히 일치하는 카드 우선, 부족하면 조건 없이 채움
+                    - 완벽한 연말을 위한 PICK: 선정 기준 미정, 임시로 찜순 상위 6개
+                    - 두 섹션 모두 조건 만족 카드가 6개 미만이면 있는 만큼만 반환
+                    - 페이지네이션 없는 고정 개수 조회입니다.
+                    """
+    )
+    ApiResponse<CardResDTO.HomeSections> getHomeSections(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    );
+
+    @Operation(
             summary = "카카오톡 채널 URL 조회",
             description = "카드에 연결된 샵의 카카오톡 채널 URL을 조회합니다."
     )

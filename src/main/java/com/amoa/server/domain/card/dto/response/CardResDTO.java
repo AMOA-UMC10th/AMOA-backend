@@ -89,4 +89,16 @@ public class CardResDTO {
             String name
     ) {
     }
+
+    // 홈 화면 카드 섹션 (이달의 아트 / 완벽한 연말을 위한 PICK)
+    public record HomeSections(
+            String nickname,   // 로그인 시 유저 닉네임, 비로그인이면 null
+            HomeSection monthlyArt,
+            HomeSection yearEndPick
+    ) {
+        public record HomeSection(
+                List<CardInfo> cards
+        ) {
+        }
+    }
 }
