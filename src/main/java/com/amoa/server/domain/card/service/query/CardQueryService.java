@@ -463,4 +463,31 @@ public class CardQueryService {
 
         return cardConverter.toCardDetail(card);
     }
+
+    // 홈 화면 카드 섹션 조회
+    @Transactional(readOnly = true)
+    public CardResDTO.HomeSections getHomeSections(Long userId, String nickname) {
+
+        List<Long> onboardingRegionIds = getOnboardingRegionIds(userId);
+        List<Long> onboardingDesignTagIds = getOnboardingDesignTagIds(userId);
+
+        List<Card> monthlyArtCards = cardRepository.findMonthlyArtCards(
+                onboardingRegionIds, onboardingDesignTagIds, 6
+        );
+        List<Card> yearEndPickCards = cardRepository.findYearEndPickCards(6);
+
+        List<Card> allCards = new ArrayList<>(monthlyArtCards);
+        allCards.addAll(yearEndPickCards);
+        Set<Long> likedCardIds = getLikedCardIds(userId, allCards);
+
+        CardResDTO.HomeSections.HomeSection monthlyArt = new CardResDTO.HomeSections.HomeSection(
+                monthlyArtCards.stream().map(card -> cardConverter.toCardInfo(card, likedCardIds)).toList()
+        );
+
+        CardResDTO.HomeSections.HomeSection yearEndPick = new CardResDTO.HomeSections.HomeSection(
+                yearEndPickCards.stream().map(card -> cardConverter.toCardInfo(card, likedCardIds)).toList()
+        );
+
+        return new CardResDTO.HomeSections(nickname, monthlyArt, yearEndPick);
+    }
 }

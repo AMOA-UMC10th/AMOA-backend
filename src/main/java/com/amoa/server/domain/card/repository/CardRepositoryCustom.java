@@ -19,4 +19,12 @@ public interface CardRepositoryCustom {
     Long countShopCards(Long shopId, ArtType artType);
 
     List<Card> findRecommendedCards(Card currentCard, int limit);
+
+    List<Card> findMonthlyArtCards(
+            List<Long> onboardingRegionIds,
+            List<Long> onboardingDesignTagIds,
+            int limit
+    );
+
+    List<Card> findYearEndPickCards(int limit);
 }
