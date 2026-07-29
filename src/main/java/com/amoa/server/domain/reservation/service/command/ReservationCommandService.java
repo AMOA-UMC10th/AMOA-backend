@@ -36,9 +36,13 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -48,6 +52,7 @@ public class ReservationCommandService {
     private final ShopOptionRepository shopOptionRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationSelectedOptionRepository reservationSelectedOptionRepository;
+    private final ReservationReminderService reservationReminderService;
 
     public ReservationResDTO.CreateReservationResponse createReservation(
             Long userId,
@@ -367,6 +372,24 @@ public class ReservationCommandService {
                 request.refundPolicyAgreed()
         );
 
+        LocalDate savedDate = reservation.getReservationDate();
+        LocalTime savedStartTime = reservation.getReservationStartTime();
+        String shopName = reservation.getShop().getShopName();
+        String reservationNumber = reservation.getReservationNumber();
+        String customerPhoneNumber = reservation.getCustomerPhoneNumber();
+
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        reservationReminderService.scheduleReminderAfterCommit(
+                                reservationId, savedDate, savedStartTime,
+                                shopName, reservationNumber, customerPhoneNumber
+                        );
+                    }
+                }
+        );
+
         String artName = reservationSelectedOptionRepository
                 .findAllByReservation_Id(reservation.getId())
                 .stream()
@@ -459,6 +482,18 @@ public class ReservationCommandService {
         validateCancelable(reservation);
 
         reservation.cancel();
+
+        String groupId = reservation.getReminderMessageGroupId();
+        if (groupId != null) {
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            reservationReminderService.cancelReminderAfterCommit(reservationId, groupId);
+                        }
+                    }
+            );
+        }
     }
 
     //예약 취소 검증

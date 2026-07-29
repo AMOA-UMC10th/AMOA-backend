@@ -119,6 +119,9 @@ public class Reservation extends BaseEntity {
     @Column(name = "is_refund_policy_agreed", nullable = false)
     private boolean isRefundPolicyAgreed;
 
+    @Column(name = "reminder_message_group_id", length = 100)
+    private String reminderMessageGroupId;
+
     public void confirmSchedule(
             LocalDate reservationDate,
             LocalTime reservationStartTime,
@@ -139,5 +142,13 @@ public class Reservation extends BaseEntity {
 
     public void cancel() {
         this.reservationStatus = ReservationStatus.CANCELED;
+    }
+
+    public void assignReminderMessageGroupId(String groupId) {
+        this.reminderMessageGroupId = groupId;
+    }
+
+    public void clearReminderMessageGroupId() {
+        this.reminderMessageGroupId = null;
     }
 }
