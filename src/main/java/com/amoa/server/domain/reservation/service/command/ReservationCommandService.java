@@ -25,13 +25,8 @@ import com.amoa.server.domain.shop.enums.ShopOptionType;
 import com.amoa.server.domain.shop.repository.ShopOptionRepository;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.repository.UserRepository;
-import com.amoa.server.global.sms.SmsSender;
-import com.amoa.server.global.sms.SolapiScheduleClient;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +39,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
 @Service
@@ -55,10 +52,7 @@ public class ReservationCommandService {
     private final ShopOptionRepository shopOptionRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationSelectedOptionRepository reservationSelectedOptionRepository;
-    private final SmsSender smsSender;
-    private final SolapiScheduleClient solapiScheduleClient;
-    private static final Duration REMINDER_BEFORE = Duration.ofHours(2);
-    private static final DateTimeFormatter RESERVATION_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private final ReservationReminderService reservationReminderService;
 
     public ReservationResDTO.CreateReservationResponse createReservation(
             Long userId,
@@ -378,7 +372,23 @@ public class ReservationCommandService {
                 request.refundPolicyAgreed()
         );
 
-        scheduleReminder(reservation);
+        LocalDate savedDate = reservation.getReservationDate();
+        LocalTime savedStartTime = reservation.getReservationStartTime();
+        String shopName = reservation.getShop().getShopName();
+        String reservationNumber = reservation.getReservationNumber();
+        String customerPhoneNumber = reservation.getCustomerPhoneNumber();
+
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        reservationReminderService.scheduleReminderAfterCommit(
+                                reservationId, savedDate, savedStartTime,
+                                shopName, reservationNumber, customerPhoneNumber
+                        );
+                    }
+                }
+        );
 
         String artName = reservationSelectedOptionRepository
                 .findAllByReservation_Id(reservation.getId())
@@ -472,7 +482,18 @@ public class ReservationCommandService {
         validateCancelable(reservation);
 
         reservation.cancel();
-        cancelReminderIfScheduled(reservation);
+
+        String groupId = reservation.getReminderMessageGroupId();
+        if (groupId != null) {
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            reservationReminderService.cancelReminderAfterCommit(reservationId, groupId);
+                        }
+                    }
+            );
+        }
     }
 
     //예약 취소 검증
@@ -489,51 +510,6 @@ public class ReservationCommandService {
             throw new ReservationException(
                     ReservationErrorCode.RESERVATION_CANNOT_CANCEL
             );
-        }
-    }
-
-    // 스케줄 리마인더
-    private void scheduleReminder(Reservation reservation) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(
-                reservation.getReservationDate(),
-                reservation.getReservationStartTime()
-        );
-        LocalDateTime reminderTime = reservationDateTime.minus(REMINDER_BEFORE);
-
-        if (reminderTime.isBefore(LocalDateTime.now())) {
-            return; // 예약 확정 시점이 이미 시작 2시간 이내면 리마인더 생략
-        }
-
-        String startTimeText = reservation.getReservationStartTime().format(RESERVATION_TIME_FORMATTER);
-
-        String text = "[AMOA] " + reservation.getShop().getShopName() + " 예약 시간이 2시간 후인 " + startTimeText + "입니다. "
-                + "(예약번호 " + reservation.getReservationNumber() + ")";
-
-        try {
-            String groupId = smsSender.sendScheduled(
-                    reservation.getCustomerPhoneNumber(),
-                    text,
-                    reminderTime
-            );
-            reservation.assignReminderMessageGroupId(groupId);
-        } catch (RuntimeException e) {
-            // 리마인드 예약 실패해도 예약 확정 자체는 성공 처리
-            log.warn("예약 리마인드 문자 예약 실패. reservationId={}", reservation.getId(), e);
-        }
-    }
-
-    private void cancelReminderIfScheduled(Reservation reservation) {
-        String groupId = reservation.getReminderMessageGroupId();
-        if (groupId == null) {
-            return;
-        }
-
-        try {
-            solapiScheduleClient.cancelSchedule(groupId);
-            reservation.clearReminderMessageGroupId();
-        } catch (RuntimeException e) {
-            // 취소 실패해도 예약 취소 자체는 성공 처리 (문자가 잘못 갈 수는 있으나 예약 취소를 막을 정도는 아님)
-            log.warn("예약 리마인드 문자 취소 실패. reservationId={}", reservation.getId(), e);
         }
     }
 }
