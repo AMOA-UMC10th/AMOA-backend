@@ -31,6 +31,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +58,7 @@ public class ReservationCommandService {
     private final SmsSender smsSender;
     private final SolapiScheduleClient solapiScheduleClient;
     private static final Duration REMINDER_BEFORE = Duration.ofHours(2);
+    private static final DateTimeFormatter RESERVATION_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public ReservationResDTO.CreateReservationResponse createReservation(
             Long userId,
@@ -502,8 +504,10 @@ public class ReservationCommandService {
             return; // 예약 확정 시점이 이미 시작 2시간 이내면 리마인더 생략
         }
 
-        String text = "[AMOA] " + reservation.getShop().getShopName()
-                + " 예약이 2시간 후입니다. 예약번호 " + reservation.getReservationNumber();
+        String startTimeText = reservation.getReservationStartTime().format(RESERVATION_TIME_FORMATTER);
+
+        String text = "[AMOA] " + reservation.getShop().getShopName() + " 예약 시간이 2시간 후인 " + startTimeText + "입니다. "
+                + "(예약번호 " + reservation.getReservationNumber() + ")";
 
         try {
             String groupId = smsSender.sendScheduled(
