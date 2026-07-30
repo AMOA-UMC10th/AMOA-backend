@@ -48,7 +48,7 @@ public class SecurityConfig {
             "/api/v1/cards/*",
             "/api/v1/cards/*/recommendations",
             "/api/v1/terms",
-            "/api/v1/admin/shops/designtag"
+            "/api/v1/shops/design-tags"
     };
 
     @Bean
