@@ -41,7 +41,8 @@ public class SavedShopRepositoryImpl
                         .orderBy(
                                 locationScore(user).desc(),
                                 shop.likeShop.desc(),
-                                savedShop.createdAt.desc()
+                                savedShop.createdAt.desc(),
+                                savedShop.id.desc()
                         )
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -97,4 +98,27 @@ public class SavedShopRepositoryImpl
 
                 .otherwise(0);
     }
+
+    @Override
+    public boolean existsRecommendedShopByUser(User user) {
+
+        return queryFactory
+                .selectOne()
+                .from(savedShop)
+                .join(savedShop.shop, shop)
+                .join(shop.region, region)
+                .where(
+                        savedShop.user.eq(user),
+                        JPAExpressions
+                                .selectOne()
+                                .from(userRegion)
+                                .where(
+                                        userRegion.user.eq(user),
+                                        userRegion.region.eq(region)
+                                )
+                                .exists()
+                )
+                .fetchFirst() != null;
+    }
+
 }

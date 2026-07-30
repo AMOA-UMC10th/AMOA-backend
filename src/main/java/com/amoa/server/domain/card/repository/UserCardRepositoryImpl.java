@@ -48,7 +48,8 @@ public class UserCardRepositoryImpl
                                 locationScore(user).desc(),
                                 designScore(user).desc(),
                                 card.likeCard.desc(),
-                                userCard.createdAt.desc()
+                                userCard.createdAt.desc(),
+                                userCard.id.desc()
                         )
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())

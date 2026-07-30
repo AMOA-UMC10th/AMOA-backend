@@ -11,4 +11,6 @@ public interface SavedShopRepositoryCustom {
             User user,
             Pageable pageable
     );
+
+    boolean existsRecommendedShopByUser(User user);
 }
