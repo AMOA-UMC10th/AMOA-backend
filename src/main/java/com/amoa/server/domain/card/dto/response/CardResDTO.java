@@ -15,7 +15,6 @@ public class CardResDTO {
             String instagramUrl,
             Integer maxPrice,
             Integer minPrice,
-            Integer durationMinutes,
             LocalDate createdYearMonth,
             ArtType artType,
             List<DesignTagRes> designTags,
