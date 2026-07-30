@@ -104,6 +104,10 @@ public class UserCommandService {
                             user.reactivate();
                         }
 
+                        if (profileImageUrl != null && !profileImageUrl.isBlank()) {
+                            user.updateProfileImageUrl(profileImageUrl);
+                        }
+
                         return user;
                     }
         });
