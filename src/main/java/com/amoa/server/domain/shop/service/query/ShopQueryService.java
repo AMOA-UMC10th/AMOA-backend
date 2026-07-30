@@ -81,6 +81,12 @@ public class ShopQueryService {
         KakaoAddressResDTO.AddressResponse response =
                 kakaoLocalClient.searchAddress(address);
 
+        if (response == null
+                || response.documents() == null
+                || response.documents().isEmpty()) {
+            throw new ShopException(ShopErrorCode.ADDRESS_NOT_FOUND);
+        }
+
         KakaoAddressResDTO.Document document =
                 response.documents().get(0);
 
