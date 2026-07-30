@@ -17,9 +17,14 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.JPAExpressions;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -496,6 +501,88 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         qCard.likeCard.desc(),
                         qCard.id.asc()
                 )
+                .limit(limit)
+                .fetch();
+    }
+
+    // 이달의 아트: artType=MONTHLY, 이번 달 등록 카드 중 온보딩 조건 우선 노출(2단계, 이분법)
+    @Override
+    public List<Card> findMonthlyArtCards(
+            List<Long> onboardingRegionIds,
+            List<Long> onboardingDesignTagIds,
+            int limit
+    ) {
+        YearMonth now = YearMonth.now();
+        LocalDate monthStart = now.atDay(1);
+        LocalDate monthEnd = now.atEndOfMonth();
+
+        boolean hasRegion = onboardingRegionIds != null && !onboardingRegionIds.isEmpty();
+        boolean hasTag = onboardingDesignTagIds != null && !onboardingDesignTagIds.isEmpty();
+
+        BooleanExpression baseFilter = qCard.deletedAt.isNull()
+                .and(qCard.artType.eq(ArtType.MONTHLY))
+                .and(qCard.createdMonth.between(monthStart, monthEnd));
+
+        // 온보딩 조건이 없으면 그냥 인기순 top N
+        if (!hasRegion && !hasTag) {
+            return queryFactory
+                    .selectFrom(qCard)
+                    .join(qCard.shop).fetchJoin()
+                    .join(qCard.shop.region).fetchJoin()
+                    .where(baseFilter)
+                    .orderBy(qCard.likeCard.desc(), qCard.id.asc())
+                    .limit(limit)
+                    .fetch();
+        }
+
+        // Stage 1: 온보딩 조건(지역 IN, 태그 EXISTS)과 정확히 일치하는 카드 우선 조회
+        BooleanExpression onboardingMatch = baseFilter
+                .and(regionCondition(onboardingRegionIds))
+                .and(designTagCondition(onboardingDesignTagIds));
+
+        List<Card> stage1 = queryFactory
+                .selectFrom(qCard)
+                .join(qCard.shop).fetchJoin()
+                .join(qCard.shop.region).fetchJoin()
+                .where(onboardingMatch)
+                .orderBy(qCard.likeCard.desc(), qCard.id.asc())
+                .limit(limit)
+                .fetch();
+
+        if (stage1.size() >= limit) {
+            return stage1;
+        }
+
+        // Stage 2: 부족하면 온보딩 조건 없이, stage1과 겹치지 않게 채움
+        Set<Long> stage1Ids = stage1.stream().map(Card::getId).collect(Collectors.toSet());
+        int remaining = limit - stage1.size();
+
+        List<Card> stage2 = queryFactory
+                .selectFrom(qCard)
+                .join(qCard.shop).fetchJoin()
+                .join(qCard.shop.region).fetchJoin()
+                .where(
+                        baseFilter,
+                        stage1Ids.isEmpty() ? null : qCard.id.notIn(stage1Ids)
+                )
+                .orderBy(qCard.likeCard.desc(), qCard.id.asc())
+                .limit(remaining)
+                .fetch();
+
+        List<Card> result = new ArrayList<>(stage1);
+        result.addAll(stage2);
+        return result;
+    }
+
+    // 완벽한 연말을 위한 PICK: 기준 미정, 임시로 인기순 top N
+    @Override
+    public List<Card> findYearEndPickCards(int limit) {
+        return queryFactory
+                .selectFrom(qCard)
+                .join(qCard.shop).fetchJoin()
+                .join(qCard.shop.region).fetchJoin()
+                .where(qCard.deletedAt.isNull())
+                .orderBy(qCard.likeCard.desc(), qCard.id.asc())
                 .limit(limit)
                 .fetch();
     }

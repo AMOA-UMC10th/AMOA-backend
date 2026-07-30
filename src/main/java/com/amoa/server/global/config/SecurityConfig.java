@@ -44,6 +44,7 @@ public class SecurityConfig {
             "/api/v1/regions/present",
             "/api/v1/regions",
             "/api/v1/cards",
+            "/api/v1/cards/home",
             "/api/v1/cards/*",
             "/api/v1/cards/*/recommendations",
             "/api/v1/terms"

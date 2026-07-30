@@ -23,6 +23,21 @@ public class CardController implements CardControllerDocs {
 
     private final CardQueryService cardQueryService;
 
+    // 홈 화면 카드 섹션 조회
+    @GetMapping("/home")
+    @Override
+    public ApiResponse<CardResDTO.HomeSections> getHomeSections(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails == null ? null : userDetails.user().getId();
+        String nickname = userDetails == null ? null : userDetails.user().getNickname();
+
+        return ApiResponse.onSuccess(
+                CardSuccessCode.CARD_FOUND,
+                cardQueryService.getHomeSections(userId, nickname)
+        );
+    }
+    
     // 카카오로 시작하기
     @GetMapping("/{cardId}/kakao-channel")
     @Override
