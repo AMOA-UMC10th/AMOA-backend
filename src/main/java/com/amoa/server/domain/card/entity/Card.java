@@ -58,12 +58,6 @@ public class Card extends BaseEntity {
     @Column(name = "min_price", nullable = false)
     private Integer minPrice;
 
-    //예약에서의 시간계산을 위한 아트 소요 시간
-    //일단 디폴트로 1시간 부여
-    @Column(name = "duration_minutes", nullable = false)
-    @Builder.Default
-    private Integer durationMinutes = 60;
-
     @Column(name = "art_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private ArtType artType;

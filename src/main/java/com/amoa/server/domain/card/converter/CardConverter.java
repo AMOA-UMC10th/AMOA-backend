@@ -34,11 +34,6 @@ public class CardConverter {
                 .instagramUrl(request.instagramUrl())
                 .maxPrice(request.maxPrice())
                 .minPrice(request.minPrice())
-                .durationMinutes(
-                        request.durationMinutes() != null
-                                ? request.durationMinutes()
-                                : 60
-                )
                 .createdMonth(createdMonth)
                 .artType(request.artType())
                 .likeCard(0)
@@ -60,7 +55,6 @@ public class CardConverter {
                 card.getInstagramUrl(),
                 card.getMaxPrice(),
                 card.getMinPrice(),
-                card.getDurationMinutes(),
                 card.getCreatedMonth(),
                 card.getArtType(),
                 designTagResList,
