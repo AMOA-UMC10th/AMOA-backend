@@ -26,6 +26,9 @@ public class KakaoUserInfoResDTO {
 
             @JsonProperty("nickname")
             private String userName;
+
+            @JsonProperty("profile_image_url")
+            private String profileImageUrl;
         }
     }
 }

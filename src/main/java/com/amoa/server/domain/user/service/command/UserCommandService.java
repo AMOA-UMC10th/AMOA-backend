@@ -65,13 +65,21 @@ public class UserCommandService {
                         ? account.getProfile().getUserName()
                         : "익명사용자";
 
+        String profileImageUrl =
+                account.getProfile() != null
+                        ? account.getProfile().getProfileImageUrl()
+                        : null;
+
         return userRepository.findBySocialUidIncludingInactive(socialUid)
                 .map(user -> {
 
                     if (!Boolean.TRUE.equals(user.getIsActive())) {
                         log.debug("탈퇴 회원 재활성화 처리");
-
                         user.reactivate();
+                    }
+
+                    if (profileImageUrl != null && !profileImageUrl.isBlank()) {
+                        user.updateProfileImageUrl(profileImageUrl);
                     }
 
                     return user;
@@ -81,6 +89,7 @@ public class UserCommandService {
                             .socialUid(socialUid)
                             .email(email)
                             .userName(userName)
+                            .profileImageUrl(profileImageUrl)
                             .role(Role.NEW_USER)
                             .isActive(true)
                             .build();
