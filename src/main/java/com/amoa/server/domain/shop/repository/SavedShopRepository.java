@@ -14,7 +14,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface SavedShopRepository extends JpaRepository<SavedShop, Long> {
+public interface SavedShopRepository extends
+        JpaRepository<SavedShop, Long>,
+        SavedShopRepositoryCustom {
 
     Optional<SavedShop> findByUserAndShop(User user, Shop shop);
 

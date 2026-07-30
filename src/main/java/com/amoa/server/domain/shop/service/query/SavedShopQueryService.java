@@ -53,8 +53,15 @@ public class SavedShopQueryService {
             case PRICE_DESC ->
                     savedShopRepository.findAllByUserOrderByPriceDesc(user, pageable);
 
-            case RECOMMENDED ->
-                    savedShopRepository.findAllByUser(user, latestPageable);
+            case RECOMMENDED -> {
+                if (hasRecommendationCondition(user)) {
+                    yield savedShopRepository
+                            .findLikedShopsByUserOrderByRecommended(user, latestPageable);
+                }
+
+                yield savedShopRepository
+                        .findAllByUserOrderByPopular(user, pageable);
+            }
         };
 
         List<SavedShopResDTO.LikedShopResponse> likedShops =
@@ -82,4 +89,9 @@ public class SavedShopQueryService {
                 savedShops.hasNext()
                 );
     }
+
+    private boolean hasRecommendationCondition(User user) {
+        return savedShopRepository.existsRecommendedShopByUser(user);
+    }
+
 }

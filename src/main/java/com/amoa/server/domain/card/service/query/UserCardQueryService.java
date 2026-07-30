@@ -35,12 +35,6 @@ public class UserCardQueryService {
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
 
-        //TO-DO Recommended부분 계획 정해지면 수정할 예정
-        if(sortType == null){
-            sortType = SortType.RECOMMENDED;
-        }
-
-
         Page<UserCard> userCards = switch(sortType) {
 
             case LATEST ->
@@ -56,7 +50,7 @@ public class UserCardQueryService {
                     userCardRepository.findLikedCardsByUserOrderByPriceDesc(user, pageable);
 
             case RECOMMENDED ->
-                    userCardRepository.findAllByUser(user, latestPageable);
+                    userCardRepository.findLikedCardsByUserOrderByRecommended(user, pageable);
         };
 
         List<UserCardResDTO.LikedCardResponse> likedCards =
