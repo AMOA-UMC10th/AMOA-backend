@@ -54,7 +54,7 @@ public class SavedShopQueryService {
                     savedShopRepository.findAllByUserOrderByPriceDesc(user, pageable);
 
             case RECOMMENDED ->
-                    savedShopRepository.findAllByUser(user, latestPageable);
+                    savedShopRepository.findLikedShopsByUserOrderByRecommended(user, latestPageable);
         };
 
         List<SavedShopResDTO.LikedShopResponse> likedShops =

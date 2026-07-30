@@ -94,7 +94,7 @@ public interface UserControllerDocs {
             @Parameter(
                     description = """
                             정렬 기준
-                            - RECOMMENDED : 추천순 (추후 구현 예정)
+                            - RECOMMENDED : 추천순
                             - POPULAR : 찜 많은 순
                             - PRICE_ASC : 최저 가격 낮은 순
                             - PRICE_DESC : 최고 가격 높은 순
