@@ -61,6 +61,10 @@ dependencies {
 
     // SMS 발송 (Solapi)
     implementation 'com.solapi:sdk:1.1.0'
+
+    //S3 의존성 추가
+    implementation platform('software.amazon.awssdk:bom:2.32.18')
+    implementation 'software.amazon.awssdk:s3'
 }
 
 tasks.named('test') {

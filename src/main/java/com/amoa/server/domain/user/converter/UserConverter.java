@@ -24,7 +24,6 @@ public class UserConverter {
     ) {
         return UserProfileResDTO.builder()
                 .userId(user.getId())
-                .profileImageUrl(user.getProfileImageUrl())
                 .name(user.getUserName())
                 .email(user.getEmail())
                 .nickname(user.getNickname())

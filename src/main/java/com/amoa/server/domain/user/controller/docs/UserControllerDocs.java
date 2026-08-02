@@ -12,6 +12,7 @@ import com.amoa.server.domain.user.dto.response.NicknameCheckResDTO;
 import com.amoa.server.domain.user.dto.response.OnboardingSaveResDTO;
 import com.amoa.server.domain.user.dto.response.PhoneSendResDTO;
 import com.amoa.server.domain.user.dto.response.PhoneVerifyResDTO;
+import com.amoa.server.domain.user.dto.response.ProfileImageResDTO;
 import com.amoa.server.domain.user.dto.response.UserProfileResDTO;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import com.amoa.server.global.auth.CustomUserDetails;
@@ -26,6 +27,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "User", description = "유저 관련 API")
 public interface UserControllerDocs {
@@ -134,6 +137,15 @@ public interface UserControllerDocs {
     ApiResponse<UserProfileResDTO> updateMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody UserProfileUpdateReqDTO request
+    );
+
+    @Operation(
+            summary = "프로필 이미지 수정",
+            description = "사용자의 프로필 이미지를 업로드하여 변경합니다."
+    )
+    ApiResponse<ProfileImageResDTO> updateProfileImage(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestPart("image") MultipartFile image
     );
 
     @Operation(
