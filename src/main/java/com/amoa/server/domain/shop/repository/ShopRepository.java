@@ -30,4 +30,7 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     Optional<Shop> findByIdWithLock(
             @Param("shopId") Long shopId
     );
+
+    // 샵 등록 시 중복 검증
+    boolean existsByAddress(String address);
 }

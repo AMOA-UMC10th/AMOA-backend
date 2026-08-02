@@ -15,6 +15,7 @@ import com.amoa.server.domain.shop.repository.ShopDesignTagRepository;
 import com.amoa.server.domain.shop.repository.ShopRepository;
 import com.amoa.server.global.kakao.KakaoLocalClient;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,11 @@ public class ShopCommandService {
 
     // POST /api/admin/shops - 샵 등록
     public ShopResDTO.CreateShopResponse createShop(ShopReqDTO.CreateShopRequest request) {
+
+        // 0) 주소 중복 검증 (카카오 API 호출 전에 먼저 체크)
+        if (shopRepository.existsByAddress(request.address())) {
+            throw new ShopException(ShopErrorCode.DUPLICATE_SHOP_ADDRESS);
+        }
 
         // 1) 카카오 로컬 API로 주소 → 좌표 변환
         BigDecimal[] coordinates = kakaoLocalClient.getCoordinates(request.address());
@@ -55,7 +61,12 @@ public class ShopCommandService {
 
         // 3) Shop Entity 생성 및 저장
         Shop shop = ShopConverter.toShop(request, region, latitude, longitude, legalCode);
-        shopRepository.save(shop);
+
+        try {
+            shopRepository.save(shop);
+        } catch (DataIntegrityViolationException e) {
+            throw new ShopException(ShopErrorCode.DUPLICATE_SHOP_ADDRESS);
+        }
 
         // 4) DesignTag 조회 및 ShopDesignTag 저장
         if (request.designtagIds() != null && !request.designtagIds().isEmpty()) {

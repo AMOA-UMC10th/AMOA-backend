@@ -100,6 +100,12 @@ public enum ShopErrorCode implements BaseErrorCode {
             "이미 등록된 옵션명입니다."
     ),
 
+    DUPLICATE_SHOP_ADDRESS(
+            HttpStatus.CONFLICT,
+            "SHOP409_4",
+            "이미 등록된 주소의 샵입니다."
+    ),
+
     KAKAO_API_ERROR(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "SHOP500_1",
