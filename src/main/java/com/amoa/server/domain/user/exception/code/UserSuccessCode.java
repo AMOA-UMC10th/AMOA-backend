@@ -21,64 +21,70 @@ public enum UserSuccessCode implements BaseSuccessCode {
             "찜한 네일샵 목록 조회에 성공했습니다."
     ),
 
-    NICKNAME_CHECK_SUCCESS(
-            HttpStatus.OK,
-            "ONBOARDING200_3",
-            "닉네임 사용 가능 여부 조회에 성공했습니다."
-    ),
-
     USER_WITHDRAW_SUCCESS(
             HttpStatus.OK,
-            "USER200_4",
+            "USER200_3",
             "탈퇴에 성공하였습니다."
     ),
 
     USER_PROFILE_GET_OK(
             HttpStatus.OK,
-            "USER200_5",
+            "USER200_4",
             "사용자 정보 조회에 성공했습니다."
-    ),
-
-    DESIGN_MOOD_LIST_FOUND(
-            HttpStatus.OK,
-            "ONBOARDING200_6",
-            "디자인 무드 목록 조회에 성공했습니다."
     ),
 
     USER_PROFILE_UPDATE_OK(
             HttpStatus.OK,
-            "USER200_7",
+            "USER200_5",
             "내 정보가 수정되었습니다."
-    ),
-
-    ONBOARDING_COMPLETE_OK(
-            HttpStatus.OK,
-            "USER200_8",
-            "온보딩 설정을 저장했습니다."
     ),
 
     PHONE_SEND_SUCCESS(
             HttpStatus.OK,
-            "USER200_9",
+            "USER200_6",
             "인증번호가 발송되었습니다."
     ),
 
     PHONE_VERIFY_SUCCESS(
             HttpStatus.OK,
-            "USER200_10",
+            "USER200_7",
             "휴대폰 인증이 완료되었습니다."
+    ),
+
+    USER_LIKED_CARDS_SUCCESS(
+            HttpStatus.OK,
+            "USER200_8",
+            "찜한 네일 아트 목록 조회에 성공했습니다."
+    ),
+
+    USER_PROFILE_IMAGE_UPDATE_OK(
+            HttpStatus.OK,
+            "USER200_9",
+            "프로필 이미지가 성공적으로 수정되었습니다."
+    ),
+
+    NICKNAME_CHECK_SUCCESS(
+            HttpStatus.OK,
+            "ONBOARDING200_1",
+            "닉네임 사용 가능 여부 조회에 성공했습니다."
+    ),
+
+    DESIGN_MOOD_LIST_FOUND(
+            HttpStatus.OK,
+            "ONBOARDING200_2",
+            "디자인 무드 목록 조회에 성공했습니다."
+    ),
+
+    ONBOARDING_COMPLETE_OK(
+            HttpStatus.OK,
+            "ONBOARDING200_3",
+            "온보딩 설정을 저장했습니다."
     ),
 
     SAVED_PLACE_CREATE_OK(
             HttpStatus.OK,
             "USER201_1",
             "장소가 성공적으로 저장되었습니다."
-    ),
-
-    USER_LIKED_CARDS_SUCCESS(
-            HttpStatus.OK,
-            "USER200_6",
-            "찜한 네일 아트 목록 조회에 성공했습니다."
     );
 
 

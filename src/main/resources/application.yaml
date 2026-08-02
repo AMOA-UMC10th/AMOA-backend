@@ -1,6 +1,10 @@
 spring:
   application:
     name: "amoa-server"
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 6MB
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver # MySQL JDBC 드라이버 클래스 이름
@@ -64,3 +68,8 @@ solapi:
   api-key: ${SOLAPI_API_KEY}
   api-secret: ${SOLAPI_API_SECRET}
   sender-phone-number: ${SOLAPI_SENDER_PHONE_NUMBER}
+
+aws:
+  s3:
+    bucket: ${AWS_S3_BUCKET}
+  region: ${AWS_REGION}

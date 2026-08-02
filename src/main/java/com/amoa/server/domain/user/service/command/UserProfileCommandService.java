@@ -5,24 +5,29 @@ import com.amoa.server.domain.common.entity.Region;
 import com.amoa.server.domain.common.repository.DesignTagRepository;
 import com.amoa.server.domain.common.repository.RegionRepository;
 import com.amoa.server.domain.user.dto.request.UserProfileUpdateReqDTO;
+import com.amoa.server.domain.user.dto.response.ProfileImageResDTO;
 import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.entity.mapping.UserDesignTag;
 import com.amoa.server.domain.user.entity.mapping.UserNotificationSetting;
 import com.amoa.server.domain.user.entity.mapping.UserRegion;
+import com.amoa.server.domain.user.exception.UserException;
 import com.amoa.server.domain.user.exception.code.UserErrorCode;
 import com.amoa.server.domain.user.repository.UserDesignTagRepository;
 import com.amoa.server.domain.user.repository.UserInterestedRegionRepository;
 import com.amoa.server.domain.user.repository.UserNotificationSettingRepository;
 import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.apiPayload.exception.GeneralException;
+import com.amoa.server.global.storage.S3Service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserProfileCommandService {
 
     private final UserRepository userRepository;
@@ -31,6 +36,7 @@ public class UserProfileCommandService {
     private final UserDesignTagRepository userDesignTagRepository;
     private final UserInterestedRegionRepository userInterestedRegionRepository;
     private final UserNotificationSettingRepository userNotificationSettingRepository;
+    private final S3Service s3Service;
 
     @Transactional
     public void updateUserProfile(
@@ -42,7 +48,6 @@ public class UserProfileCommandService {
                         new GeneralException(UserErrorCode.USER_NOT_FOUND)
                 );
 
-        updateProfileImage(user, request.profileImageUrl());
         updateNickname(user, request.nickname());
         updatePhoneNumber(user, request.phoneNumber());
         replaceDesignTags(user, request.selectedDesignTagIds());
@@ -57,15 +62,50 @@ public class UserProfileCommandService {
     }
 
 
-    private void updateProfileImage(
-            User user,
-            String profileImageUrl
+    @Transactional
+    public ProfileImageResDTO updateProfileImage(
+            Long userId,
+            MultipartFile image
     ) {
-        if (profileImageUrl == null) {
-            return;
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new UserException(UserErrorCode.USER_NOT_FOUND)
+                );
 
-        user.updateProfileImageUrl(profileImageUrl);
+        String previousImageUrl = user.getProfileImageUrl();
+
+        String newImageUrl = s3Service.uploadProfileImage(image);
+
+        user.updateProfileImageUrl(newImageUrl);
+
+        registerImageCleanup(
+                previousImageUrl,
+                newImageUrl
+        );
+
+        return new ProfileImageResDTO(newImageUrl);
+    }
+
+    private void registerImageCleanup(
+            String previousImageUrl,
+            String newImageUrl
+    ) {
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+
+                    @Override
+                    public void afterCommit() {
+                        s3Service.deleteProfileImage(previousImageUrl);
+                    }
+
+                    @Override
+                    public void afterCompletion(int status) {
+                        if (status == STATUS_ROLLED_BACK) {
+                            s3Service.deleteProfileImage(newImageUrl);
+                        }
+                    }
+                }
+        );
     }
 
     private void updateNickname(User user, String nickname) {

@@ -75,6 +75,24 @@ public enum UserErrorCode implements BaseErrorCode{
             "휴대폰 인증이 완료되지 않았습니다."
     ),
 
+    PROFILE_IMAGE_REQUIRED(
+            HttpStatus.BAD_REQUEST,
+            "USER400_12",
+            "프로필 이미지 파일은 필수입니다."
+    ),
+
+    PROFILE_IMAGE_INVALID_FORMAT(
+            HttpStatus.BAD_REQUEST,
+            "USER400_13",
+            "지원하지 않는 이미지 형식입니다."
+    ),
+
+    PROFILE_IMAGE_TOO_LARGE(
+            HttpStatus.BAD_REQUEST,
+            "USER400_14",
+            "프로필 이미지는 5MB 이하만 업로드할 수 있습니다."
+    ),
+
     USER_NOT_ACTIVE(
             HttpStatus.UNAUTHORIZED,
             "USER401_1",
@@ -127,6 +145,12 @@ public enum UserErrorCode implements BaseErrorCode{
             HttpStatus.INTERNAL_SERVER_ERROR,
         "USER500_1",
                 "인증번호 발송에 실패했습니다."
+    ),
+
+    PROFILE_IMAGE_UPLOAD_FAILED(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+        "USER500_2",
+                "프로필 이미지 업로드에 실패했습니다."
     );
 
     private final HttpStatus httpStatus;
