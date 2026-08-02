@@ -47,7 +47,7 @@ public class SecurityConfig {
             "/api/v1/cards/home",
             "/api/v1/cards/*",
             "/api/v1/cards/*/recommendations",
-            "/api/v1/terms",
+            "/api/v1/terms/**",
             "/api/v1/shops/design-tags"
     };
 
