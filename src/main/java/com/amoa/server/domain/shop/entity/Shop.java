@@ -11,7 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "shop")
+@Table(
+        name = "shop",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_shop_address", columnNames = "address")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

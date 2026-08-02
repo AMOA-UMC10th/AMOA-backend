@@ -15,6 +15,7 @@ import com.amoa.server.domain.shop.repository.ShopDesignTagRepository;
 import com.amoa.server.domain.shop.repository.ShopRepository;
 import com.amoa.server.global.kakao.KakaoLocalClient;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +61,12 @@ public class ShopCommandService {
 
         // 3) Shop Entity 생성 및 저장
         Shop shop = ShopConverter.toShop(request, region, latitude, longitude, legalCode);
-        shopRepository.save(shop);
+
+        try {
+            shopRepository.save(shop);
+        } catch (DataIntegrityViolationException e) {
+            throw new ShopException(ShopErrorCode.DUPLICATE_SHOP_ADDRESS);
+        }
 
         // 4) DesignTag 조회 및 ShopDesignTag 저장
         if (request.designtagIds() != null && !request.designtagIds().isEmpty()) {
