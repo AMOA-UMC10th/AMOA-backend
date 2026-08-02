@@ -10,10 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Slf4j
 @Service
@@ -22,6 +22,8 @@ public class S3Service {
 
     private static final Set<String> ALLOWED_EXTENSIONS =
             Set.of("jpg", "jpeg", "png", "webp");
+
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     private final S3Client s3Client;
 
@@ -51,18 +53,14 @@ public class S3Service {
             );
         }
 
-//        catch (IOException | S3Exception e) {
-//            throw new UserException(
-//                    UserErrorCode.PROFILE_IMAGE_UPLOAD_FAILED
-//            );
-//        }
-        catch (IOException | S3Exception e) {
+        catch (IOException | SdkException e) {
             log.error("S3 프로필 이미지 업로드 실패", e);
 
             throw new UserException(
                     UserErrorCode.PROFILE_IMAGE_UPLOAD_FAILED
             );
         }
+
         return createImageUrl(fileName);
     }
 
@@ -70,6 +68,12 @@ public class S3Service {
         if (file == null || file.isEmpty()) {
             throw new UserException(
                     UserErrorCode.PROFILE_IMAGE_REQUIRED
+            );
+        }
+
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new UserException(
+                    UserErrorCode.PROFILE_IMAGE_TOO_LARGE
             );
         }
 
@@ -104,6 +108,8 @@ public class S3Service {
                 .toLowerCase();
     }
 
+
+
     private String createImageUrl(String fileName) {
         return "https://"
                 + bucket
@@ -111,5 +117,43 @@ public class S3Service {
                 + region
                 + ".amazonaws.com/"
                 + fileName;
+    }
+
+    public void deleteProfileImage(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) {
+            return;
+        }
+
+        String key = extractProfileImageKey(imageUrl);
+
+        if (key == null) {
+            return;
+        }
+
+        try {
+            s3Client.deleteObject(builder -> builder
+                    .bucket(bucket)
+                    .key(key)
+            );
+        } catch (SdkException e) {
+            log.error("S3 기존 프로필 이미지 삭제 실패. key={}", key, e);
+        }
+    }
+
+    private String extractProfileImageKey(String imageUrl) {
+        String expectedPrefix =
+                "https://" + bucket + ".s3." + region + ".amazonaws.com/";
+
+        if (!imageUrl.startsWith(expectedPrefix)) {
+            return null;
+        }
+
+        String key = imageUrl.substring(expectedPrefix.length());
+
+        if (!key.startsWith("profile/")) {
+            return null;
+        }
+
+        return key;
     }
 }

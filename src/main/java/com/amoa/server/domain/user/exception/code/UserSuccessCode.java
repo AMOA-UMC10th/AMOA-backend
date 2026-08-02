@@ -23,43 +23,43 @@ public enum UserSuccessCode implements BaseSuccessCode {
 
     USER_WITHDRAW_SUCCESS(
             HttpStatus.OK,
-            "USER200_4",
+            "USER200_3",
             "탈퇴에 성공하였습니다."
     ),
 
     USER_PROFILE_GET_OK(
             HttpStatus.OK,
-            "USER200_5",
+            "USER200_4",
             "사용자 정보 조회에 성공했습니다."
     ),
 
     USER_PROFILE_UPDATE_OK(
             HttpStatus.OK,
-            "USER200_7",
+            "USER200_5",
             "내 정보가 수정되었습니다."
     ),
 
     PHONE_SEND_SUCCESS(
             HttpStatus.OK,
-            "USER200_9",
+            "USER200_6",
             "인증번호가 발송되었습니다."
     ),
 
     PHONE_VERIFY_SUCCESS(
             HttpStatus.OK,
-            "USER200_10",
+            "USER200_7",
             "휴대폰 인증이 완료되었습니다."
     ),
 
     USER_LIKED_CARDS_SUCCESS(
             HttpStatus.OK,
-            "USER200_11",
+            "USER200_8",
             "찜한 네일 아트 목록 조회에 성공했습니다."
     ),
 
     USER_PROFILE_IMAGE_UPDATE_OK(
             HttpStatus.OK,
-            "USER200_12",
+            "USER200_9",
             "프로필 이미지가 성공적으로 수정되었습니다."
     ),
 

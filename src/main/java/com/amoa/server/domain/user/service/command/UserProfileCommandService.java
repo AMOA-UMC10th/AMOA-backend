@@ -22,11 +22,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserProfileCommandService {
 
     private final UserRepository userRepository;
@@ -71,12 +72,40 @@ public class UserProfileCommandService {
                         new UserException(UserErrorCode.USER_NOT_FOUND)
                 );
 
-        String imageUrl =
-                s3Service.uploadProfileImage(image);
+        String previousImageUrl = user.getProfileImageUrl();
 
-        user.updateProfileImageUrl(imageUrl);
+        String newImageUrl = s3Service.uploadProfileImage(image);
 
-        return new ProfileImageResDTO(imageUrl);
+        user.updateProfileImageUrl(newImageUrl);
+
+        registerImageCleanup(
+                previousImageUrl,
+                newImageUrl
+        );
+
+        return new ProfileImageResDTO(newImageUrl);
+    }
+
+    private void registerImageCleanup(
+            String previousImageUrl,
+            String newImageUrl
+    ) {
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+
+                    @Override
+                    public void afterCommit() {
+                        s3Service.deleteProfileImage(previousImageUrl);
+                    }
+
+                    @Override
+                    public void afterCompletion(int status) {
+                        if (status == STATUS_ROLLED_BACK) {
+                            s3Service.deleteProfileImage(newImageUrl);
+                        }
+                    }
+                }
+        );
     }
 
     private void updateNickname(User user, String nickname) {

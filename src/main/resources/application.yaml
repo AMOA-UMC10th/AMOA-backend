@@ -3,8 +3,8 @@ spring:
     name: "amoa-server"
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: 6MB
+      max-request-size: 6MB
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver # MySQL JDBC 드라이버 클래스 이름
