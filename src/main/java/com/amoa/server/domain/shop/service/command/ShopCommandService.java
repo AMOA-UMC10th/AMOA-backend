@@ -35,6 +35,11 @@ public class ShopCommandService {
     // POST /api/admin/shops - 샵 등록
     public ShopResDTO.CreateShopResponse createShop(ShopReqDTO.CreateShopRequest request) {
 
+        // 0) 주소 중복 검증 (카카오 API 호출 전에 먼저 체크)
+        if (shopRepository.existsByAddress(request.address())) {
+            throw new ShopException(ShopErrorCode.DUPLICATE_SHOP_ADDRESS);
+        }
+
         // 1) 카카오 로컬 API로 주소 → 좌표 변환
         BigDecimal[] coordinates = kakaoLocalClient.getCoordinates(request.address());
         if (coordinates == null) {
