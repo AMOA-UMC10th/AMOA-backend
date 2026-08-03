@@ -45,7 +45,6 @@ public class AdminShopController implements AdminShopControllerDocs {
     // GET /api/v1/admin/shops/address/search - 주소검색으로 카카오 로컬 API 검색
     @Override
     @GetMapping("/address/search")
-
     public ApiResponse<ShopAddressSearchResponse> searchAddress(
             @RequestParam String address
     ) {
