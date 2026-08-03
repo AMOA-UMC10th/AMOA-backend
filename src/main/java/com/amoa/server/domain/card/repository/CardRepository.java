@@ -78,4 +78,10 @@ public interface CardRepository extends JpaRepository<Card, Long>, CardRepositor
     // 샵의 전체 카드 찜 수
     @Query("SELECT COUNT(uc) FROM UserCard uc WHERE uc.card.shop.id = :shopId")
     int countCardLikesByShopId(@Param("shopId") Long shopId);
+
+    // 중복 카드 검증
+    boolean existsByShopAndInstagramUrlAndDeletedAtIsNull(
+            Shop shop,
+            String instagramUrl
+    );
 }

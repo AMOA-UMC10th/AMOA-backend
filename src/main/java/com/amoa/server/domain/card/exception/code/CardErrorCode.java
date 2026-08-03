@@ -43,6 +43,12 @@ public enum CardErrorCode implements BaseErrorCode {
             HttpStatus.CONFLICT,
             "CARD409_1",
             "이미 찜한 카드입니다."
+    ),
+
+    CARD_ALREADY_EXISTS(
+            HttpStatus.CONFLICT,
+            "CARD409_2",
+            "이미 등록된 카드입니다."
     );
 
     private final HttpStatus httpStatus;

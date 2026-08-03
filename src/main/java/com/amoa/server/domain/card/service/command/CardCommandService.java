@@ -44,6 +44,13 @@ public class CardCommandService {
             throw new CardException(CardErrorCode.CARD_INVALID_DESIGN_TAG);
         }
 
+        // 3. 중복 카드 검증
+        if (cardRepository.existsByShopAndInstagramUrlAndDeletedAtIsNull(
+                shop,
+                request.instagramUrl())) {
+            throw new CardException(CardErrorCode.CARD_ALREADY_EXISTS);
+        }
+
         // 3. 년도와 월을 LocalDate로 변환 (해당 월의 첫 날)
         LocalDate createdMonth = cardConverter.convertYearMonthToLocalDate(
                 request.createdYear(),
