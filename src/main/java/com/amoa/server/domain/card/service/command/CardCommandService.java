@@ -51,13 +51,13 @@ public class CardCommandService {
             throw new CardException(CardErrorCode.CARD_ALREADY_EXISTS);
         }
 
-        // 3. 년도와 월을 LocalDate로 변환 (해당 월의 첫 날)
+        // 4. 년도와 월을 LocalDate로 변환 (해당 월의 첫 날)
         LocalDate createdMonth = cardConverter.convertYearMonthToLocalDate(
                 request.createdYear(),
                 request.createdMonth()
         );
 
-        // 4. Card 엔티티 생성 및 저장
+        // 5. Card 엔티티 생성 및 저장
         Card card =
                 cardConverter.toEntity(
                         request,
@@ -72,7 +72,7 @@ public class CardCommandService {
 
         Card savedCard = cardRepository.save(card);
 
-        // 5. CardDesignTag 연관 관계 저장
+        // 6. CardDesignTag 연관 관계 저장
         List<CardDesignTag> cardDesignTags = designTags.stream()
                 .map(designTag -> CardDesignTag.builder()
                         .card(savedCard)
@@ -82,7 +82,7 @@ public class CardCommandService {
 
         cardDesignTagRepository.saveAll(cardDesignTags);
 
-        // 6. 응답 DTO 변환 및 반환
+        // 7. 응답 DTO 변환 및 반환
         return cardConverter.toCreateCardResponse(savedCard, cardDesignTags);
     }
 }
