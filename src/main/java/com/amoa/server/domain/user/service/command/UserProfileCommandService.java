@@ -10,6 +10,7 @@ import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.entity.mapping.UserDesignTag;
 import com.amoa.server.domain.user.entity.mapping.UserNotificationSetting;
 import com.amoa.server.domain.user.entity.mapping.UserRegion;
+import com.amoa.server.domain.user.exception.UserException;
 import com.amoa.server.domain.user.exception.code.UserErrorCode;
 import com.amoa.server.domain.user.repository.UserDesignTagRepository;
 import com.amoa.server.domain.user.repository.UserInterestedRegionRepository;
