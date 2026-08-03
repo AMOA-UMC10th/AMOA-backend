@@ -43,7 +43,7 @@ public class S3Service {
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(fileName)
-                .contentType(file.getContentType())
+                .contentType(resolveContentType(extension))
                 .build();
 
         try {
@@ -85,14 +85,81 @@ public class S3Service {
             );
         }
 
-        String contentType = file.getContentType();
+        // 실제 파일 바이트를 보고 이미지 형식 확인
+        String detectedType = detectImageType(file);
 
-        if (contentType == null
-                || !contentType.startsWith("image/")) {
+        boolean matched = switch (detectedType) {
+            case "jpeg" ->
+                    extension.equals("jpg")
+                            || extension.equals("jpeg");
+
+            case "png" ->
+                    extension.equals("png");
+
+            case "webp" ->
+                    extension.equals("webp");
+
+            default -> false;
+        };
+
+        if (!matched) {
             throw new UserException(
                     UserErrorCode.PROFILE_IMAGE_INVALID_FORMAT
             );
         }
+    }
+
+    private String detectImageType(MultipartFile file) {
+        try {
+            byte[] bytes = file.getBytes();
+
+            if (bytes.length >= 3
+                    && (bytes[0] & 0xFF) == 0xFF
+                    && (bytes[1] & 0xFF) == 0xD8
+                    && (bytes[2] & 0xFF) == 0xFF) {
+                return "jpeg";
+            }
+
+            if (bytes.length >= 8
+                    && (bytes[0] & 0xFF) == 0x89
+                    && bytes[1] == 0x50
+                    && bytes[2] == 0x4E
+                    && bytes[3] == 0x47) {
+                return "png";
+            }
+
+            if (bytes.length >= 12
+                    && bytes[0] == 'R'
+                    && bytes[1] == 'I'
+                    && bytes[2] == 'F'
+                    && bytes[3] == 'F'
+                    && bytes[8] == 'W'
+                    && bytes[9] == 'E'
+                    && bytes[10] == 'B'
+                    && bytes[11] == 'P') {
+                return "webp";
+            }
+
+            throw new UserException(
+                    UserErrorCode.PROFILE_IMAGE_INVALID_FORMAT
+            );
+
+        } catch (IOException e) {
+            throw new UserException(
+                    UserErrorCode.PROFILE_IMAGE_INVALID_FORMAT
+            );
+        }
+    }
+
+    private String resolveContentType(String extension) {
+        return switch (extension) {
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "png" -> "image/png";
+            case "webp" -> "image/webp";
+            default -> throw new UserException(
+                    UserErrorCode.PROFILE_IMAGE_INVALID_FORMAT
+            );
+        };
     }
 
     private String getExtension(String originalFilename) {

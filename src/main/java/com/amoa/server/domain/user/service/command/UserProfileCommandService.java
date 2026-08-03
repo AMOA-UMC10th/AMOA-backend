@@ -22,8 +22,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -36,6 +34,7 @@ public class UserProfileCommandService {
     private final UserDesignTagRepository userDesignTagRepository;
     private final UserInterestedRegionRepository userInterestedRegionRepository;
     private final UserNotificationSettingRepository userNotificationSettingRepository;
+    private final UserProfileImageCommandService userProfileImageCommandService;
     private final S3Service s3Service;
 
     @Transactional
@@ -61,51 +60,27 @@ public class UserProfileCommandService {
         );
     }
 
-
-    @Transactional
     public ProfileImageResDTO updateProfileImage(
             Long userId,
             MultipartFile image
     ) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new UserException(UserErrorCode.USER_NOT_FOUND)
-                );
+        // DB 트랜잭션 밖에서 S3 업로드
+        String newImageUrl =
+                s3Service.uploadProfileImage(image);
 
-        String previousImageUrl = user.getProfileImageUrl();
-
-        String newImageUrl = s3Service.uploadProfileImage(image);
-
-        user.updateProfileImageUrl(newImageUrl);
-
-        registerImageCleanup(
-                previousImageUrl,
-                newImageUrl
-        );
+        try {
+            // 이 메서드 내부에서만 DB 트랜잭션 시작
+            userProfileImageCommandService.updateProfileImageUrl(
+                    userId,
+                    newImageUrl
+            );
+        } catch (RuntimeException e) {
+            // DB 저장/커밋에 실패한 경우 새로 업로드한 이미지 제거
+            s3Service.deleteProfileImage(newImageUrl);
+            throw e;
+        }
 
         return new ProfileImageResDTO(newImageUrl);
-    }
-
-    private void registerImageCleanup(
-            String previousImageUrl,
-            String newImageUrl
-    ) {
-        TransactionSynchronizationManager.registerSynchronization(
-                new TransactionSynchronization() {
-
-                    @Override
-                    public void afterCommit() {
-                        s3Service.deleteProfileImage(previousImageUrl);
-                    }
-
-                    @Override
-                    public void afterCompletion(int status) {
-                        if (status == STATUS_ROLLED_BACK) {
-                            s3Service.deleteProfileImage(newImageUrl);
-                        }
-                    }
-                }
-        );
     }
 
     private void updateNickname(User user, String nickname) {

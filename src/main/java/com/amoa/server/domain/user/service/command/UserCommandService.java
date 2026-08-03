@@ -78,10 +78,6 @@ public class UserCommandService {
                         user.reactivate();
                     }
 
-                    if (profileImageUrl != null && !profileImageUrl.isBlank()) {
-                        user.updateProfileImageUrl(profileImageUrl);
-                    }
-
                     return user;
                 })
                 .orElseGet(() -> {
@@ -102,10 +98,6 @@ public class UserCommandService {
 
                         if (!Boolean.TRUE.equals(user.getIsActive())) {
                             user.reactivate();
-                        }
-
-                        if (profileImageUrl != null && !profileImageUrl.isBlank()) {
-                            user.updateProfileImageUrl(profileImageUrl);
                         }
 
                         return user;
