@@ -119,7 +119,7 @@ public class ShopConverter {
     public static ShopResDTO.CardResponse toCardResponse(Card card, boolean isLiked) {
         return new ShopResDTO.CardResponse(
                 card.getId(),
-                card.getShop().getRegion().getSecondDepth() + " " + card.getShop().getRegion().getThirdDepth(),  // 구+동
+                card.getShop().getRegion().getThirdDepth(),   // 동만
                 card.getMinPrice(),
                 card.getMaxPrice(),
                 card.getArtType() != null ? card.getArtType().name() : null,
