@@ -88,7 +88,10 @@ public class SecurityConfig {
                 "https://amoa-frontend.vercel.app",
 
                 // Swagger가 새 백엔드 도메인에서 실행되므로 추가
-                "https://api.amoa.beauty"
+                "https://api.amoa.beauty",
+
+                //새 프론트 배포 주소
+                "https://www.amoa.beauty"
         ));
 
         configuration.setAllowedMethods(List.of(
