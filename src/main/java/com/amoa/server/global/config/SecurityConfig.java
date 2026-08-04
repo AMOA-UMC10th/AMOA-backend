@@ -85,7 +85,10 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "http://localhost:5177",
                 "https://amoa-frontend-git-dev-hunbee776s-projects.vercel.app",
-                "https://amoa-frontend.vercel.app"
+                "https://amoa-frontend.vercel.app",
+
+                // Swagger가 새 백엔드 도메인에서 실행되므로 추가
+                "https://api.amoa.beauty"
         ));
 
         configuration.setAllowedMethods(List.of(
