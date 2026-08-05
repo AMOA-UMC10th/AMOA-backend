@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@Tag(name = "Shop(management)", description = "샵 관련 API(management)")
+@Tag(name = "Shop(support)", description = "샵 관련 보조 API(support)")
 public interface ShopOptionControllerDocs {
 
     @Operation(

@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "Card(management)", description = "카드 관련 API(management)")
+@Tag(name = "Card(support)", description = "카드 관련 보조 API(support)")
 public interface AdminCardControllerDocs {
     @Operation(
             summary = "아트 등록",

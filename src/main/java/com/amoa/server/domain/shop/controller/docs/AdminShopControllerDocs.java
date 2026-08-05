@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "Shop(management)", description = "샵 관련 API(management)")
+@Tag(name = "Shop(support)", description = "샵 관련 보조 API(support)")
 public interface AdminShopControllerDocs {
 
     @Operation(
