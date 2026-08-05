@@ -5,7 +5,6 @@ import lombok.Builder;
 
 @Builder
 public record UserProfileResDTO(
-
             Long userId,
             String profileImageUrl,
             String name,
@@ -20,7 +19,6 @@ public record UserProfileResDTO(
 
     @Builder
     public record InterestedRegionDto(
-
             Long regionId,
             String region1DepthName,
             String region2DepthName,
@@ -30,7 +28,6 @@ public record UserProfileResDTO(
 
     @Builder
     public record NotificationSettingDto(
-
             String notificationType,
             String title,
             String description,

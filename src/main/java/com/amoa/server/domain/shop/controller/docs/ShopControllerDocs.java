@@ -27,10 +27,4 @@ public interface ShopControllerDocs {
     ApiResponse<ShopResDTO.ShopDetailResponse> getShopDetail(
             @PathVariable Long shopId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails);
-
-    @Operation(
-            summary = "디자인 태그 목록 조회",
-            description = "아트 검색 및 필터에서 사용할 디자인 태그 목록을 조회합니다. 로그인 없이도 조회 가능합니다."
-    )
-    ApiResponse<ShopResDTO.DesignTagListResponse> getDesignTags();
 }

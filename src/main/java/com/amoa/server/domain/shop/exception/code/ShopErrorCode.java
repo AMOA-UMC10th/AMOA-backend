@@ -45,7 +45,6 @@ public enum ShopErrorCode implements BaseErrorCode {
             "지원하지 않는 정렬 조건입니다."
     ),
 
-
     SHOP_NOT_FOUND(
             HttpStatus.NOT_FOUND,
             "SHOP404_1",

@@ -8,7 +8,6 @@ import com.amoa.server.domain.card.repository.UserCardRepository;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.common.enums.ArtType;
 import com.amoa.server.domain.common.enums.SortType;
-import com.amoa.server.domain.common.repository.DesignTagRepository;
 import com.amoa.server.domain.shop.converter.ShopConverter;
 import com.amoa.server.domain.shop.dto.response.ShopResDTO;
 import com.amoa.server.domain.shop.dto.response.ShopResDTO.ShopAddressSearchResponse;
@@ -38,7 +37,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ShopQueryService {
 
-    private final DesignTagRepository designTagRepository;
     private final KakaoLocalClient kakaoLocalClient;
     private final CardRepository cardRepository;
     private final ShopRepository shopRepository;
@@ -48,12 +46,6 @@ public class ShopQueryService {
     private final SavedShopRepository savedShopRepository;
     private final CardDesignTagRepository cardDesignTagRepository;
     private final UserDesignTagRepository userDesignTagRepository;
-
-    // GET /api/admin/shops/designtag - 디자인태그 목록 조회
-    public ShopResDTO.DesignTagListResponse getDesignTags() {
-        List<DesignTag> designTags = designTagRepository.findAllByOrderByIdAsc();
-        return ShopConverter.toDesignTagListResponse(designTags);
-    }
 
     // GET /api/admin/shops/search - 카카오 로컬 API 검색
     public ShopResDTO.KakaoSearchResponse searchByKeyword(String keyword) {
@@ -157,7 +149,7 @@ public class ShopQueryService {
     }
 
     // GET /api/shops/{shop_id} - 샵 상세 조회 (유저)
-    public ShopResDTO.ShopDetailResponse getShopDetail (Long shopId, Long userId){
+    public ShopResDTO.ShopDetailResponse getShopDetail(Long shopId, Long userId){
 
         // 1) 샵 조회
         Shop shop = shopRepository.findById(shopId)

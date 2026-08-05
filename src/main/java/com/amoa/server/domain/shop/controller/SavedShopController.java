@@ -19,7 +19,7 @@ public class SavedShopController implements SavedShopControllerDocs{
     private final SavedShopCommandService savedShopCommandService;
 
     @Override
-    @PostMapping("/{shopId}/like")
+    @PostMapping("/{shopId}/likes")
     public ApiResponse<SavedShopResDTO.LikeResultDTO> createShopLike(
             @PathVariable Long shopId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -34,7 +34,7 @@ public class SavedShopController implements SavedShopControllerDocs{
     }
 
     @Override
-    @DeleteMapping("/{shopId}/like")
+    @DeleteMapping("/{shopId}/likes")
     public ApiResponse<Void> deleteShopLike(
             @PathVariable Long shopId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails

@@ -42,16 +42,4 @@ public class ShopController implements ShopControllerDocs {
         ShopResDTO.ShopDetailResponse result = shopQueryService.getShopDetail(shopId, userId);
         return ApiResponse.onSuccess(ShopSuccessCode.SHOP_FOUND, result);
     }
-
-    //디자인 태그 조회(사용자 공개용)
-    @Override
-    @GetMapping("/design-tags")
-    public ApiResponse<ShopResDTO.DesignTagListResponse> getDesignTags() {
-        ShopResDTO.DesignTagListResponse result = shopQueryService.getDesignTags();
-
-        return ApiResponse.onSuccess(
-                ShopSuccessCode.DESIGN_TAG_LIST_FOUND,
-                result
-        );
-    }
 }

@@ -20,21 +20,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/admin/shops")
+@RequestMapping("/api/v1/shops")
 @RequiredArgsConstructor
 public class AdminShopController implements AdminShopControllerDocs {
 
     private final ShopCommandService shopCommandService;
     private final ShopQueryService shopQueryService;
 
-    // GET /api/admin/shops/designtag - 디자인태그 목록 조회
-    @GetMapping("/designtag")
-    public ApiResponse<ShopResDTO.DesignTagListResponse> getDesignTags() {
-        ShopResDTO.DesignTagListResponse result = shopQueryService.getDesignTags();
-        return ApiResponse.onSuccess(ShopSuccessCode.DESIGN_TAG_LIST_FOUND, result);
-    }
-
-    // GET /api/admin/shops/search - 샵 이름으로 카카오 로컬 API 검색
+    // GET /api/v1/shops/search - 샵 이름으로 카카오 로컬 API 검색
     @GetMapping("/search")
     public ApiResponse<ShopResDTO.KakaoSearchResponse> searchShopByKeyword(
             @RequestParam String keyword) {
@@ -42,9 +35,9 @@ public class AdminShopController implements AdminShopControllerDocs {
         return ApiResponse.onSuccess(ShopSuccessCode.KAKAO_SEARCH_FOUND, result);
     }
 
-    // GET /api/v1/admin/shops/address/search - 주소검색으로 카카오 로컬 API 검색
+    // GET /api/v1/shops/address/search - 주소검색으로 카카오 로컬 API 검색
     @Override
-    @GetMapping("/address/search")
+    @GetMapping("/addresses")
     public ApiResponse<ShopAddressSearchResponse> searchAddress(
             @RequestParam String address
     ) {
@@ -55,7 +48,7 @@ public class AdminShopController implements AdminShopControllerDocs {
 
     }
 
-    // POST /api/admin/shops - 샵 등록
+    // POST /api/v1/shops - 샵 등록
     @PostMapping()
     public ResponseEntity<ApiResponse<ShopResDTO.CreateShopResponse>> createShop(
             @RequestBody @Valid ShopReqDTO.CreateShopRequest request) {

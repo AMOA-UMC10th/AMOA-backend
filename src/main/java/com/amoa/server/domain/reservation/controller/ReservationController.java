@@ -29,8 +29,9 @@ public class ReservationController implements ReservationControllerDocs {
     private final ReservationCommandService reservationCommandService;
     private final ReservationQueryService reservationQueryService;
 
+    //예약 최초 생성
     @Override
-    @PostMapping
+    @PostMapping("/schedule")
     public ApiResponse<ReservationResDTO.CreateReservationResponse> createReservation(
             @Valid @RequestBody ReservationReqDTO.CreateReservationRequest request,
             @AuthenticationPrincipal CustomUserDetails principal
@@ -43,8 +44,9 @@ public class ReservationController implements ReservationControllerDocs {
         );
     }
 
+    //예약 최종 생성
     @Override
-    @PatchMapping("/{reservationId}/schedule")
+    @PatchMapping("/{reservationId}/confirm")
     public ApiResponse<ReservationResDTO.ConfirmScheduleResponse> confirmReservationSchedule(
             @AuthenticationPrincipal CustomUserDetails principal,
             @PathVariable Long reservationId,
@@ -64,6 +66,7 @@ public class ReservationController implements ReservationControllerDocs {
         );
     }
 
+    //예약 가능 시간 조회
     @Override
     @GetMapping("/{reservationId}/available-times")
     public ApiResponse<ReservationResDTO.AvailableTimesResponse>
@@ -82,6 +85,7 @@ public class ReservationController implements ReservationControllerDocs {
         );
     }
 
+    //예약 상세 조회
     @Override
     @GetMapping("/{reservationId}")
     public ApiResponse<ReservationResDTO.ReservationInfoResponse>
@@ -98,6 +102,7 @@ public class ReservationController implements ReservationControllerDocs {
         );
     }
 
+    //예약 목록 조회
     @Override
     @GetMapping
     public ApiResponse<ReservationResDTO.ReservationListResponse> getReservationList(
@@ -113,6 +118,7 @@ public class ReservationController implements ReservationControllerDocs {
         );
     }
 
+    //예약 취소
     @Override
     @PatchMapping("/{reservationId}/cancel")
     public ApiResponse<Void> cancelReservation(

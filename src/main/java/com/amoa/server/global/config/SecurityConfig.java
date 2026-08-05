@@ -41,14 +41,14 @@ public class SecurityConfig {
     };
 
     private final String[] getAllowUris = {
-            "/api/v1/regions/present",
             "/api/v1/regions",
+            "/api/v1/regions/present",
             "/api/v1/cards",
             "/api/v1/cards/home",
             "/api/v1/cards/*",
             "/api/v1/cards/*/recommendations",
             "/api/v1/terms/**",
-            "/api/v1/shops/design-tags"
+            "/api/v1/design-tags"
     };
 
     @Bean

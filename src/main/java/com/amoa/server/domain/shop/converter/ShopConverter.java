@@ -1,6 +1,8 @@
 package com.amoa.server.domain.shop.converter;
 
 import com.amoa.server.domain.card.entity.Card;
+import com.amoa.server.domain.common.converter.DesignTagConverter;
+import com.amoa.server.domain.common.dto.response.DesignTagResDTO;
 import com.amoa.server.domain.common.entity.DesignTag;
 import com.amoa.server.domain.common.entity.Region;
 import com.amoa.server.domain.shop.dto.request.ShopReqDTO;
@@ -15,25 +17,8 @@ import com.amoa.server.global.kakao.dto.response.KakaoAddressResDTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ShopConverter {
-
-    // DesignTag Entity → DesignTagResponse DTO 변환
-    public static ShopResDTO.DesignTagResponse toDesignTagResponse(DesignTag designTag) {
-        return new ShopResDTO.DesignTagResponse(
-                designTag.getId(),
-                designTag.getName()
-        );
-    }
-
-    // DesignTag 리스트 → DesignTagListResponse DTO 변환
-    public static ShopResDTO.DesignTagListResponse toDesignTagListResponse(List<DesignTag> designTags) {
-        List<ShopResDTO.DesignTagResponse> designTagResponses = designTags.stream()
-                .map(ShopConverter::toDesignTagResponse)
-                .collect(Collectors.toList());
-        return new ShopResDTO.DesignTagListResponse(designTagResponses);
-    }
 
     // CreateShopRequest DTO → Shop Entity 변환
     public static Shop toShop(ShopReqDTO.CreateShopRequest request,
@@ -153,9 +138,9 @@ public class ShopConverter {
             int shopLikeCount,
             boolean isLiked) {
 
-        List<ShopResDTO.DesignTagResponse> designTagResponses = designTags.stream()
-                .map(ShopConverter::toDesignTagResponse)
-                .collect(Collectors.toList());
+        List<DesignTagResDTO.DesignTagResponse> designTagResponses = designTags.stream()
+                .map(DesignTagConverter::toDesignTagResponse)
+                .toList();
 
         return new ShopResDTO.ShopDetailResponse(
                 shop.getId(),

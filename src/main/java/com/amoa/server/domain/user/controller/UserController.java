@@ -6,7 +6,6 @@ import com.amoa.server.domain.card.dto.response.UserCardResDTO;
 import com.amoa.server.domain.card.service.query.UserCardQueryService;
 import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.shop.dto.response.SavedShopResDTO;
-import com.amoa.server.domain.shop.dto.response.ShopResDTO;
 import com.amoa.server.domain.shop.service.query.SavedShopQueryService;
 import com.amoa.server.domain.user.controller.docs.UserControllerDocs;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
@@ -59,7 +58,7 @@ public class UserController implements UserControllerDocs {
     private final OnboardingCommandService onboardingCommandService;
 
     @Override
-    @DeleteMapping("/me/withdraw")
+    @DeleteMapping("/me")
     public ApiResponse<String> withdraw(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             HttpServletRequest request
@@ -197,15 +196,6 @@ public class UserController implements UserControllerDocs {
     }
 
     @Override
-    @GetMapping("/design-moods")
-    public ApiResponse<ShopResDTO.DesignTagListResponse> getDesignMoods() {
-        return ApiResponse.onSuccess(
-                UserSuccessCode.DESIGN_MOOD_LIST_FOUND,
-                userQueryService.getDesignMoods()
-        );
-    }
-
-    @Override
     @PatchMapping("/me/profile")
     public ApiResponse<UserProfileResDTO> updateMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -242,7 +232,7 @@ public class UserController implements UserControllerDocs {
     }
 
     @Override
-    @PostMapping("/phone/send")
+    @PostMapping("/phone/verification")
     public ApiResponse<PhoneSendResDTO> sendPhoneVerificationCode(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PhoneSendReqDTO request
@@ -256,7 +246,7 @@ public class UserController implements UserControllerDocs {
     }
 
     @Override
-    @PostMapping("/phone/verify")
+    @PostMapping("/phone/verification/verify")
     public ApiResponse<PhoneVerifyResDTO> verifyPhoneCode(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PhoneVerifyReqDTO request

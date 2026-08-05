@@ -3,7 +3,6 @@ package com.amoa.server.domain.user.controller.docs;
 import com.amoa.server.domain.card.dto.response.UserCardResDTO;
 import com.amoa.server.domain.common.enums.SortType;
 import com.amoa.server.domain.shop.dto.response.SavedShopResDTO;
-import com.amoa.server.domain.shop.dto.response.ShopResDTO;
 import com.amoa.server.domain.user.dto.request.OnboardingSaveReqDTO;
 import com.amoa.server.domain.user.dto.request.PhoneSendReqDTO;
 import com.amoa.server.domain.user.dto.request.PhoneVerifyReqDTO;
@@ -120,11 +119,6 @@ public interface UserControllerDocs {
             @Max(100)
             int size
     );
-    @Operation(
-            summary = "디자인 무드 목록 조회 API",
-            description = "온보딩/설정 화면에서 선택 가능한 디자인 무드(태그) 목록을 조회합니다."
-    )
-    ApiResponse<ShopResDTO.DesignTagListResponse> getDesignMoods();
 
     @Operation(
             summary = "내 정보 통합 수정 API",

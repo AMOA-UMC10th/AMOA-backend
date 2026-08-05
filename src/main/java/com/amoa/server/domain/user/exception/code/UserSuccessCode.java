@@ -69,12 +69,6 @@ public enum UserSuccessCode implements BaseSuccessCode {
             "닉네임 사용 가능 여부 조회에 성공했습니다."
     ),
 
-    DESIGN_MOOD_LIST_FOUND(
-            HttpStatus.OK,
-            "ONBOARDING200_2",
-            "디자인 무드 목록 조회에 성공했습니다."
-    ),
-
     ONBOARDING_COMPLETE_OK(
             HttpStatus.OK,
             "ONBOARDING200_3",
