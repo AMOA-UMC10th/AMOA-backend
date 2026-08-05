@@ -64,8 +64,8 @@ public interface CardControllerDocs {
                       PRICE_DESC 가격 높은순
                       RECOMMENDED 추천순
                     - period: artType=MONTHLY인 경우에만 사용하는 기간 필터
-                      , CURRENT 이번 달 등록된 아트
-                      , PAST 지난달 이전에 등록된 아트 (지난달 포함, 그 이전 전체)
+                      , CURRENT 이달의 아트
+                      , PAST 지난달 아트
                       , artType이 MONTHLY가 아니면 무시됩니다.
                     """
     )
