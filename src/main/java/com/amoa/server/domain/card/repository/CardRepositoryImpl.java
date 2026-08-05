@@ -85,7 +85,8 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                 .and(artTypeCondition(narrowerRequest.artType()))
                 .and(priceCondition(narrowerRequest))
                 .and(regionCondition(narrowerRequest.regionIds()))
-                .and(designTagCondition(narrowerRequest.designTagIds()));
+                .and(designTagCondition(narrowerRequest.designTagIds()))
+                .and(monthlyPeriodCondition(narrowerRequest.artType(), narrowerRequest.period()));
 
         return queryFactory
                 .select(qCard.count())
