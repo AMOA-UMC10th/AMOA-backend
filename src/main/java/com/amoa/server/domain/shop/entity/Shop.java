@@ -35,7 +35,7 @@ public class Shop {
     @Column(name = "shop_name", nullable = false, length = 100)
     private String shopName;
 
-    @Column(name = "kakao_channel_url", length = 500)
+    @Column(name = "kakao_channel_url", nullable = false, length = 500)
     private String kakaoChannelUrl;
 
     @Column(name = "instagram_url", length = 500)

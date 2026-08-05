@@ -29,9 +29,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private static final Set<String> TEMP_TOKEN_ALLOWED_URIS = Set.of(
             "/api/v1/users/onboarding",
             "/api/v1/users/nickname/check",
-            "/api/v1/users/design-moods",
-            "/api/v1/users/phone/send",
-            "/api/v1/users/phone/verify"
+            "/api/v1/users/phone/verification",
+            "/api/v1/users/phone/verification/verify",
+            "/api/v1/regions",
+            "/api/v1/regions/present",
+            "/api/v1/design-tags"
     );
 
     private final JwtUtil jwtUtil;

@@ -3,7 +3,6 @@ package com.amoa.server.domain.shop.controller.docs;
 import com.amoa.server.domain.shop.dto.request.ShopReqDTO;
 import com.amoa.server.domain.shop.dto.response.ShopResDTO;
 import com.amoa.server.domain.shop.dto.response.ShopResDTO.CreateShopResponse;
-import com.amoa.server.domain.shop.dto.response.ShopResDTO.DesignTagListResponse;
 import com.amoa.server.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,14 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "Shop(admin)", description = "샵 관련 API(admin)")
+@Tag(name = "Shop(support)", description = "샵 관련 보조 API(support)")
 public interface AdminShopControllerDocs {
-
-    @Operation(
-            summary = "디자인태그 목록 조회",
-            description = "샵 등록 시 선택 가능한 디자인태그 목록을 조회합니다."
-    )
-    ApiResponse<DesignTagListResponse> getDesignTags();
 
     @Operation(
             summary = "샵 이름으로 카카오 로컬 API 검색",

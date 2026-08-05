@@ -1,5 +1,6 @@
 package com.amoa.server.domain.shop.dto.response;
 
+import com.amoa.server.domain.common.dto.response.DesignTagResDTO;
 import com.amoa.server.domain.shop.enums.ShopStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,18 +11,7 @@ import lombok.Getter;
 
 public class ShopResDTO {
 
-    // GET /api/admin/shops/designtag (디자인태그 목록 조회)
-    public record DesignTagResponse(
-            Long designtagId,
-            String name
-    ) {}
-
-    // 디자인태그 목록
-    public record DesignTagListResponse(
-            List<DesignTagResponse> designtags
-    ) {}
-
-    // GET /api/admin/shops/search (카카오 로컬 API 검색)
+    // GET /api/shops/search (카카오 로컬 API 검색)
     @Getter
     @Builder
     @AllArgsConstructor
@@ -31,7 +21,7 @@ public class ShopResDTO {
         private String phone;
     }
 
-    // GET /api/v1/admin/shops/address/search
+    // GET /api/v1/shops/address/search
     @Builder
     public record ShopAddressSearchResponse(
             String roadAddress,
@@ -44,7 +34,7 @@ public class ShopResDTO {
             String region3DepthName
     ) { }
 
-    // POST /api/admin/shops (샵 등록)
+    // POST /api/shops (샵 등록)
     public record CreateShopResponse(
             Long shopId,
             String shopName,
@@ -80,7 +70,7 @@ public class ShopResDTO {
             String address,
             String shopPhoneNumber,
             String businessHours,
-            List<DesignTagResponse> designtags,
+            List<DesignTagResDTO.DesignTagResponse> designTags,
             int cardLikeCount,
             int shopLikeCount,
             boolean isLiked

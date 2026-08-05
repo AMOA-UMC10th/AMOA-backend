@@ -19,7 +19,7 @@ public class UserCardController implements UserCardControllerDocs {
     private final UserCardCommandService userCardCommandService;
 
     @Override
-    @PostMapping("/{cardId}/like")
+    @PostMapping("/{cardId}/likes")
     public ApiResponse<UserCardResDTO.LikeResultDTO> createCardLike(
             @PathVariable Long cardId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -33,7 +33,7 @@ public class UserCardController implements UserCardControllerDocs {
     }
 
     @Override
-    @DeleteMapping("/{cardId}/like")
+    @DeleteMapping("/{cardId}/likes")
     public ApiResponse<Void> deleteCardLike(
             @PathVariable Long cardId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
