@@ -102,7 +102,8 @@ public class CardQueryService {
                     onboardingDesignTagIds,
                     SortType.RECOMMENDED,
                     stage1Cursor,
-                    request.size()
+                    request.size(),
+                    request.period()
             );
 
             return handleTwoStageSearch(stage1Request, request, userId, size, true, false,
@@ -122,7 +123,8 @@ public class CardQueryService {
                     request.designTagIds(),
                     SortType.RECOMMENDED,
                     stage1Cursor,
-                    request.size()
+                    request.size(),
+                    request.period()
             );
 
             return handleTwoStageSearch(stage1Request, request, userId, size, false, true,
@@ -137,7 +139,8 @@ public class CardQueryService {
                 onboardingDesignTagIds.isEmpty() ? null : onboardingDesignTagIds,
                 SortType.RECOMMENDED,
                 stage1Cursor,
-                request.size()
+                request.size(),
+                request.period()
         );
 
         return handleTwoStageSearch(stage1Request, request, userId, size, false, false,
@@ -201,7 +204,8 @@ public class CardQueryService {
                     null,
                     SortType.RECOMMENDED,
                     stage2Cursor,
-                    remainingSize + size
+                    remainingSize + size,
+                    originalRequest.period()
             );
         } else if (isDesignTagSearchOnly) {
             stage2Request = new CardSearchRequest(
@@ -212,7 +216,8 @@ public class CardQueryService {
                     originalRequest.designTagIds(),
                     SortType.RECOMMENDED,
                     stage2Cursor,
-                    remainingSize + size
+                    remainingSize + size,
+                    originalRequest.period()
             );
         } else {
             stage2Request = new CardSearchRequest(
@@ -223,7 +228,8 @@ public class CardQueryService {
                     null,
                     SortType.RECOMMENDED,
                     stage2Cursor,
-                    remainingSize + size
+                    remainingSize + size,
+                    originalRequest.period()
             );
         }
 
