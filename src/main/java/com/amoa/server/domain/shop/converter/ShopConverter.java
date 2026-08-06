@@ -30,7 +30,6 @@ public class ShopConverter {
                 .shopName(request.shopName())
                 .kakaoChannelUrl(request.kakaoChannelUrl())
                 .instagramUrl(request.instagramUrl())
-                .profileImageUrl(request.profileImageUrl())
                 .address(request.address())
                 .latitude(latitude)
                 .longitude(longitude)

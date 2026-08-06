@@ -15,7 +15,6 @@ public class ShopReqDTO {
             String kakaoChannelUrl,
 
             String instagramUrl,
-            String profileImageUrl,
 
             @NotBlank(message = "주소는 필수입니다.")
             String address,
