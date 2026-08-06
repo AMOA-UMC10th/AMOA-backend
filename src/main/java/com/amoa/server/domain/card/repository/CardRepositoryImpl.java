@@ -9,6 +9,7 @@ import com.amoa.server.domain.card.exception.CardException;
 import com.amoa.server.domain.card.exception.code.CardErrorCode;
 import com.amoa.server.domain.card.util.CardCursor;
 import com.amoa.server.domain.common.enums.ArtType;
+import com.amoa.server.domain.common.enums.MonthlyPeriod;
 import com.amoa.server.domain.common.enums.SortType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -45,7 +46,8 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         artTypeCondition(request.artType()),
                         priceCondition(request),
                         regionCondition(request.regionIds()),
-                        designTagCondition(request.designTagIds())
+                        designTagCondition(request.designTagIds()),
+                        monthlyPeriodCondition(request.artType(), request.period())
                 )
                 .fetchOne();
     }
@@ -64,7 +66,8 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         artTypeCondition(request.artType()),
                         priceCondition(request),
                         regionCondition(request.regionIds()),
-                        designTagCondition(request.designTagIds())
+                        designTagCondition(request.designTagIds()),
+                        monthlyPeriodCondition(request.artType(), request.period())
                 )
                 .orderBy(getOrder(request.sort()))                           // 정렬
                 .limit(size + 1)
@@ -82,7 +85,8 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                 .and(artTypeCondition(narrowerRequest.artType()))
                 .and(priceCondition(narrowerRequest))
                 .and(regionCondition(narrowerRequest.regionIds()))
-                .and(designTagCondition(narrowerRequest.designTagIds()));
+                .and(designTagCondition(narrowerRequest.designTagIds()))
+                .and(monthlyPeriodCondition(narrowerRequest.artType(), narrowerRequest.period()));
 
         return queryFactory
                 .select(qCard.count())
@@ -93,6 +97,7 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         priceCondition(broaderRequest),
                         regionCondition(broaderRequest.regionIds()),
                         designTagCondition(broaderRequest.designTagIds()),
+                        monthlyPeriodCondition(broaderRequest.artType(), broaderRequest.period()),
                         narrowerMatch.not()
                 )
                 .fetchOne();
@@ -269,6 +274,23 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                         sub.designTag.id.in(designTagIds)
                 )
                 .exists();
+    }
+
+    // MONTHLY 아트의 기간 조건 (artType=MONTHLY)
+    private BooleanExpression monthlyPeriodCondition(
+            ArtType artType,
+            MonthlyPeriod period
+    ) {
+        if (artType != ArtType.MONTHLY || period == null) {
+            return null;
+        }
+
+        LocalDate currentMonth = YearMonth.now().atDay(1);
+
+        return switch (period) {
+            case CURRENT -> qCard.createdMonth.eq(currentMonth);
+            case PAST -> qCard.createdMonth.lt(currentMonth);
+        };
     }
 
     // 정렬

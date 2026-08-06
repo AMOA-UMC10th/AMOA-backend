@@ -63,6 +63,10 @@ public interface CardControllerDocs {
                       PRICE_ASC 가격 낮은순
                       PRICE_DESC 가격 높은순
                       RECOMMENDED 추천순
+                    - period: artType=MONTHLY인 경우에만 사용하는 기간 필터
+                      , CURRENT 이달의 아트
+                      , PAST 지난달 아트
+                      , artType이 MONTHLY가 아니면 무시됩니다.
                     """
     )
     ApiResponse<CardResDTO.CardList> searchCards(

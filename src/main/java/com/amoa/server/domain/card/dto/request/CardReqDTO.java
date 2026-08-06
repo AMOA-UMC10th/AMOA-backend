@@ -1,5 +1,6 @@
 package com.amoa.server.domain.card.dto.request;
 
+import com.amoa.server.domain.common.enums.MonthlyPeriod;
 import com.amoa.server.domain.common.enums.SortType;
 import jakarta.validation.constraints.Min;
 import com.amoa.server.domain.common.enums.ArtType;
@@ -29,7 +30,8 @@ public class CardReqDTO {
             List<Long> designTagIds,
             SortType sort,
             String cursor, // 복합 커서
-            Integer size
+            Integer size,
+            MonthlyPeriod period
     ) {
     }
 
