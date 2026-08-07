@@ -46,7 +46,7 @@ public interface UserCardRepository extends
         FROM UserCard uc
         JOIN uc.card c
         WHERE uc.user = :user
-        ORDER BY c.likeCard, uc.id DESC
+        ORDER BY c.likeCard DESC, uc.id DESC
     """)
     Page<UserCard> findLikedCardsByUserOrderByPopular(
             @Param("user") User user,
@@ -82,7 +82,7 @@ public interface UserCardRepository extends
         FROM UserCard uc
         JOIN uc.card c
         WHERE uc.user = :user
-        ORDER BY c.maxPrice, uc.id DESC
+        ORDER BY c.maxPrice DESC, uc.id DESC
     """)
     Page<UserCard> findLikedCardsByUserOrderByPriceDesc(
             @Param("user") User user,
