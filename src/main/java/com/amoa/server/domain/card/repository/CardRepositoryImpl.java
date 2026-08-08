@@ -18,12 +18,16 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.JPAExpressions;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,7 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     private static final QCard qCard = QCard.card;
+    private final EntityManager entityManager;
     private static final QCardDesignTag qCardDesignTag = QCardDesignTag.cardDesignTag;
 
     // 검색 조건에 맞는 카드가 총 몇 개인지 조회
@@ -527,7 +532,199 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                 .fetch();
     }
 
-    // 이달의 아트: artType=MONTHLY, 이번 달 등록 카드 중 온보딩 조건 우선 노출(2단계, 이분법)
+    // stage1 카드 중, 특정 샵이 targetCount개 이상을 차지하는 샵 ID 목록 반환 (완전 포화 샵 판별용)
+    private List<Long> findShopIdsWithCardCount(List<Long> stage1Ids, int targetCount) {
+        if (stage1Ids.isEmpty()) {
+            return List.of();
+        }
+
+        List<Card> stage1Cards = findCardsByIdsWithShopAndRegion(stage1Ids);
+
+        return stage1Cards.stream()
+                .collect(Collectors.groupingBy(card -> card.getShop().getId(), Collectors.counting()))
+                .entrySet().stream()
+                .filter(e -> e.getValue() >= targetCount)
+                .map(Map.Entry::getKey)
+                .toList();
+    }
+
+    // 이달의 아트 Stage 1: 온보딩 지역/태그 조건에 맞는 카드 ID를, 샵당 최대 2개로 제한해 찜순으로 조회
+    @SuppressWarnings("unchecked")
+    private List<Long> findMonthlyArtStage1Ids(
+            LocalDate monthStart,
+            LocalDate monthEnd,
+            List<Long> regionIds,
+            List<Long> designTagIds,
+            int limit
+    ) {
+        String sql = """
+                SELECT ranked.card_id AS card_id
+                FROM (
+                    SELECT
+                        c.card_id AS card_id,
+                        c.like_card AS like_card,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY c.shop_id
+                            ORDER BY c.like_card DESC, c.card_id ASC
+                        ) AS shop_rank
+                    FROM card c
+                    JOIN shop s ON c.shop_id = s.shop_id
+                    WHERE c.deleted_at IS NULL
+                      AND c.art_type = 'MONTHLY'
+                      AND c.created_month BETWEEN :monthStart AND :monthEnd
+                      AND s.region_id IN (:regionIds)
+                      AND EXISTS (
+                            SELECT 1 FROM card_design_tag cdt
+                            WHERE cdt.card_id = c.card_id
+                              AND cdt.design_tag_id IN (:designTagIds)
+                      )
+                ) ranked
+                WHERE ranked.shop_rank <= 2
+                ORDER BY ranked.like_card DESC, ranked.card_id ASC
+                LIMIT :limit
+                """;
+
+        List<Object> rows = entityManager.createNativeQuery(sql)
+                .setParameter("monthStart", monthStart)
+                .setParameter("monthEnd", monthEnd)
+                .setParameter("regionIds", regionIds)
+                .setParameter("designTagIds", designTagIds)
+                .setParameter("limit", limit)
+                .getResultList();
+
+        return rows.stream().map(row -> ((Number) row).longValue()).toList();
+    }
+
+    // 이달의 아트 Stage 2: 온보딩 조건 없이, 이미 뽑힌 카드/포화된 샵을 제외하고 채움
+    @SuppressWarnings("unchecked")
+    private List<Long> findMonthlyArtStage2Ids(
+            LocalDate monthStart,
+            LocalDate monthEnd,
+            List<Long> excludeIds,
+            List<Long> saturatedShopIds,
+            int remainingPerShop,
+            int limit
+    ) {
+        String excludeIdsSql = excludeIds.stream().map(id -> "?").collect(Collectors.joining(","));
+        String saturatedShopSql = saturatedShopIds.isEmpty()
+                ? "-1"
+                : saturatedShopIds.stream().map(id -> "?").collect(Collectors.joining(","));
+
+        String sql = """
+                SELECT ranked.card_id AS card_id
+                FROM (
+                    SELECT
+                        c.card_id AS card_id,
+                        c.like_card AS like_card,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY c.shop_id
+                            ORDER BY c.like_card DESC, c.card_id ASC
+                        ) AS shop_rank
+                    FROM card c
+                    WHERE c.deleted_at IS NULL
+                      AND c.art_type = 'MONTHLY'
+                      AND c.created_month BETWEEN ? AND ?
+                      AND c.card_id NOT IN (%s)
+                      AND c.shop_id NOT IN (%s)
+                ) ranked
+                WHERE ranked.shop_rank <= ?
+                ORDER BY ranked.like_card DESC, ranked.card_id ASC
+                LIMIT ?
+                """.formatted(excludeIdsSql, saturatedShopSql);
+
+        jakarta.persistence.Query query = entityManager.createNativeQuery(sql);
+
+        int idx = 1;
+        query.setParameter(idx++, monthStart);
+        query.setParameter(idx++, monthEnd);
+        for (Long id : excludeIds) {
+            query.setParameter(idx++, id);
+        }
+        for (Long shopId : saturatedShopIds) {
+            query.setParameter(idx++, shopId);
+        }
+        query.setParameter(idx++, remainingPerShop);
+        query.setParameter(idx, limit);
+
+        List<Object> rows = query.getResultList();
+        return rows.stream().map(row -> ((Number) row).longValue()).toList();
+    }
+
+    // 완벽한 연말을 위한 PICK: 샵당 최대 2개 제한된 카드 ID를 찜순으로 조회
+    @SuppressWarnings("unchecked")
+    private List<Long> findYearEndPickIds(int limit) {
+        String sql = """
+                SELECT ranked.card_id AS card_id
+                FROM (
+                    SELECT
+                        c.card_id AS card_id,
+                        c.like_card AS like_card,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY c.shop_id
+                            ORDER BY c.like_card DESC, c.card_id ASC
+                        ) AS shop_rank
+                    FROM card c
+                    WHERE c.deleted_at IS NULL
+                ) ranked
+                WHERE ranked.shop_rank <= 2
+                ORDER BY ranked.like_card DESC, ranked.card_id ASC
+                LIMIT :limit
+                """;
+
+        List<Object> rows = entityManager.createNativeQuery(sql)
+                .setParameter("limit", limit)
+                .getResultList();
+
+        return rows.stream().map(row -> ((Number) row).longValue()).toList();
+    }
+
+    // ID 목록을 받아 shop/region까지 fetch join으로 한 번에 조회 (N+1 방지), ID 순서를 그대로 보존
+    private List<Card> findCardsByIdsWithShopAndRegion(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
+        List<Card> cards = queryFactory
+                .selectFrom(qCard)
+                .join(qCard.shop).fetchJoin()
+                .join(qCard.shop.region).fetchJoin()
+                .where(qCard.id.in(ids))
+                .fetch();
+
+        Map<Long, Integer> orderIndex = new HashMap<>();
+        for (int i = 0; i < ids.size(); i++) {
+            orderIndex.put(ids.get(i), i);
+        }
+
+        return cards.stream()
+                .sorted(Comparator.comparingInt(card -> orderIndex.get(card.getId())))
+                .toList();
+    }
+
+    // 정렬 순서를 유지하며 샵당 maxPerShop개로 최종 제한 (stage1+stage2 합산 후 안전망)
+    private List<Card> limitPerShop(List<Card> cards, int maxPerShop, int limit) {
+        Map<Long, Integer> shopCount = new HashMap<>();
+        List<Card> result = new ArrayList<>();
+
+        for (Card card : cards) {
+            Long shopId = card.getShop().getId();
+            int count = shopCount.getOrDefault(shopId, 0);
+
+            if (count >= maxPerShop) {
+                continue;
+            }
+
+            result.add(card);
+            shopCount.put(shopId, count + 1);
+
+            if (result.size() >= limit) {
+                break;
+            }
+        }
+
+        return result;
+    }
+
     @Override
     public List<Card> findMonthlyArtCards(
             List<Long> onboardingRegionIds,
@@ -541,71 +738,45 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
         boolean hasRegion = onboardingRegionIds != null && !onboardingRegionIds.isEmpty();
         boolean hasTag = onboardingDesignTagIds != null && !onboardingDesignTagIds.isEmpty();
 
-        BooleanExpression baseFilter = qCard.deletedAt.isNull()
-                .and(qCard.artType.eq(ArtType.MONTHLY))
-                .and(qCard.createdMonth.between(monthStart, monthEnd));
-
-        // 온보딩 조건이 없으면 그냥 인기순 top N
-        if (!hasRegion && !hasTag) {
-            return queryFactory
-                    .selectFrom(qCard)
-                    .join(qCard.shop).fetchJoin()
-                    .join(qCard.shop.region).fetchJoin()
-                    .where(baseFilter)
-                    .orderBy(qCard.likeCard.desc(), qCard.id.asc())
-                    .limit(limit)
-                    .fetch();
+        if (!hasRegion || !hasTag) {
+            List<Long> ids = findMonthlyArtStage2Ids(
+                    monthStart, monthEnd, List.of(-1L), List.of(), 2, limit
+            );
+            return findCardsByIdsWithShopAndRegion(ids);
         }
 
-        // Stage 1: 온보딩 조건(지역 IN, 태그 EXISTS)과 정확히 일치하는 카드 우선 조회
-        BooleanExpression onboardingMatch = baseFilter
-                .and(regionCondition(onboardingRegionIds))
-                .and(designTagCondition(onboardingDesignTagIds));
+        // Stage 1: 온보딩 조건 + 샵당 2개 제한
+        List<Long> stage1Ids = findMonthlyArtStage1Ids(
+                monthStart, monthEnd, onboardingRegionIds, onboardingDesignTagIds, limit
+        );
 
-        List<Card> stage1 = queryFactory
-                .selectFrom(qCard)
-                .join(qCard.shop).fetchJoin()
-                .join(qCard.shop.region).fetchJoin()
-                .where(onboardingMatch)
-                .orderBy(qCard.likeCard.desc(), qCard.id.asc())
-                .limit(limit)
-                .fetch();
-
-        if (stage1.size() >= limit) {
-            return stage1;
+        if (stage1Ids.size() >= limit) {
+            return findCardsByIdsWithShopAndRegion(stage1Ids);
         }
 
-        // Stage 2: 부족하면 온보딩 조건 없이, stage1과 겹치지 않게 채움
-        Set<Long> stage1Ids = stage1.stream().map(Card::getId).collect(Collectors.toSet());
-        int remaining = limit - stage1.size();
+        // 샵당 2개를 이미 채운(포화된) 샵은 Stage 2에서 제외
+        List<Long> saturatedShopIds = findShopIdsWithCardCount(stage1Ids, 2);
 
-        List<Card> stage2 = queryFactory
-                .selectFrom(qCard)
-                .join(qCard.shop).fetchJoin()
-                .join(qCard.shop.region).fetchJoin()
-                .where(
-                        baseFilter,
-                        stage1Ids.isEmpty() ? null : qCard.id.notIn(stage1Ids)
-                )
-                .orderBy(qCard.likeCard.desc(), qCard.id.asc())
-                .limit(remaining)
-                .fetch();
+        List<Long> excludeIds = stage1Ids.isEmpty() ? List.of(-1L) : stage1Ids;
+        int remaining = limit - stage1Ids.size();
 
-        List<Card> result = new ArrayList<>(stage1);
-        result.addAll(stage2);
-        return result;
+        List<Long> stage2Ids = findMonthlyArtStage2Ids(
+                monthStart, monthEnd, excludeIds, saturatedShopIds, 2, remaining * 3
+        );
+
+        List<Long> combinedIds = new ArrayList<>(stage1Ids);
+        combinedIds.addAll(stage2Ids);
+
+        List<Card> combinedCards = findCardsByIdsWithShopAndRegion(combinedIds);
+
+        // 부분 포화 샵(1개만 쓴 샵) 케이스에 대한 최종 안전망
+        return limitPerShop(combinedCards, 2, limit);
     }
 
-    // 완벽한 연말을 위한 PICK: 기준 미정, 임시로 인기순 top N
+    // 완벽한 연말을 위한 PICK: 기준 미정, 임시로 인기순 top N + 샵당 최대 2개 제한
     @Override
     public List<Card> findYearEndPickCards(int limit) {
-        return queryFactory
-                .selectFrom(qCard)
-                .join(qCard.shop).fetchJoin()
-                .join(qCard.shop.region).fetchJoin()
-                .where(qCard.deletedAt.isNull())
-                .orderBy(qCard.likeCard.desc(), qCard.id.asc())
-                .limit(limit)
-                .fetch();
+        List<Long> ids = findYearEndPickIds(limit);
+        return findCardsByIdsWithShopAndRegion(ids);
     }
 }
