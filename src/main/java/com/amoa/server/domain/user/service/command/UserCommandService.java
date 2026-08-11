@@ -152,6 +152,9 @@ public class UserCommandService {
         // 4. 사용자 프로필 / 온보딩 상태 초기화
         user.resetForWithdrawal();
 
+        // 초기화한 nickname, phoneNumber, role을 먼저 DB에 반영
+        userRepository.saveAndFlush(user);
+
         // 5. Soft Delete
         // @SQLDelete -> is_active = false
         userRepository.delete(user);
