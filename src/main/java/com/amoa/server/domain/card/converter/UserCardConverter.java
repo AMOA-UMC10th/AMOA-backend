@@ -21,7 +21,7 @@ public class UserCardConverter {
                 card.getInstagramUrl(),
                 card.getArtType().name(),
                 shop.getShopName(),
-                region.getSecondDepth(),
+                region.getThirdDepth(),
                 card.getMinPrice(),
                 card.getMaxPrice(),
                 userCard.getCreatedAt()
