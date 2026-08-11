@@ -1,5 +1,8 @@
 package com.amoa.server.domain.user.service.command;
 
+import com.amoa.server.domain.card.repository.UserCardRepository;
+import com.amoa.server.domain.reservation.repository.ReservationRepository;
+import com.amoa.server.domain.shop.repository.SavedShopRepository;
 import com.amoa.server.domain.user.dto.request.PhoneVerifyReqDTO;
 import com.amoa.server.domain.user.dto.response.KakaoUserInfoResDTO;
 import com.amoa.server.domain.user.dto.response.PhoneVerifyResDTO;
@@ -7,6 +10,10 @@ import com.amoa.server.domain.user.entity.User;
 import com.amoa.server.domain.user.enums.Role;
 import com.amoa.server.domain.user.exception.UserException;
 import com.amoa.server.domain.user.exception.code.UserErrorCode;
+import com.amoa.server.domain.user.repository.UserAgreementRepository;
+import com.amoa.server.domain.user.repository.UserDesignTagRepository;
+import com.amoa.server.domain.user.repository.UserInterestedRegionRepository;
+import com.amoa.server.domain.user.repository.UserNotificationSettingRepository;
 import com.amoa.server.domain.user.repository.UserRepository;
 import com.amoa.server.global.util.JwtUtil;
 import com.amoa.server.global.util.RedisUtil;
@@ -41,6 +48,13 @@ public class UserCommandService {
     private final JwtUtil jwtUtil;
     private static final int MAX_VERIFY_ATTEMPTS = 5;
     private static final Duration VERIFIED_STATE_TTL = Duration.ofMinutes(30);
+    private final UserDesignTagRepository userDesignTagRepository;
+    private final UserInterestedRegionRepository userInterestedRegionRepository;
+    private final UserAgreementRepository userAgreementRepository;
+    private final UserNotificationSettingRepository userNotificationSettingRepository;
+    private final UserCardRepository userCardRepository;
+    private final SavedShopRepository savedShopRepository;
+    private final ReservationRepository reservationRepository;
 
     // 기존 회원 조회 또는 신규 회원 생성
     @Transactional
@@ -74,7 +88,7 @@ public class UserCommandService {
                 .map(user -> {
 
                     if (!Boolean.TRUE.equals(user.getIsActive())) {
-                        log.debug("탈퇴 회원 재활성화 처리");
+                        log.debug("탈퇴 회원 재가입 처리");
                         user.reactivate();
                     }
 
@@ -122,10 +136,30 @@ public class UserCommandService {
         Long remainingTime =
                 jwtUtil.getExpirationTime(accessToken);
 
-        // @SQLDelete에 의해 is_active = false 처리
+        // 1. 온보딩 관련 데이터 초기화
+        userDesignTagRepository.deleteAllByUser_Id(userId);
+        userInterestedRegionRepository.deleteAllByUser_Id(userId);
+        userAgreementRepository.deleteAllByUser_Id(userId);
+        userNotificationSettingRepository.deleteAllByUser_Id(userId);
+
+        // 2. 찜 데이터 초기화
+        userCardRepository.deleteAllByUser_Id(userId);
+        savedShopRepository.deleteAllByUser_Id(userId);
+
+        // 3. 기존 예약은 DB에 보존하되 사용자에게 미노출
+        reservationRepository.hideAllByUserId(userId);
+
+        // 4. 사용자 프로필 / 온보딩 상태 초기화
+        user.resetForWithdrawal();
+
+        // 초기화한 nickname, phoneNumber, role을 먼저 DB에 반영
+        userRepository.saveAndFlush(user);
+
+        // 5. Soft Delete
+        // @SQLDelete -> is_active = false
         userRepository.delete(user);
 
-        // DB 커밋이 성공한 뒤 Redis 토큰 무효화
+        // 6. DB 커밋 성공 후 Redis 토큰 무효화
         TransactionSynchronizationManager.registerSynchronization(
                 new TransactionSynchronization() {
                     @Override

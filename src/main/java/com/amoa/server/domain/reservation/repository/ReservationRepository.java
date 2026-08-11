@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -35,6 +36,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             Long userId
     );
 
+    Optional<Reservation> findByIdAndUser_IdAndIsVisibleToUserTrue(
+            Long reservationId,
+            Long userId
+    );
+
     List<Reservation>
     findAllByShop_IdAndReservationDateAndReservationStatusIn(
             Long shopId,
@@ -42,24 +48,35 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             List<ReservationStatus> reservationStatus
     );
 
-    Optional<Reservation> findByIdAndUser_IdAndReservationStatusNot(
+    Optional<Reservation>
+    findByIdAndUser_IdAndReservationStatusNotAndIsVisibleToUserTrue(
             Long reservationId,
             Long userId,
             ReservationStatus reservationStatus
     );
 
     @Query("""
-    SELECT r
-    FROM Reservation r
-    WHERE r.user.id = :userId
-      AND r.reservationStatus <> :status
-    ORDER BY r.reservationDate DESC,
-             r.reservationStartTime DESC,
-             r.id DESC
-    """)
+        SELECT r
+        FROM Reservation r
+        WHERE r.user.id = :userId
+            AND r.reservationStatus <> :status
+            AND r.isVisibleToUser = true
+        ORDER BY r.reservationDate DESC,
+                 r.reservationStartTime DESC,
+                 r.id DESC
+""")
     List<Reservation> findReservationList(
             Long userId,
             ReservationStatus status,
             Pageable pageable
     );
+
+    //탈퇴용 업데이트
+    @Modifying
+    @Query("""
+    UPDATE Reservation r
+    SET r.isVisibleToUser = false
+    WHERE r.user.id = :userId
+""")
+    void hideAllByUserId(@Param("userId") Long userId);
 }

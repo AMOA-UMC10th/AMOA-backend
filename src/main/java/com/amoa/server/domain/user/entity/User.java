@@ -109,4 +109,10 @@ public class User extends BaseEntity {
         this.nickname = nickname;
         this.userPhoneNumber = phoneNumber;
     }
+
+    public void resetForWithdrawal() {
+        this.nickname = null;
+        this.userPhoneNumber = null;
+        this.role = Role.NEW_USER;
+    }
 }

@@ -14,4 +14,6 @@ public interface UserNotificationSettingRepository extends JpaRepository<UserNot
             Long userId,
             NotificationType notificationType
     );
+
+    void deleteAllByUser_Id(Long userId);
 }
