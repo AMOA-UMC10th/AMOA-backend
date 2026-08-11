@@ -43,7 +43,10 @@ public class ReservationQueryService {
         validateReservationDate(reservationDate);
 
         Reservation reservation = reservationRepository
-                .findByIdAndUser_Id(reservationId, userId)
+                .findByIdAndUser_IdAndIsVisibleToUserTrue(
+                        reservationId,
+                        userId
+                )
                 .orElseThrow(() ->
                         new ReservationException(
                                 ReservationErrorCode.RESERVATION_NOT_FOUND
@@ -250,15 +253,17 @@ public class ReservationQueryService {
     ) {
         System.out.println("reservationId = " + reservationId);
         System.out.println("userId = " + userId);
-        
+
         Reservation reservation = reservationRepository
-                .findByIdAndUser_IdAndReservationStatusNot(
+                .findByIdAndUser_IdAndReservationStatusNotAndIsVisibleToUserTrue(
                         reservationId,
                         userId,
                         ReservationStatus.DRAFT
                 )
                 .orElseThrow(() ->
-                        new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND)
+                        new ReservationException(
+                                ReservationErrorCode.RESERVATION_NOT_FOUND
+                        )
                 );
 
         List<ReservationSelectedOption> selectedOptions =

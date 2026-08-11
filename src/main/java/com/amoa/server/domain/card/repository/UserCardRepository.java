@@ -23,6 +23,9 @@ public interface UserCardRepository extends
 
     boolean existsByUserAndCard(User user, Card card);
 
+    //탈퇴 시 삭제
+    void deleteAllByUser_Id(Long userId);
+
     // 아트 목록 조회 시 사용자가 찜한 카드 조회
     List<UserCard> findByUserIdAndCardIdIn(Long userId, List<Long> cardIds);
 

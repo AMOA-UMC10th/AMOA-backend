@@ -151,4 +151,8 @@ public class Reservation extends BaseEntity {
     public void clearReminderMessageGroupId() {
         this.reminderMessageGroupId = null;
     }
+
+    @Column(name = "is_visible_to_user", nullable = false)
+    @Builder.Default
+    private Boolean isVisibleToUser = true;
 }

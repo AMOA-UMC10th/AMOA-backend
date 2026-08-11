@@ -20,6 +20,9 @@ public interface SavedShopRepository extends
 
     Optional<SavedShop> findByUserAndShop(User user, Shop shop);
 
+    //탈퇴 시
+    void deleteAllByUser_Id(Long userId);
+
     // 최신순
     Page<SavedShop> findAllByUser(User user, Pageable pageable);
 

@@ -9,6 +9,8 @@ public interface UserAgreementRepository
 
     List<UserAgreement> findAllByUser_Id(Long userId);
 
+    void deleteAllByUser_Id(Long userId);
+
     boolean existsByUser_IdAndTerm_IdAndAgreedVersion(
             Long userId,
             Long termId,
