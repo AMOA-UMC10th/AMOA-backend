@@ -18,7 +18,7 @@ public class SavedShopConverter {
                 savedShop.getShop().getShopName(),
                 savedShop.getCreatedAt(),
                 savedShop.getShop().getProfileImageUrl(),
-                savedShop.getShop().getRegion().getSecondDepth(),
+                savedShop.getShop().getRegion().getThirdDepth(),
                 cards
         );
 
